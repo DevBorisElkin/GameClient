@@ -9,6 +9,7 @@ using static NetworkingMessageAttributes;
 
 public class ConnectionManager : MonoBehaviour
 {
+    // TODO MAKE CHANGES
     public static ConnectionManager instance;
     UI_TestConnectionPanel _ui_testConnect;
 
