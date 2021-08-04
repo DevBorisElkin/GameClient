@@ -54,8 +54,8 @@ public class ConnectionManager : MonoBehaviour
 
     void OnConnected(EndPoint endPoint)
     {
-        Debug.Log("On Connected " + endPoint);
         UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
+        Debug.Log("On Connected " + endPoint);
     }
     void OnDisconnected()
     {

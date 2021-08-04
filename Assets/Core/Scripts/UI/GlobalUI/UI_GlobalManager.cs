@@ -58,7 +58,7 @@ public class UI_GlobalManager : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().buildIndex == 2)
         {
-            OnlineGameManager.instance.OnPlayRoomEntered();
+            //OnlineGameManager.instance.OnPlayRoomEntered();
         }
     }
     // is called manually
@@ -67,11 +67,17 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log("Manage Scene()");
         if (recordedStatus.Equals(ClientStatus.Disconnected) && newStatus.Equals(ClientStatus.Connected))
         {
-            UI_MainMenu.MainMenu_Connected(true);
+            Action act = LoadMainMenuScene;
+            UnityThread.executeInUpdate(act);
+
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(true); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Disconnected))
         {
-            UI_MainMenu.MainMenu_Connected(false);
+            Action act = LoadMainMenuScene;
+            UnityThread.executeInUpdate(act);
+
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(false); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.InPlayRoom))
         {
