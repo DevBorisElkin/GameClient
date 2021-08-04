@@ -31,7 +31,7 @@ namespace BorisUnityDev.Networking
             if (socket != null && socket.Connected)
             {
                 socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                socket.Dispose();
             }
         }
     }

@@ -15,16 +15,14 @@ namespace BorisUnityDev.Networking
         static IPEndPoint remoteEpUdp;
         static Socket udpSocket;
 
-        static Connection connection;
         static string address;
         static int portUdp;
 
         static Task taskListenUDP;
-        public static void ConnectTo(string _address, int _port, Connection _connection)
+        public static void ConnectTo(string _address, int _port)
         {
             address = _address;
             portUdp = _port;
-            connection = _connection;
             try
             {
                 remoteEpUdp = new IPEndPoint(IPAddress.Any, portUdp);
@@ -63,15 +61,22 @@ namespace BorisUnityDev.Networking
                 int bytes;
                 while (connected)
                 {
-                    builder = new StringBuilder();
-                    do
+                    try
                     {
-                        bytes = udpSocket.ReceiveFrom(data, ref remoteIp);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (udpSocket.Available > 0);
+                        builder = new StringBuilder();
+                        do
+                        {
+                            bytes = udpSocket.ReceiveFrom(data, ref remoteIp);
+                            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        }
+                        while (udpSocket.Available > 0);
 
-                    connection.OnMessageReceived(builder.ToString(), MessageProtocol.UDP);
+                        Connection.OnMessageReceived(builder.ToString(), MessageProtocol.UDP);
+                    }
+                    catch(Exception e)
+                    {
+                        //Debug.Log(e.ToString());
+                    }
                 }
             }
             catch (Exception ex)
@@ -84,23 +89,18 @@ namespace BorisUnityDev.Networking
             }
         }
 
-        private static void DelayedInitCall()
-        {
-            Thread.Sleep(1000);
-            SendMessageUdp("init_udp");
-        }
         public static void Disconnect()
         {
-            Debug.Log("[SYSTEM_MESSAGE]: closed udp");
+            if (!connected) return;
             connected = false;
+            Debug.Log("[SYSTEM_MESSAGE]: closed udp");
             if (udpSocket != null)
             {
-                udpSocket.Shutdown(SocketShutdown.Both);
-                udpSocket.Close();
+                try { udpSocket.Shutdown(SocketShutdown.Both); }
+                catch (Exception e) { }
+                finally { udpSocket.Close(); }
                 udpSocket = null;
             }
-            remoteEpUdp = null;
-            //taskListenUDP.Dispose();
         }
     }
 }

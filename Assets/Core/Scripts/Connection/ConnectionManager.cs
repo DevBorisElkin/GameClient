@@ -26,8 +26,6 @@ public class ConnectionManager : MonoBehaviour
         }
      }
 
-    Connection connection;
-
     public static string ip = "18.192.64.12";
 
     public static int portTcp = 8384;
@@ -57,15 +55,13 @@ public class ConnectionManager : MonoBehaviour
     }
     void InitConnection()
     {
-        connection = new Connection();
-        connection.OnConnectedEvent += OnConnected;
-        connection.OnDisconnectedEvent += OnDisconnected;
-        connection.OnMessageReceivedEvent += OnMessageReceived;
+        Connection.OnConnectedEvent += OnConnected;
+        Connection.OnDisconnectedEvent += OnDisconnected;
+        Connection.OnMessageReceivedEvent += OnMessageReceived;
     }
     public void Connect()
     {
-        connection.Connect(ip, portTcp);
-        UDP.ConnectTo(ip, portUdp, connection);
+        Connection.Connect(ip, portTcp, portUdp);
     }
 
     public void Disconnect()
@@ -73,9 +69,7 @@ public class ConnectionManager : MonoBehaviour
         if (currentStatus.Equals(ClientCurrentStatus.InPlayRoom))
             LeavePlayroom();
 
-
-        connection.Disconnect();
-        UDP.Disconnect();
+        Connection.Disconnect();
     }
 
     void OnConnected(EndPoint endPoint)
@@ -218,7 +212,7 @@ public class ConnectionManager : MonoBehaviour
     public void SendMessageToServer(string message, MessageProtocol mp)
     {
         //Debug.Log($"[{mp}] Sending message to server:" +message);
-        connection.SendMessage(message, mp);
+        Connection.SendMessage(message, mp);
     }
 
 
