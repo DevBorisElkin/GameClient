@@ -68,6 +68,7 @@ public class OnlineGameManager : MonoBehaviour
 
     public void OnPlayerDisconnectedFromPlayroom(string message)
     {
+        if (!inPlayRoom) return;
         string[] substrings = message.Split('|');
         string leftPlayerIp = substrings[3];
 
@@ -84,6 +85,7 @@ public class OnlineGameManager : MonoBehaviour
     // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
     public void OnPositionMessageReceived(string message)
     {
+        if (!inPlayRoom) return;
         try
         {
             if (message.Length <= "players_positions_in_playroom|".Length) return;
@@ -157,6 +159,7 @@ public class OnlineGameManager : MonoBehaviour
 
     }
 
+    // basically checks if player that joined room has not been yet added as an GameObject
     void CheckUnspawnedPlayers()
     {
         foreach (Player a in opponents)
@@ -191,22 +194,6 @@ public class OnlineGameManager : MonoBehaviour
             }
         }
         catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
-    }
-
-    void UpdatePlayersPosRot()
-    {
-        foreach (Player a in opponents)
-        {
-            if (a.controlledGameObject != null)
-            {
-                a.controlledGameObject.transform.position = a.position;
-                a.controlledGameObject.transform.rotation = a.rotation;
-            }
-            else
-            {
-                a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
-            }
-        }
     }
 
     List<Player> opponents;

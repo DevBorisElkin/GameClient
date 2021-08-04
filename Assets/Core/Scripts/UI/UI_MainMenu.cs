@@ -5,58 +5,35 @@ using UnityEngine;
 using UnityEngine.UI;
 using static ConnectionManager;
 
-public class UI_TestConnectionPanel : MonoBehaviour
+public class UI_MainMenu : MonoBehaviour
 {
     public GameObject panelConnect;
     public GameObject panelSendReceive;
 
-    public InputField enterTextInputField; 
-
-    public Text ip_port_connectedTo;
-    public Text serverOutputText;
-
+    public InputField enterTextInputField;
 
     private void Start()
     {
-        if (ConnectionManager.instance.currentStatus.Equals(ClientCurrentStatus.Connected))
-        {
-            panelConnect.SetActive(false);
-            panelSendReceive.SetActive(true);
-        }
-        else if (ConnectionManager.instance.currentStatus.Equals(ClientCurrentStatus.Disconnected))
-        {
-            panelConnect.SetActive(true);
-            panelSendReceive.SetActive(false);
-        }
-        
+        UI_GlobalManager.instance.ManageSceneOnLoad();
     }
-
+    public void MainMenu_Connected(bool state)
+    {
+        panelConnect.SetActive(!state);
+        panelSendReceive.SetActive(state);
+    }
     public void OnClick_Connect()
     {
         Debug.Log("Trying to connect to the server");
         ConnectionManager.instance.Connect();
     }
-
-    public void OnConnectedCallback(string ip_port)
+    public void OnClick_Disconnect()
     {
-        ip_port_connectedTo.text = ip_port;
-
-        panelConnect.SetActive(false);
-        panelSendReceive.SetActive(true);
+        ConnectionManager.instance.Disconnect();
     }
-    public void OnDisconnectedCallback()
-    {
-        ip_port_connectedTo.text = "";
-
-        panelConnect.SetActive(true);
-        panelSendReceive.SetActive(false);
-    }
-
     public void OnClick_ConnectToPlayroom()
     {
-        ConnectionManager.instance.OnClick_ConnectToPlayroom();
+        ConnectionManager.instance.ConnectToPlayroom();
     }
-
     public void OnClick_SendMessage()
     {
         if (message != "")
@@ -77,19 +54,6 @@ public class UI_TestConnectionPanel : MonoBehaviour
             }
         }
         enterTextInputField.SetTextWithoutNotify("");
-    }
-
-    public void OnMessageReceived(string mes)
-    {
-        serverOutputText.text += $"\n{mes}";
-    }
-
-    public void OnClick_Disconnect()
-    {
-        panelConnect.SetActive(true);
-        panelSendReceive.SetActive(false);
-
-        ConnectionManager.instance.Disconnect();
     }
 
     string message;

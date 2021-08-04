@@ -47,10 +47,12 @@ namespace BorisUnityDev.Networking
             }
             catch (SocketException se)
             {
+                Console.WriteLine($"{se.Message} {se.StackTrace}");
                 Disconnect();
             }
             catch (Exception e)
             {
+                Console.WriteLine($"{e.Message} {e.StackTrace}");
                 Disconnect();
             }
         }
