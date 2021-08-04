@@ -11,7 +11,7 @@ class NetworkingMessageAttributes
 
     // confirmation code for the player that he got accepted to the playroom
     // example of message
-    // "confirm_enter_playroom|1";
+    // "confirm_enter_playroom|1|";
     public const string CONFIRM_ENTER_PLAY_ROOM = "confirm_enter_playroom";
 
     // message for all other players that the player joined playroom
@@ -23,7 +23,7 @@ class NetworkingMessageAttributes
     // message for all other players that the player disconnected from playroom
     // example of message
     //         the code, playroom number, nickname
-    // "client_disconnected_from_playroom|1|nickname|ip"
+    // "client_connected_to_playroom|1|nickname|ip"
     public const string CLIENT_DISCONNECTED_FROM_THE_PLAYROOM = "client_disconnected_from_playroom";
 
     // message from client to server about client position and rotation
@@ -37,5 +37,23 @@ class NetworkingMessageAttributes
     //
     // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
     public const string MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM = "players_positions_in_playroom";
+
+    // _______________________________________________________CONNECTION_CHECK________________________
+
+
+    // code for checking if player is connected
+    // example of message receiving on server to confirm
+    // "check_connected";
+    public const string CHECK_CONNECTED = "check_connected";
+
+    // code for checking if player is in playroom
+    // example of message receiving on server to confirm
+    // "check_connected_playroom|1";
+    public const string CHECK_CONNECTED_PLAYROOM = "check_connected_playroom";
+
+    // message for client that he was disconnected
+    // example of message receiving on server to confirm
+    // "client_disconnected
+    public const string CLIENT_DISCONNECTED = "client_disconnected";
 
 }

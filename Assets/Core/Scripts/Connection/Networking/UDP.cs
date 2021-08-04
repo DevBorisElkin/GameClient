@@ -36,7 +36,7 @@ namespace BorisUnityDev.Networking
             }
             catch (Exception e)
             {
-                Debug.Log($"Unexpected exception : {e}");
+                Debug.Log($"Unexpected exception : {e} || {e.StackTrace} || {e.Source}");
             }
         }
 
@@ -52,7 +52,8 @@ namespace BorisUnityDev.Networking
         {
             try
             {
-                DelayedInitCall();
+                //DelayedInitCall();
+                SendMessageUdp("init_udp");
 
                 connected = true;
 
@@ -98,6 +99,7 @@ namespace BorisUnityDev.Networking
                 udpSocket.Close();
                 udpSocket = null;
             }
+            remoteEpUdp = null;
             //taskListenUDP.Dispose();
         }
     }

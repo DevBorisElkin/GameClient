@@ -136,7 +136,11 @@ public class ConnectionManager : MonoBehaviour
 
     void ParseMessage(string message, MessageProtocol mp)
     {
-        if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
+        if (message.Equals(CLIENT_DISCONNECTED))
+        {
+            Disconnect();
+        }
+        else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
         {
             if (!currentStatus.Equals(ClientCurrentStatus.WaitingToGetAcceptedToPlayroom)) return;
 

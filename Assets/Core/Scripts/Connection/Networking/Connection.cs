@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetworkingMessageAttributes;
 
 namespace BorisUnityDev.Networking
 {
@@ -30,6 +27,9 @@ namespace BorisUnityDev.Networking
 
         string ip;
         int port;
+
+        double ms_connectedCheck = 2000;
+        DateTime lastConnectedConfirmed;
         #endregion
 
         // [CONNECT TO SERVER AND START RECEIVING MESSAGES]
@@ -58,11 +58,14 @@ namespace BorisUnityDev.Networking
             {
                 Socket client = (Socket)ar.AsyncState;
                 client.EndConnect(ar);
+                lastConnectedConfirmed = DateTime.Now;
                 OnConnected(client.RemoteEndPoint);
                 connected = true;
 
                 Task listenToIncomingMessages = new Task(ReceiveMessages);
                 listenToIncomingMessages.Start();
+                connectionChecker = new Task(CheckClientConnected);
+                connectionChecker.Start();
             }
             catch (Exception e)
             {
@@ -89,7 +92,9 @@ namespace BorisUnityDev.Networking
                     }
                     else
                     {
-                        OnMessageReceived(message);
+                        lastConnectedConfirmed = DateTime.Now;
+                        if(!message.Equals(CHECK_CONNECTED))
+                            OnMessageReceived(message);
                     }
                 }
                 catch (Exception e)
@@ -99,9 +104,30 @@ namespace BorisUnityDev.Networking
                 }
             }
         }
+        Task connectionChecker;
+        void CheckClientConnected()
+        {
+            while (connected)
+            {
+                Thread.Sleep(500);
+
+                var msSinceLastConnectionConfirmed = (DateTime.Now - lastConnectedConfirmed).TotalMilliseconds;
+                if (msSinceLastConnectionConfirmed > ms_connectedCheck)
+                {
+                    // Connection timed out, disconnect client
+                    Debug.Log($"[CLIENT_MESSAGE]: connection to server [{ip}] timed out");
+                    Disconnect();
+                }
+                else
+                {
+                    SendMessage(CHECK_CONNECTED, MessageProtocol.TCP);
+                }
+            }
+        }
         // [DISCONNECT FROM THE SERVER]
         public void Disconnect()
         {
+            UDP.Disconnect();
             ConnectionUtil.Disconnect(socket);
             connected = false;
             OnDisconnected();
@@ -110,7 +136,7 @@ namespace BorisUnityDev.Networking
         // [SEND MESSAGE TO SERVER]
         public void SendMessage(string message, MessageProtocol mp = MessageProtocol.TCP)
         {
-            Debug.Log($"Sending Message in Connection:{message}");
+            //Debug.Log($"Sending Message in Connection:{message}");
             if (mp.Equals(MessageProtocol.TCP))
                 if (connected)
                 {
