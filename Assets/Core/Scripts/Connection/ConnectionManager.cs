@@ -106,16 +106,21 @@ public class ConnectionManager : MonoBehaviour
     void OnMessageReceived(string message, MessageProtocol mp)
     {
         //if(!mp.Equals(MessageProtocol.UDP))
-        Debug.Log($"On message received[{mp}]: "+message);
+        Debug.Log($"On message received[{mp}]: " + message);
 
         if (currentStatus.Equals(ClientCurrentStatus.Connected) || currentStatus.Equals(ClientCurrentStatus.WaitingToGetAcceptedToPlayroom))
         {
+            UI_TestConnectionPanel tcPanel = UI_TestConnect;
             Action act = Action3;
-            UnityThread.executeInUpdate(act);
+
+            if (tcPanel != null)
+            {
+                UnityThread.executeInUpdate(act);
+            }
 
             void Action3()
             {
-                UI_TestConnect.OnMessageReceived($"[SERVER_MESSAGE][{mp}][{ip}]: {message}");
+                tcPanel.OnMessageReceived($"[SERVER_MESSAGE][{mp}][{ip}]: {message}");
             }
 
             ParseMessage(message, mp);
@@ -123,9 +128,10 @@ public class ConnectionManager : MonoBehaviour
         else if (currentStatus.Equals(ClientCurrentStatus.InPlayRoom))
         {
             ParseMessage(message, mp);
-        }
 
-        // TODO CHECK MESSAGES
+
+            // TODO CHECK MESSAGES
+        }
     }
 
     void ParseMessage(string message, MessageProtocol mp)

@@ -174,18 +174,23 @@ public class OnlineGameManager : MonoBehaviour
 
     void CheckRemoveAndDeleteLeftPlayers()
     {
-        foreach (Player a in opponents)
+        try
         {
-            if (a.controlledGameObject != null && a.playerLeft)
+            List<Player> playersToDelete = new List<Player>();
+
+            foreach (Player a in opponents)
             {
-                try
-                {
-                    Destroy(a.controlledGameObject);
-                    opponents.Remove(a);
-                }
-                catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
+                if (a.controlledGameObject != null && a.playerLeft)
+                    playersToDelete.Add(a);
+            }
+
+            foreach (Player a in playersToDelete)
+            {
+                Destroy(a.controlledGameObject);
+                opponents.Remove(a);
             }
         }
+        catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
     }
 
     void UpdatePlayersPosRot()
