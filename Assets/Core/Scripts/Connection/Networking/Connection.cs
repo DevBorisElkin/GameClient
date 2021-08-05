@@ -99,8 +99,7 @@ namespace BorisUnityDev.Networking
                     else
                     {
                         lastConnectedConfirmed = DateTime.Now;
-                        if(!message.Equals(CHECK_CONNECTED))
-                            OnMessageReceived(message);
+                        OnMessageReceived(message);
                     }
                 }
                 catch (Exception e)
@@ -126,7 +125,7 @@ namespace BorisUnityDev.Networking
                 }
                 else
                 {
-                    SendMessage(CHECK_CONNECTED, MessageProtocol.TCP);
+                    SendMessage(CHECK_CONNECTED+"<EOF>", MessageProtocol.TCP);
                 }
             }
         }

@@ -52,7 +52,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         while (true)
         {
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.05f);
 			//Debug.Log("OnPlayerMoved|"+transform.position+"|"+transform.rotation);
 			OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
 		}

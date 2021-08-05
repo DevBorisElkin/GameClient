@@ -56,4 +56,8 @@ class NetworkingMessageAttributes
     // "client_disconnected
     public const string CLIENT_DISCONNECTED = "client_disconnected";
 
+    // string that is attached to the end of each message sent
+    // "client_disconnected<EOF>
+    public const string END_OF_FILE = "<EOF>";
+
 }

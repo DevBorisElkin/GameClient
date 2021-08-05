@@ -64,32 +64,45 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnMessageReceived(string message, MessageProtocol mp)
     {
-        Debug.Log($"On message received[{mp}]: " + message);
         ParseMessage(message, mp);
     }
 
-    void ParseMessage(string message, MessageProtocol mp)
+    void ParseMessage(string msg, MessageProtocol mp)
     {
-        if (message.Equals(CLIENT_DISCONNECTED))
-        {
-            Disconnect();
-        }
-        else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
-        {
-            string[] substrings = message.Split('|');
+        string[] parcedMessage = msg.Split(END_OF_FILE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-            Debug.Log($"Accepted to play room [{substrings[1]}]");
+        foreach(string message in parcedMessage)
+        {
+            if (!message.Contains(CHECK_CONNECTED))
+            {
+                Debug.Log($"[MESSAGE FROM SERVER]: {message}");
+            }
 
-            UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
-        }else if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
-        {
-            if(OnlineGameManager.instance != null)
-                OnlineGameManager.instance.OnPositionMessageReceived(message);
-        }else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
-        {
-            if (OnlineGameManager.instance != null)
-                OnlineGameManager.instance.OnPlayerDisconnectedFromPlayroom(message);
+
+            if (message.Equals(CLIENT_DISCONNECTED))
+            {
+                Disconnect();
+            }
+            else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
+            {
+                string[] substrings = message.Split('|');
+
+                Debug.Log($"Accepted to play room [{substrings[1]}]");
+
+                UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
+            }
+            else if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+            {
+                if (OnlineGameManager.instance != null)
+                    OnlineGameManager.instance.OnPositionMessageReceived(message);
+            }
+            else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
+            {
+                if (OnlineGameManager.instance != null)
+                    OnlineGameManager.instance.OnPlayerDisconnectedFromPlayroom(message);
+            }
         }
+        
     }
     public void ConnectToPlayroom()
     {
@@ -107,7 +120,7 @@ public class ConnectionManager : MonoBehaviour
     public void SendMessageToServer(string message, MessageProtocol mp)
     {
         //Debug.Log($"[{mp}] Sending message to server:" +message);
-        Connection.SendMessage(message, mp);
+        Connection.SendMessage(message+END_OF_FILE, mp);
     }
     void OnApplicationQuit()
     {
