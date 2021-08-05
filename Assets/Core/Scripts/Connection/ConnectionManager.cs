@@ -73,7 +73,7 @@ public class ConnectionManager : MonoBehaviour
 
         foreach(string message in parcedMessage)
         {
-            if (!message.Contains(CHECK_CONNECTED))
+            if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
             {
                 Debug.Log($"[MESSAGE FROM SERVER]: {message}");
             }
