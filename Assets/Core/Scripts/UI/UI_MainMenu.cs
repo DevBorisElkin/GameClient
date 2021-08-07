@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static ConnectionManager;
+using static Enums;
 using static UI_GlobalManager;
 
 public class UI_MainMenu : MonoBehaviour
@@ -14,6 +15,7 @@ public class UI_MainMenu : MonoBehaviour
     [Header("General")]
     public Color colorOkay;
     public Color colorError;
+    public Color colorNeutral;
     public TMP_Text connectionStatus;
     string str_connected = "Connected to Server";
     string str_disconnected = "No connection to Server";
@@ -111,6 +113,8 @@ public class UI_MainMenu : MonoBehaviour
 
         auth_errorResult.text = "";
         reg_errorResult.text = "";
+        auth_errorResult.color = colorNeutral;
+        reg_errorResult.color =  colorNeutral;
     }
     public void MainMenu_Authenticated(bool state)
     {
@@ -152,6 +156,7 @@ public class UI_MainMenu : MonoBehaviour
     public void OnClick_TryToAuthenticate()
     {
         // TODO CHECK CONNECTION
+        auth_errorResult.color = colorNeutral;
 
         if (loginAuth.Equals(""))
         {
@@ -194,11 +199,29 @@ public class UI_MainMenu : MonoBehaviour
 
     public void OnClick_TryToRegister()
     {
+        reg_errorResult.color = colorNeutral;
         Debug.Log("Now you can't register account");
     }
 
     #endregion
 
+    #region newtwork results for authentication and registration
+
+    public void ShowAuthOrRegResult(string result, bool useForAuthentication = true)
+    {
+        if (useForAuthentication)
+        {
+            auth_errorResult.text = result;
+            auth_errorResult.color = colorError;
+        }
+        else
+        {
+            reg_errorResult.text = result;
+            reg_errorResult.color = colorError;
+        }
+    }
+
+    #endregion;
 
     #region ALREADY CONNECTED
     // TODO Connection now should be automatic

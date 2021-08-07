@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public class UserData
 {
@@ -34,14 +35,4 @@ public class UserData
         return $"{id},{login},{password},{nickname}";
     }
 }
-// here I will populate different DatabaseRequestResults
-public enum RequestResult
-{
-    None = 0,
-    Success = 1,
-    Fail = 2,
-    Fail_NoConnectionToDB = 3,
-    Fail_WrongPairLoginPassword = 4,
-    Fail_LoginAlreadyTaken = 5,
-    Fail_NoUserWithGivenLogin = 6
-}
+

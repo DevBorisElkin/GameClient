@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
+using static Enums;
 
 public class UI_GlobalManager : MonoBehaviour
 {
@@ -38,7 +39,6 @@ public class UI_GlobalManager : MonoBehaviour
         }
     }
 
-    public enum ClientStatus { Disconnected, Connected, Authenticated, WaitingToGetAcceptedToPlayroom, InPlayRoom }
     public ClientStatus recordedStatus = ClientStatus.Disconnected;
     
     // is called ONLY when new scene loaded (at Start() methods of UI_1 & UI_2)
@@ -122,9 +122,23 @@ public class UI_GlobalManager : MonoBehaviour
         recordedStatus = newStatus;
     }
 
-    private void Update()
+    public void SetAuthInResult()
     {
-        
+        if(recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
+        {
+            UI_MainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(LatestReceivedResult), true);
+        }
+    }
+
+    public void SetRegistrationResult(RequestResult result)
+    {
+        if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
+        {
+            if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
+            {
+                UI_MainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
+            }
+        }
     }
 
 
