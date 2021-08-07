@@ -38,25 +38,18 @@ public class UI_GlobalManager : MonoBehaviour
         }
     }
 
-    public enum ClientStatus { Disconnected, Connected, WaitingToGetAcceptedToPlayroom, InPlayRoom }
+    public enum ClientStatus { Disconnected, Connected, Authenticated, WaitingToGetAcceptedToPlayroom, InPlayRoom }
     public ClientStatus recordedStatus = ClientStatus.Disconnected;
     
     // is called ONLY when new scene loaded (at Start() methods of UI_1 & UI_2)
     public void ManageSceneOnLoad()
     {
         Debug.Log("Manage Scene On Load()");
-        if(SceneManager.GetActiveScene().buildIndex == 1)
+        if(SceneManager.GetActiveScene().buildIndex == 0)
         {
-            if (recordedStatus.Equals(ClientStatus.Connected))
-            {
-                UI_MainMenu.MainMenu_Connected(true);
-            } 
-            else if (recordedStatus.Equals(ClientStatus.Disconnected))
-            {
-                UI_MainMenu.MainMenu_Connected(false);
-            }
+            UI_MainMenu.MainMenu_Connected(recordedStatus);
         }
-        else if (SceneManager.GetActiveScene().buildIndex == 2)
+        else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             //OnlineGameManager.instance.OnPlayRoomEntered();
         }
@@ -67,19 +60,43 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log("Manage Scene()");
         if (recordedStatus.Equals(ClientStatus.Disconnected) && newStatus.Equals(ClientStatus.Connected))
         {
-            Action act = LoadMainMenuScene;
-            UnityThread.executeInUpdate(act);
+            if(SceneManager.GetActiveScene().buildIndex == 0)
+            {
+                Action act = updateUIInMainMenu;
+                UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(true); }
+                void updateUIInMainMenu() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
+            }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Disconnected))
         {
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(false); }
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Disconnected, false); }
         }
-        else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.InPlayRoom))
+        else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Authenticated))
+        {
+            Action act = LoadMainMenuScene;
+            UnityThread.executeInUpdate(act);
+
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Authenticated, true); }
+        }
+        else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.Connected))
+        {
+            Action act = LoadMainMenuScene;
+            UnityThread.executeInUpdate(act);
+
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, true); }
+        }
+        else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.Disconnected))
+        {
+            Action act = LoadMainMenuScene;
+            UnityThread.executeInUpdate(act);
+
+            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Disconnected, true); }
+        }
+        else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.InPlayRoom))
         {
             // Load play room scene
             Action act = LoadPlayRoomScene;
@@ -91,7 +108,7 @@ public class UI_GlobalManager : MonoBehaviour
                 SceneManager.LoadSceneAsync("NetworkingGameScene");
             }
         }
-        else if (recordedStatus.Equals(ClientStatus.InPlayRoom) && (newStatus.Equals(ClientStatus.Connected) || newStatus.Equals(ClientStatus.Disconnected)))
+        else if (recordedStatus.Equals(ClientStatus.InPlayRoom) && (newStatus.Equals(ClientStatus.Authenticated) || newStatus.Equals(ClientStatus.Disconnected) || newStatus.Equals(ClientStatus.Connected)))
         {
             OnlineGameManager.instance.OnPlayRoomExited();
             Action act = LoadMainMenuScene;

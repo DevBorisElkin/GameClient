@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static NetworkingMessageAttributes;
@@ -18,11 +20,18 @@ public class ConnectionManager : MonoBehaviour
     public static int portTcp = 8384;
     public static int portUdp = 8385;
 
+    UserData currentUserData;
+    bool appIsRunning = true;
+
     private void Awake()
     {
         InitSingleton();
         InitConnectionCallbacks();
         UnityThread.initUnityThread();
+
+        Connect();
+        //Task connectionTask = new Task(KeepConnection);
+        //connectionTask.Start();
     }
     void InitSingleton()
     {
@@ -41,6 +50,22 @@ public class ConnectionManager : MonoBehaviour
         Connection.OnMessageReceivedEvent += OnMessageReceived;
     }
     //_____________________________________________________________________
+
+    void InitConnection()
+    {
+        Connection.Connect(ip, portTcp, portUdp);
+    }
+    public void KeepConnection()
+    {
+        while (appIsRunning)
+        {
+            Thread.Sleep(5000);
+            if (!Connection.connected && appIsRunning)
+            {
+                Connect();
+            }
+        }
+    }
     public void Connect()
     {
         Connection.Connect(ip, portTcp, portUdp);
@@ -73,15 +98,33 @@ public class ConnectionManager : MonoBehaviour
 
         foreach(string message in parcedMessage)
         {
-            if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
-            {
-                Debug.Log($"[MESSAGE FROM SERVER]: {message}");
-            }
+            //if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+            //{
+                Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
+            //}
 
 
             if (message.Equals(CLIENT_DISCONNECTED))
             {
                 Disconnect();
+            }
+            else if (message.Contains(LOG_IN_RESULT))
+            {
+                string[] substrings = message.Split('|');
+                if(substrings[1].Equals("Success") && substrings.Length >= 3)
+                {
+                    Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
+
+                    string[] userData = substrings[2].Split(',');
+                    currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+                    Debug.Log($"Current user data: {currentUserData}");
+                    UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+
+                }
+                else
+                {
+                    Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
+                }
             }
             else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
             {
@@ -104,6 +147,12 @@ public class ConnectionManager : MonoBehaviour
         }
         
     }
+
+    public void LogIn(string login, string password)
+    {
+        SendMessageToServer($"{LOG_IN}|{login}|{password}", MessageProtocol.TCP);
+    }
+
     public void ConnectToPlayroom()
     {
         // send message to server for connection, and start waiting for successful reply
@@ -124,6 +173,7 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnApplicationQuit()
     {
+        appIsRunning = false;
         Disconnect();
     }
 }
