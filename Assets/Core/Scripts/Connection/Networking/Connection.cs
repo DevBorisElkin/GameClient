@@ -141,7 +141,7 @@ namespace BorisUnityDev.Networking
         // [SEND MESSAGE TO SERVER]
         public static void SendMessage(string message, MessageProtocol mp = MessageProtocol.TCP)
         {
-            Debug.Log($"Sending Message in Connection:{message}");
+            //Debug.Log($"Sending Message in Connection:{message}");
             if (mp.Equals(MessageProtocol.TCP))
                 if (connected)
                 {

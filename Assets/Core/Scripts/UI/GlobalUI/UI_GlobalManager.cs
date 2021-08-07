@@ -60,13 +60,10 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log("Manage Scene()");
         if (recordedStatus.Equals(ClientStatus.Disconnected) && newStatus.Equals(ClientStatus.Connected))
         {
-            if(SceneManager.GetActiveScene().buildIndex == 0)
-            {
-                Action act = updateUIInMainMenu;
-                UnityThread.executeInUpdate(act);
+            Action act = updateUIInMainMenu;
+            UnityThread.executeInUpdate(act);
 
-                void updateUIInMainMenu() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
-            }
+            void updateUIInMainMenu() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Disconnected))
         {

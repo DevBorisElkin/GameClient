@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -30,8 +31,8 @@ public class ConnectionManager : MonoBehaviour
         UnityThread.initUnityThread();
 
         Connect();
-        //Task connectionTask = new Task(KeepConnection);
-        //connectionTask.Start();
+        Task connectionTask = new Task(KeepConnection);
+        connectionTask.Start();
     }
     void InitSingleton()
     {
@@ -94,14 +95,23 @@ public class ConnectionManager : MonoBehaviour
 
     void ParseMessage(string msg, MessageProtocol mp)
     {
-        string[] parcedMessage = msg.Split(END_OF_FILE.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-        foreach(string message in parcedMessage)
+        if (!msg.Equals("")) { Debug.Log("msg"); }
+
+        // KIND OF WACKY BECAUSE UNITY VERSION ON .NET DOES NOT SUPPORT SPLIT BY STRING
+
+        StringBuilder builder = new StringBuilder(msg);
+        builder.Replace($"<EOF>", "*");
+        string res = builder.ToString();
+        char[] spearator = { '*' };
+        string[] parcedMessage = res.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string message in parcedMessage)
         {
-            //if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
-            //{
+            if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals(""))
+            {
                 Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
-            //}
+            }
 
 
             if (message.Equals(CLIENT_DISCONNECTED))
@@ -168,7 +178,7 @@ public class ConnectionManager : MonoBehaviour
     }
     public void SendMessageToServer(string message, MessageProtocol mp)
     {
-        //Debug.Log($"[{mp}] Sending message to server:" +message);
+        Debug.Log($"[{mp}] Sending message to server:" +message);
         Connection.SendMessage(message+END_OF_FILE, mp);
     }
     void OnApplicationQuit()
