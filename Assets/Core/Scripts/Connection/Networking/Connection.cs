@@ -87,11 +87,13 @@ namespace BorisUnityDev.Networking
                 try
                 {
                     string message = ConnectionUtil.ReadLine(socket);
-                    if (message.Equals(""))
+                    if (message.Equals(string.Empty))
                     {
+                        Debug.Log("[TCP]: Received empty message from server");
                         errorNumber++;
                         if(errorNumber > 25)
                         {
+                            Debug.Log($"[TCP]: {errorNumber} empty messages from server, disconnecting");
                             Disconnect();
                             break;
                         }

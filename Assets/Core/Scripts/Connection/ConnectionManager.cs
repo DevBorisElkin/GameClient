@@ -33,8 +33,8 @@ public class ConnectionManager : MonoBehaviour
         UnityThread.initUnityThread();
 
         Connect();
-        Task connectionTask = new Task(KeepConnection);
-        connectionTask.Start();
+        //Task connectionTask = new Task(KeepConnection);
+        //connectionTask.Start();
     }
     void InitSingleton()
     {
@@ -54,7 +54,9 @@ public class ConnectionManager : MonoBehaviour
     }
     //_____________________________________________________________________
 
-    public void KeepConnection()
+    // Connection attempt proceeds successfull up until 12 seconds after connection,
+    // to safely reconnect decided to lauch the same process after 16 seconds
+    public void KeepConnection() 
     {
         while (appIsRunning)
         {
@@ -83,8 +85,8 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnDisconnected()
     {
-        UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
         Debug.Log("On Disconnected " + ip);
+        UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
     }
     void OnMessageReceived(string message, MessageProtocol mp)
     {
@@ -96,7 +98,8 @@ public class ConnectionManager : MonoBehaviour
 
         try
         {
-            if (!msg.Equals("") && !msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
+            //if (!msg.Equals("") && !msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
+            if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
 
             // KIND OF WACKY BECAUSE UNITY VERSION OF .NET DOES NOT SUPPORT SPLIT BY STRING
 
@@ -110,7 +113,7 @@ public class ConnectionManager : MonoBehaviour
             {
                 if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals(""))
                 {
-                    Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
+                    //Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
                 }
 
 

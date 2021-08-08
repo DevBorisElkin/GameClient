@@ -71,7 +71,12 @@ namespace BorisUnityDev.Networking
                         }
                         while (udpSocket.Available > 0);
 
-                        Connection.OnMessageReceived(builder.ToString(), MessageProtocol.UDP);
+                        string message = builder.ToString();
+                        if (message.Equals(""))
+                        {
+                            Debug.Log("[UDP]: Received empty message from server");
+                        }
+                        Connection.OnMessageReceived(message, MessageProtocol.UDP);
                     }
                     catch(Exception e)
                     {
