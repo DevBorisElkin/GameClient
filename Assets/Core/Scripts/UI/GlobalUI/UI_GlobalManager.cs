@@ -57,7 +57,7 @@ public class UI_GlobalManager : MonoBehaviour
     // is called manually
     public void ManageScene(ClientStatus newStatus)
     {
-        Debug.Log("Manage Scene()");
+        //Debug.Log("Manage Scene()");
         if (recordedStatus.Equals(ClientStatus.Disconnected) && newStatus.Equals(ClientStatus.Connected))
         {
             Action act = updateUIInMainMenu;

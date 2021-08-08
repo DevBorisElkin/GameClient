@@ -51,33 +51,27 @@ public class ConnectionManager : MonoBehaviour
         Connection.OnConnectedEvent += OnConnected;
         Connection.OnDisconnectedEvent += OnDisconnected;
         Connection.OnMessageReceivedEvent += OnMessageReceived;
+        Connection.OnFailedToConnectEvent += OnFailededToConnectToServer;
     }
     //_____________________________________________________________________
 
     // Connection attempt proceeds successfull up until 12 seconds after connection,
     // to safely reconnect decided to lauch the same process after 16 seconds
-    public void KeepConnection() 
-    {
-        while (appIsRunning)
-        {
-            Thread.Sleep(5000);
-            if (!Connection.connected && appIsRunning)
-            {
-                Connect();
-            }
-        }
-    }
+    
     public void Connect()
     {
-        Connection.Connect(ip, portTcp, portUdp);
+        if (appIsRunning) Connection.Connect(ip, portTcp, portUdp);
     }
 
-    public void Disconnect()
+    public void Disconnect(bool notifDisconnect = true)
     {
         UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
-        Connection.Disconnect();
+        Connection.Disconnect(notifDisconnect);
     }
-
+    void OnFailededToConnectToServer()
+    {
+        Connect();
+    }
     void OnConnected(EndPoint endPoint)
     {
         UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
@@ -87,7 +81,9 @@ public class ConnectionManager : MonoBehaviour
     {
         Debug.Log("On Disconnected " + ip);
         UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
+        Connect();
     }
+
     void OnMessageReceived(string message, MessageProtocol mp)
     {
         ParseMessage(message, mp);
@@ -202,6 +198,6 @@ public class ConnectionManager : MonoBehaviour
     void OnApplicationQuit()
     {
         appIsRunning = false;
-        Disconnect();
+        Disconnect(false);
     }
 }

@@ -21,6 +21,9 @@ namespace BorisUnityDev.Networking
         public delegate void OnMessageReceivedDelegate(string message, MessageProtocol protocol);
         public static event OnMessageReceivedDelegate OnMessageReceivedEvent;
 
+        public delegate void OnFailedToConnectDelegate();
+        public static event OnFailedToConnectDelegate OnFailedToConnectEvent;
+
         #region variables
         public static Socket socket;
         public static bool connected;
@@ -31,6 +34,8 @@ namespace BorisUnityDev.Networking
 
         static double ms_connectedCheck = 3000;
         static DateTime lastConnectedConfirmed;
+
+        public const int connectionTimeoutMs = 13000;
         #endregion
 
         // [CONNECT TO SERVER AND START RECEIVING MESSAGES]
@@ -61,17 +66,27 @@ namespace BorisUnityDev.Networking
             try
             {
                 Socket client = (Socket)ar.AsyncState;
-                client.EndConnect(ar);
-                lastConnectedConfirmed = DateTime.Now;
-                OnConnected(client.RemoteEndPoint);
-                connected = true;
+                if (client.Connected)
+                {
+                    client.EndConnect(ar);
+                    lastConnectedConfirmed = DateTime.Now;
+                    OnConnected(client.RemoteEndPoint);
+                    connected = true;
 
-                Task listenToIncomingMessages = new Task(ReceiveMessages);
-                listenToIncomingMessages.Start();
-                connectionChecker = new Task(CheckClientConnected);
-                connectionChecker.Start();
+                    Task listenToIncomingMessages = new Task(ReceiveMessages);
+                    listenToIncomingMessages.Start();
+                    connectionChecker = new Task(CheckClientConnected);
+                    connectionChecker.Start();
 
-                UDP.ConnectTo(ip, portUdp);
+                    UDP.ConnectTo(ip, portUdp);
+                }
+                else
+                {
+                    Disconnect(false);
+                    OnFailedToConnect();
+                }
+
+                
             }
             catch (Exception e)
             {
@@ -132,12 +147,12 @@ namespace BorisUnityDev.Networking
             }
         }
         // [DISCONNECT FROM THE SERVER]
-        public static void Disconnect()
+        public static void Disconnect(bool notifyDisconnect = true)
         {
             UDP.Disconnect();
             ConnectionUtil.Disconnect(socket);
             connected = false;
-            OnDisconnected();
+            if(notifyDisconnect) OnDisconnected();
         }
 
         // [SEND MESSAGE TO SERVER]
@@ -167,6 +182,8 @@ namespace BorisUnityDev.Networking
         static void OnConnected(EndPoint endPoint) { OnConnectedEvent?.Invoke(endPoint); }
         static void OnDisconnected() { OnDisconnectedEvent?.Invoke(); }
         public static void OnMessageReceived(string message, MessageProtocol mp = MessageProtocol.TCP) { OnMessageReceivedEvent?.Invoke(message, mp); }
+
+        static void OnFailedToConnect() { OnFailedToConnectEvent?.Invoke(); }
     }
 }
 
