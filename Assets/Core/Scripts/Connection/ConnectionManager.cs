@@ -32,9 +32,8 @@ public class ConnectionManager : MonoBehaviour
         InitConnectionCallbacks();
         UnityThread.initUnityThread();
 
+        Connection.SetConnectionValues(ip, portTcp, portUdp);
         Connect();
-        //Task connectionTask = new Task(KeepConnection);
-        //connectionTask.Start();
     }
     void InitSingleton()
     {
@@ -57,10 +56,22 @@ public class ConnectionManager : MonoBehaviour
 
     // Connection attempt proceeds successfull up until 12 seconds after connection,
     // to safely reconnect decided to lauch the same process after 16 seconds
-    
-    public void Connect()
+
+    int taskToDestroy = 1;
+    public async void Connect()
     {
-        if (appIsRunning) Connection.Connect(ip, portTcp, portUdp);
+        if (appIsRunning)
+        {
+            //Thread thread = new Thread(new ThreadStart(Connection.Connect));
+            //thread.Start();
+
+            Task connectionTask = Task.Factory.StartNew(Connection.Connect);
+            await connectionTask;
+
+            Debug.Log("Connection task was destroyed: "+taskToDestroy);
+            taskToDestroy++;
+            
+        }
     }
 
     public void Disconnect(bool notifDisconnect = true)
@@ -70,6 +81,7 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnFailededToConnectToServer()
     {
+        Debug.Log("ConnectionManager: OnFailedToConnectToServer -> reconnecting");
         Connect();
     }
     void OnConnected(EndPoint endPoint)
@@ -95,7 +107,7 @@ public class ConnectionManager : MonoBehaviour
         try
         {
             //if (!msg.Equals("") && !msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
-            if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
+            if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"[MESSAGE_FROM_SERVER][{mp}]: {msg}"); }
 
             // KIND OF WACKY BECAUSE UNITY VERSION OF .NET DOES NOT SUPPORT SPLIT BY STRING
 
@@ -192,7 +204,7 @@ public class ConnectionManager : MonoBehaviour
     }
     public void SendMessageToServer(string message, MessageProtocol mp)
     {
-        Debug.Log($"[{mp}] Sending message to server:" +message);
+        //Debug.Log($"[{mp}] Sending message to server:" +message);
         Connection.SendMessage(message+END_OF_FILE, mp);
     }
     void OnApplicationQuit()

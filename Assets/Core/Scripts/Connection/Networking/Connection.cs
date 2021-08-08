@@ -25,7 +25,8 @@ namespace BorisUnityDev.Networking
         public static event OnFailedToConnectDelegate OnFailedToConnectEvent;
 
         #region variables
-        public static Socket socket;
+        public static Socket socket_connect;
+        public static Socket socket_client;
         public static bool connected;
 
         static string ip;
@@ -35,42 +36,41 @@ namespace BorisUnityDev.Networking
         static double ms_connectedCheck = 3000;
         static DateTime lastConnectedConfirmed;
 
-        public const int connectionTimeoutMs = 13000;
+        public const int connectionTimeoutMs = 5000;
         #endregion
 
-        // [CONNECT TO SERVER AND START RECEIVING MESSAGES]
-        public static void Connect(string _ip, int _portTcp, int _portUdp)
+        public static void SetConnectionValues(string _ip, int _portTcp, int _portUdp)
         {
             ip = _ip;
             portTcp = _portTcp;
             portUdp = _portUdp;
-            try
-            {
-                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ip), portTcp);
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.BeginConnect(remoteEP, new AsyncCallback(ConnectedCallback), socket);
-            }
-            catch (SocketException se)
-            {
-                Console.WriteLine($"{se.Message} {se.StackTrace}");
-                Disconnect();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"{e.Message} {e.StackTrace}");
-                Disconnect();
-            }
         }
-        static void ConnectedCallback(IAsyncResult ar)
+        // [CONNECT TO SERVER AND START RECEIVING MESSAGES]
+        public static void Connect()
         {
             try
             {
-                Socket client = (Socket)ar.AsyncState;
-                if (client.Connected)
+                IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ip), portTcp);
+                socket_connect = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                IAsyncResult asyncResult = socket_connect.BeginConnect(remoteEP, null, socket_connect);
+
+                bool success = false;
+                try
                 {
-                    client.EndConnect(ar);
+                    success = asyncResult.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(connectionTimeoutMs));
+                }
+                catch(Exception e)
+                {
+                    Debug.Log(e.ToString());
+                }
+
+                if (success)
+                {
+                    //Debug.Log("Success connect");
+                    socket_client = (Socket)asyncResult.AsyncState;
+                    socket_client.EndConnect(asyncResult);
                     lastConnectedConfirmed = DateTime.Now;
-                    OnConnected(client.RemoteEndPoint);
+                    OnConnected(socket_client.RemoteEndPoint);
                     connected = true;
 
                     Task listenToIncomingMessages = new Task(ReceiveMessages);
@@ -82,15 +82,17 @@ namespace BorisUnityDev.Networking
                 }
                 else
                 {
+                    //Debug.Log("Fail connect");
+                    //socket_connect.EndConnect(asyncResult);
                     Disconnect(false);
                     OnFailedToConnect();
                 }
-
-                
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[CONNECTION_ERROR]: connection attempt failed - timed out");
+                Debug.LogError($"{e}");
+                Thread.Sleep(2000); // cooldown
+                Disconnect();
             }
         }
         // [RECEIVE MESSAGES FROM SERVER]
@@ -101,7 +103,7 @@ namespace BorisUnityDev.Networking
             {
                 try
                 {
-                    string message = ConnectionUtil.ReadLine(socket);
+                    string message = ConnectionUtil.ReadLine(socket_connect);
                     if (message.Equals(string.Empty))
                     {
                         Debug.Log("[TCP]: Received empty message from server");
@@ -150,8 +152,10 @@ namespace BorisUnityDev.Networking
         public static void Disconnect(bool notifyDisconnect = true)
         {
             UDP.Disconnect();
-            ConnectionUtil.Disconnect(socket);
+            ConnectionUtil.Disconnect(socket_connect);
+            ConnectionUtil.Disconnect(socket_client);
             connected = false;
+
             if(notifyDisconnect) OnDisconnected();
         }
 
@@ -163,7 +167,7 @@ namespace BorisUnityDev.Networking
                 if (connected)
                 {
                     byte[] data = Encoding.Unicode.GetBytes(message);
-                    socket.Send(data);
+                    socket_connect.Send(data);
                     return;
                 }
 
@@ -176,7 +180,7 @@ namespace BorisUnityDev.Networking
         public static void SendMessage(byte[] message)
         {
             if (connected)
-                socket.Send(message);
+                socket_connect.Send(message);
         }
         // [CALLBACKS]
         static void OnConnected(EndPoint endPoint) { OnConnectedEvent?.Invoke(endPoint); }

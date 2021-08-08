@@ -224,12 +224,7 @@ public class UI_MainMenu : MonoBehaviour
     #endregion;
 
     #region ALREADY CONNECTED
-    // TODO Connection now should be automatic
-    public void OnClick_Connect()
-    {
-        Debug.Log("Trying to connect to the server");
-        ConnectionManager.instance.Connect();
-    }
+    
     public void OnClick_Disconnect()
     {
         ConnectionManager.instance.Disconnect();

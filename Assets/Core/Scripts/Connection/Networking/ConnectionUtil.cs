@@ -28,10 +28,13 @@ namespace BorisUnityDev.Networking
 
         public static void Disconnect(Socket socket)
         {
-            if (socket != null && socket.Connected)
+            if (socket != null)
             {
-                socket.Shutdown(SocketShutdown.Both);
+                if (socket.Connected)
+                    socket.Shutdown(SocketShutdown.Both);
+                else socket.Close();
                 socket.Dispose();
+                socket = null;
             }
         }
     }
