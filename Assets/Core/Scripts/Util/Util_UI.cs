@@ -35,21 +35,22 @@ public class Util_UI : MonoBehaviour
 
     public static bool IsStringCompatible(string toCheck)
     {
-        Regex rgx = new Regex("[^A-Za-z0-9]");
+        Regex rgx = new Regex("[^A-Za-z0-9_]");
         return !(rgx.IsMatch(toCheck));
     }
 
-    public static bool StringStarstsFromNumber(string toCheck)
+    public static bool StringStarstsFromNumberOrUnderscore(string toCheck)
     {
         string input = toCheck.Substring(0, 1);
         bool isDigitPresent = input.Any(c => char.IsDigit(c));
-        return isDigitPresent;
+        bool startsWithUnderscore = toCheck.StartsWith("_");
+        return (isDigitPresent || startsWithUnderscore);
     }
 
     public enum Input_Field { Login, Password, Nickname}
     public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput)
     {
-        if (IsStringCompatible(stringToCheck) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumber(stringToCheck))
+        if (IsStringCompatible(stringToCheck) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumberOrUnderscore(stringToCheck))
             return true;
         else
         {
@@ -78,9 +79,9 @@ public class Util_UI : MonoBehaviour
             {
                 errorField.text = txtToAdd + " can't be longer than 10 characters";
             }
-            else if (StringStarstsFromNumber(stringToCheck))
+            else if (StringStarstsFromNumberOrUnderscore(stringToCheck))
             {
-                errorField.text = txtToAdd + " can't start with digit";
+                errorField.text = txtToAdd + " can't start with digit or underscore";
             }
             return false;
         }
