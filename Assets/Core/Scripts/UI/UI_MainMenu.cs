@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using static ConnectionManager;
 using static Enums;
 using static UI_GlobalManager;
+using static Util_UI;
 
 public class UI_MainMenu : MonoBehaviour
 {
@@ -157,22 +158,11 @@ public class UI_MainMenu : MonoBehaviour
     {
         // TODO CHECK CONNECTION
         auth_errorResult.color = colorNeutral;
+        auth_errorResult.text = "";
 
-        if (loginAuth.Equals(""))
+        if (   IsStringClearFromErrors   (loginAuth,    auth_errorResult, Input_Field.Login)
+            && IsStringClearFromErrors   (passwordAuth, auth_errorResult, Input_Field.Password))
         {
-            auth_errorResult.text = "login can't be empty";
-        }
-        else if (loginAuth.Length > 10)
-        {
-            auth_errorResult.text = "login shouldn't be longer than 10 characters";
-        }else if(passwordAuth.Length < 5)
-        {
-            auth_errorResult.text = "password can't be less than 5 characters";
-        }
-        else
-        {
-            // TODO perform auth action
-
             // TODO BLOCK INTERFACE WHILE WAITING FOR RESPONSE
             ConnectionManager.instance.LogIn(loginAuth, passwordAuth);
         }
@@ -197,10 +187,19 @@ public class UI_MainMenu : MonoBehaviour
         nicknameReg = text;
     }
 
+    // TODO BLOCK SPECIAL SYMBOLS | , @ _ FOR USER
     public void OnClick_TryToRegister()
     {
         reg_errorResult.color = colorNeutral;
-        Debug.Log("Now you can't register account");
+        reg_errorResult.text = "";
+
+        if (   IsStringClearFromErrors(loginReg, reg_errorResult,    Input_Field.Login)
+            && IsStringClearFromErrors(passwordReg, reg_errorResult, Input_Field.Password)
+            && IsStringClearFromErrors(nicknameReg, reg_errorResult, Input_Field.Nickname))
+        {
+            // TODO BLOCK INTERFACE WHILE WAITING FOR RESPONSE
+            ConnectionManager.instance.Register(loginReg, passwordReg, nicknameReg);
+        }
     }
 
     #endregion

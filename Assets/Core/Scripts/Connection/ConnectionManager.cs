@@ -155,6 +155,30 @@ public class ConnectionManager : MonoBehaviour
                         UnityThread.executeInUpdate(act);
                     }
                 }
+                else if (message.Contains(REGISTER_RESULT))
+                {
+                    string[] substrings = message.Split('|');
+                    if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                    {
+                        Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
+
+                        string[] userData = substrings[2].Split(',');
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+                        Debug.Log($"Current user data: {currentUserData}");
+                        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+
+                    }
+                    else
+                    {
+                        // log_in_result|Fail_WrongPairLoginPassword
+                        Debug.Log($"Failed to register, fail reason: {substrings[1]}");
+                        Enum.TryParse(substrings[1], out RequestResult myStatus);
+                        LatestReceivedResult = myStatus;
+
+                        Action act = UI_GlobalManager.instance.SetAuthInResult;
+                        UnityThread.executeInUpdate(act);
+                    }
+                }
                 else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                 {
                     string[] substrings = message.Split('|');
@@ -187,6 +211,10 @@ public class ConnectionManager : MonoBehaviour
     public void LogIn(string login, string password)
     {
         SendMessageToServer($"{LOG_IN}|{login}|{password}", MessageProtocol.TCP);
+    }
+    public void Register(string login, string password, string nickname)
+    {
+        SendMessageToServer($"{REGISTER}|{login}|{password}|{nickname}", MessageProtocol.TCP);
     }
 
     public void ConnectToPlayroom()

@@ -90,7 +90,10 @@ namespace BorisUnityDev.Networking
             }
             catch (Exception e)
             {
-                Debug.LogError($"{e}");
+                if(e.Message.Equals("Network is unreachable"))
+                {
+                    Debug.Log($"Can't connect to the server because [{e.Message}]");
+                }else Debug.LogError($"{e}");
                 Thread.Sleep(2000); // cooldown
                 Disconnect();
             }
