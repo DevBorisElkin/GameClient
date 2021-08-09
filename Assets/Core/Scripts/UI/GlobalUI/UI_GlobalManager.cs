@@ -26,7 +26,7 @@ public class UI_GlobalManager : MonoBehaviour
     }
 
     UI_MainMenu _ui_MainMenu;
-    public UI_MainMenu UI_MainMenu
+    public UI_MainMenu UI_mainMenu
     {
         get
         {
@@ -47,7 +47,7 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log("Manage Scene On Load()");
         if(SceneManager.GetActiveScene().buildIndex == 0)
         {
-            UI_MainMenu.MainMenu_Connected(recordedStatus);
+            UI_mainMenu.MainMenu_Connected(recordedStatus);
         }
         else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
@@ -63,35 +63,35 @@ public class UI_GlobalManager : MonoBehaviour
             Action act = updateUIInMainMenu;
             UnityThread.executeInUpdate(act);
 
-            void updateUIInMainMenu() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
+            void updateUIInMainMenu() { UI_mainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Disconnected))
         {
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Disconnected, false); }
+            void LoadMainMenuScene() { UI_mainMenu.MainMenu_Connected(ClientStatus.Disconnected, false); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Authenticated))
         {
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Authenticated, true); }
+            void LoadMainMenuScene() { UI_mainMenu.MainMenu_Connected(ClientStatus.Authenticated, true); }
         }
         else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.Connected))
         {
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Connected, true); }
+            void LoadMainMenuScene() { UI_mainMenu.MainMenu_Connected(ClientStatus.Connected, true); }
         }
         else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.Disconnected))
         {
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
-            void LoadMainMenuScene() { UI_MainMenu.MainMenu_Connected(ClientStatus.Disconnected, true); }
+            void LoadMainMenuScene() { UI_mainMenu.MainMenu_Connected(ClientStatus.Disconnected, true); }
         }
         else if (recordedStatus.Equals(ClientStatus.Authenticated) && newStatus.Equals(ClientStatus.InPlayRoom))
         {
@@ -126,7 +126,7 @@ public class UI_GlobalManager : MonoBehaviour
     {
         if(recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
         {
-            UI_MainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(LatestReceivedResult), true);
+            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(LatestReceivedResult), true);
         }
     }
 
@@ -136,8 +136,19 @@ public class UI_GlobalManager : MonoBehaviour
         {
             if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
             {
-                UI_MainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
+                UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
             }
+        }
+    }
+
+    public void UpdatePlyroomsList()
+    {
+        Action act = Action; ;
+        UnityThread.executeInUpdate(act);
+
+        void Action()
+        {
+            UI_mainMenu.ui_PlayroomsManager.SpawnLobbyItems();
         }
     }
 

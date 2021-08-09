@@ -49,3 +49,5 @@ MonoBehaviour:
     type: 3}
   ui_lobbyItem_prefab: {fileID: 3082549894700822469, guid: b7ed2508f6f396740ae4c83c6c8d045e,
     type: 3}
+  ui_createLobby_prefab: {fileID: 5772440560712462211, guid: 799753d8cbe7831409d3b6af5cab79df,
+    type: 3}

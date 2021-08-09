@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UI_MessageFromServer : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public TMP_Text messageTxt;
+
+    public void SetUp(string _message)
     {
-        
+        messageTxt.text = _message;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnClick_Close()
     {
-        
+        Destroy(gameObject);
     }
 }

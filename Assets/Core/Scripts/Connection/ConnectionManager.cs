@@ -131,6 +131,12 @@ public class ConnectionManager : MonoBehaviour
                     Debug.Log("For some reason server disconnected you");
                     Disconnect();
                 }
+                else if (message.Contains(PLAYROOMS_DATA_RESPONSE))
+                {
+                    UI_PlayroomsManager.latestPlayroomsData = message;
+                    UI_GlobalManager.instance.UpdatePlyroomsList();
+
+                }
                 else if (message.Contains(LOG_IN_RESULT))
                 {
                     string[] substrings = message.Split('|');
@@ -217,6 +223,11 @@ public class ConnectionManager : MonoBehaviour
         SendMessageToServer($"{REGISTER}|{login}|{password}|{nickname}", MessageProtocol.TCP);
     }
 
+    public void RequestListOfPlayrooms()
+    {
+        SendMessageToServer($"{PLAYROOMS_DATA_REQUEST}");
+    }
+
     public void ConnectToPlayroom()
     {
         // send message to server for connection, and start waiting for successful reply
@@ -230,9 +241,13 @@ public class ConnectionManager : MonoBehaviour
         SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|1|no_nickname", MessageProtocol.TCP);
         UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
     }
-    public void SendMessageToServer(string message, MessageProtocol mp)
+    public void SendMessageToServer(string message, MessageProtocol mp = MessageProtocol.TCP)
     {
-        //Debug.Log($"[{mp}] Sending message to server:" +message);
+        if (string.IsNullOrEmpty(message)) return;
+
+        if(mp == MessageProtocol.TCP)
+            Debug.Log($"[{mp}] Sending message to server:" +message+END_OF_FILE);
+
         Connection.SendMessage(message+END_OF_FILE, mp);
     }
     void OnApplicationQuit()

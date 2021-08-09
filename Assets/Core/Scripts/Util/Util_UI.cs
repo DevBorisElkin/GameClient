@@ -47,7 +47,7 @@ public class Util_UI : MonoBehaviour
         return (isDigitPresent || startsWithUnderscore);
     }
 
-    public enum Input_Field { Login, Password, Nickname}
+    public enum Input_Field { Login, Password, Nickname, Lobby_Name}
     public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput)
     {
         if (IsStringCompatible(stringToCheck) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumberOrUnderscore(stringToCheck))
@@ -65,6 +65,9 @@ public class Util_UI : MonoBehaviour
                     break;
                 case Input_Field.Nickname:
                     txtToAdd = "nickname field";
+                    break;
+                case Input_Field.Lobby_Name:
+                    txtToAdd = "lobby name field";
                     break;
             }
 

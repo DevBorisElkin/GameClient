@@ -42,6 +42,8 @@ public class UI_MainMenu : MonoBehaviour
     public GameObject panel_connection_main;
     public GameObject panel_connection_profile;
     public GameObject panel_connection_playrooms;
+    [Space(5f)]
+    public GameObject rootForServerMessages;
 
     [Header("Legacy")]
     public GameObject panelConnect;  // panel connect now will be the parent of 3 new panels
@@ -101,6 +103,9 @@ public class UI_MainMenu : MonoBehaviour
             introPanel.SetActive(false);
             authenticationPanel.SetActive(false);
             registrationPanel.SetActive(false);
+
+            panel_connection_profile.SetActive(false);
+            panel_connection_playrooms.SetActive(false);
         }
         
         loginAuth = "";
@@ -270,20 +275,23 @@ public class UI_MainMenu : MonoBehaviour
 
     public void OnClick_OpenPlayroomsList()
     {
-
+        ui_PlayroomsManager.ClearItemsHolder();
+        panel_connection_playrooms.SetActive(true);
+        ConnectionManager.instance.RequestListOfPlayrooms();
     }
     public void OnClick_ClosePlayroomsList()
     {
-
+        panel_connection_playrooms.SetActive(false);
     }
     public void OnClick_RefreshPlayroomsList()
     {
-
+        ConnectionManager.instance.RequestListOfPlayrooms();
     }
 
     public void OnClick_CreatePlayroom()
     {
-
+        GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab);
+        newObj.transform.SetParent(rootForServerMessages.transform);
     }
 
 

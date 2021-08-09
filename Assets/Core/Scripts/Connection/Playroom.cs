@@ -37,5 +37,6 @@ public class Playroom
 
     }
 
-    public enum Map { DefaultMap }
+    public enum Map { DefaultMap = 0 }
+    //public enum Map { DefaultMap = 0, IcyMap = 1, DesertMap = 2 }
 }

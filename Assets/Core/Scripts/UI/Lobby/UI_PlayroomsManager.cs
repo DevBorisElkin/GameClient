@@ -9,11 +9,12 @@ public class UI_PlayroomsManager : MonoBehaviour
 
     List<UI_PlayroomItem> lobbyItems;
 
-    public void SpawnLobbyItems(string networkResponse)
+    public static string latestPlayroomsData;
+    public void SpawnLobbyItems()
     {
         ClearItemsHolder();
 
-        List<Playroom> playrooms = CreatePlayroomsFromNetworkResponse(networkResponse);
+        List<Playroom> playrooms = CreatePlayroomsFromNetworkResponse(latestPlayroomsData);
         Debug.Log($"found {playrooms.Count} playrooms");
 
         lobbyItems = new List<UI_PlayroomItem>();
@@ -29,7 +30,7 @@ public class UI_PlayroomsManager : MonoBehaviour
         }
     }
 
-    void ClearItemsHolder()
+    public void ClearItemsHolder()
     {
         List<GameObject> itemsToDelete = new List<GameObject>();
         for (int i = 0; i < parentForLobbyItems.transform.childCount; i++)
