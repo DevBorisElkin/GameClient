@@ -33,10 +33,18 @@ public class Util_UI : MonoBehaviour
         else return true;
     }
 
-    public static bool IsStringCompatible(string toCheck)
+    public static bool IsStringCompatible(string toCheck, bool allowSpace = false)
     {
-        Regex rgx = new Regex("[^A-Za-z0-9_]");
-        return !(rgx.IsMatch(toCheck));
+        if (allowSpace)
+        {
+            Regex rgx = new Regex("[^A-Za-z0-9_ ]");
+            return !(rgx.IsMatch(toCheck));
+        }
+        else
+        {
+            Regex rgx = new Regex("[^A-Za-z0-9_]");
+            return !(rgx.IsMatch(toCheck));
+        }
     }
 
     public static bool StringStarstsFromNumberOrUnderscore(string toCheck)
@@ -48,9 +56,9 @@ public class Util_UI : MonoBehaviour
     }
 
     public enum Input_Field { Login, Password, Nickname, Lobby_Name}
-    public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput)
+    public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput, bool useSpace = false)
     {
-        if (IsStringCompatible(stringToCheck) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumberOrUnderscore(stringToCheck))
+        if (IsStringCompatible(stringToCheck, useSpace) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumberOrUnderscore(stringToCheck))
             return true;
         else
         {
@@ -71,7 +79,7 @@ public class Util_UI : MonoBehaviour
                     break;
             }
 
-            if (!IsStringCompatible(stringToCheck))
+            if (!IsStringCompatible(stringToCheck, useSpace))
             {
                 errorField.text = txtToAdd + " can contain only english characters and digits";
             }else if(stringToCheck.Length < 5)

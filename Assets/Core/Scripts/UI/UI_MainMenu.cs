@@ -284,8 +284,8 @@ public class UI_MainMenu : MonoBehaviour
 
     public void OnClick_CreatePlayroom()
     {
-        GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab);
-        newObj.transform.SetParent(rootForServerMessages.transform);
+        GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab, rootForServerMessages.transform);
+        //newObj.transform.SetParent(rootForServerMessages.transform);
     }
 
 

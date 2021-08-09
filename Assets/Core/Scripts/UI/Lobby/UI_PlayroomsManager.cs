@@ -46,14 +46,27 @@ public class UI_PlayroomsManager : MonoBehaviour
     // data: id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers
     List<Playroom> CreatePlayroomsFromNetworkResponse(string networkResponse)
     {
+        if (networkResponse.Equals($"{PLAYROOMS_DATA_RESPONSE}|"))
+        {
+            Debug.Log("No opened playrooms were found");
+            return new List<Playroom>();
+        }
         string[] sub1 = networkResponse.Split('|');
-        string[] sub2 = sub1[1].Split(',');
 
         List<Playroom> playrooms = new List<Playroom>();
 
-        foreach(string a in sub2)
+        if (sub1[1].Contains(","))
         {
-            Playroom room = new Playroom(a);
+            string[] sub2 = sub1[1].Split(',');
+            foreach (string a in sub2)
+            {
+                Playroom room = new Playroom(a);
+                playrooms.Add(room);
+            }
+        }
+        else
+        {
+            Playroom room = new Playroom(sub1[1]);
             playrooms.Add(room);
         }
 

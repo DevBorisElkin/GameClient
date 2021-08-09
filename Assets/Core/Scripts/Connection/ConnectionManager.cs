@@ -26,6 +26,8 @@ public class ConnectionManager : MonoBehaviour
     public ClientAccessLevel clientAccessLevel;
     bool appIsRunning = true;
 
+    Playroom activePlayroom;
+
     private void Awake()
     {
         InitSingleton();
@@ -203,11 +205,12 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
+                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers"
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {
                         string[] substrings = message.Split('|');
-
-                        Debug.Log($"Accepted to play room [{substrings[1]}]");
+                        activePlayroom = new Playroom(substrings[1]);
+                        Debug.Log($"Accepted to play room [{activePlayroom.id}]");
 
                         UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
                     }
@@ -257,8 +260,8 @@ public class ConnectionManager : MonoBehaviour
     }
     public void LeavePlayroom()
     {
-        SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|1|no_nickname", MessageProtocol.TCP);
-        UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
+        SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|{activePlayroom.id}|no_nickname", MessageProtocol.TCP);
+        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
     }
     public void SendMessageToServer(string message, MessageProtocol mp = MessageProtocol.TCP)
     {

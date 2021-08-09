@@ -96,15 +96,15 @@ public class UI_CreateLobby : MonoBehaviour
 
     static string[] defaultLobbyNames = new string[10]
     {
-        "Awesome playroom",
-        "Cool lobby",
-        "Clash of bros",
-        "Let's kick it",
-        "Join all",
-        "Cruel massacre",
-        "Bloody massacre",
-        "Easy game",
-        "Cool fight",
-        "Join me right now!"
+        "Awesome_playroom",
+        "Cool_lobby",
+        "Clash_of_bros",
+        "Let's_kick_it",
+        "Join_all",
+        "Cruel_massacre",
+        "Bloody_massacre",
+        "Easy_game",
+        "Cool_fight",
+        "Join_me_right_now!"
     };
 }

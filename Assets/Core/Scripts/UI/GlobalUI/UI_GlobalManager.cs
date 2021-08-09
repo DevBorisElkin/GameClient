@@ -105,14 +105,14 @@ public class UI_GlobalManager : MonoBehaviour
                 SceneManager.LoadSceneAsync("NetworkingGameScene");
             }
         }
-        else if (recordedStatus.Equals(ClientStatus.InPlayRoom) && (newStatus.Equals(ClientStatus.Authenticated) || newStatus.Equals(ClientStatus.Disconnected) || newStatus.Equals(ClientStatus.Connected)))
+        else if (recordedStatus.Equals(ClientStatus.InPlayRoom) && ((newStatus.Equals(ClientStatus.Authenticated) || newStatus.Equals(ClientStatus.Disconnected) || newStatus.Equals(ClientStatus.Connected))))
         {
-            OnlineGameManager.instance.OnPlayRoomExited();
             Action act = LoadMainMenuScene;
             UnityThread.executeInUpdate(act);
 
             void LoadMainMenuScene()
             {
+                Debug.Log("Leaving playroom");
                 OnlineGameManager.instance.OnPlayRoomExited();
                 SceneManager.LoadSceneAsync("MainScene");
             }
@@ -158,8 +158,7 @@ public class UI_GlobalManager : MonoBehaviour
 
         void Act()
         {
-            GameObject spawnedGobj = Instantiate(PrefabsHolder.instance.ui_messageFromServer_prefab);
-            spawnedGobj.transform.SetParent(UI_mainMenu.rootForServerMessages.transform);
+            GameObject spawnedGobj = Instantiate(PrefabsHolder.instance.ui_messageFromServer_prefab, UI_mainMenu.rootForServerMessages.transform);
             UI_MessageFromServer message = spawnedGobj.GetComponent<UI_MessageFromServer>();
             message.SetUp(msg);
         }
