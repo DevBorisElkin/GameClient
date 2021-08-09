@@ -21,8 +21,7 @@ public class UI_GlobalManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(this);
         }
-        else
-            if (instance != this) Destroy(gameObject);
+        else Destroy(gameObject);
     }
 
     UI_MainMenu _ui_MainMenu;
@@ -47,10 +46,11 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log("Manage Scene On Load()");
         if(SceneManager.GetActiveScene().buildIndex == 0)
         {
-            UI_mainMenu.MainMenu_Connected(recordedStatus);
+            //UI_mainMenu.MainMenu_Connected(recordedStatus);
         }
         else if (SceneManager.GetActiveScene().buildIndex == 1)
         {
+            UI_mainMenu.MainMenu_Connected(recordedStatus);
             //OnlineGameManager.instance.OnPlayRoomEntered();
         }
     }
@@ -63,7 +63,7 @@ public class UI_GlobalManager : MonoBehaviour
             Action act = updateUIInMainMenu;
             UnityThread.executeInUpdate(act);
 
-            void updateUIInMainMenu() { UI_mainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
+            void updateUIInMainMenu() { if(UI_mainMenu!=null) UI_mainMenu.MainMenu_Connected(ClientStatus.Connected, false); }
         }
         else if (recordedStatus.Equals(ClientStatus.Connected) && newStatus.Equals(ClientStatus.Disconnected))
         {
@@ -101,7 +101,6 @@ public class UI_GlobalManager : MonoBehaviour
 
             void LoadPlayRoomScene()
             {
-                OnlineGameManager.instance.OnPlayRoomEntered();
                 SceneManager.LoadSceneAsync("NetworkingGameScene");
             }
         }
@@ -113,7 +112,6 @@ public class UI_GlobalManager : MonoBehaviour
             void LoadMainMenuScene()
             {
                 Debug.Log("Leaving playroom");
-                OnlineGameManager.instance.OnPlayRoomExited();
                 SceneManager.LoadSceneAsync("MainScene");
             }
 

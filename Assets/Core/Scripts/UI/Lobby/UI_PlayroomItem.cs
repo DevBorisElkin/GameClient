@@ -27,6 +27,8 @@ public class UI_PlayroomItem : MonoBehaviour
 
     public void OnClick_LobbyItem()
     {
-        // TODO OPEN SPEC PANEL TO JOIN WITH PASS OR FREE
+        GameObject newObj = Instantiate(PrefabsHolder.instance.ui_preJoinLobby_prefab, UI_GlobalManager.instance.UI_mainMenu.rootForServerMessages.transform);
+        UI_PreJoinLobby uiPreJoin = newObj.GetComponent<UI_PreJoinLobby>();
+        uiPreJoin.SetUp(playroom);
     }
 }

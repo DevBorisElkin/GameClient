@@ -33,18 +33,10 @@ public class Util_UI : MonoBehaviour
         else return true;
     }
 
-    public static bool IsStringCompatible(string toCheck, bool allowSpace = false)
+    public static bool IsStringCompatible(string toCheck)
     {
-        if (allowSpace)
-        {
-            Regex rgx = new Regex("[^A-Za-z0-9_ ]");
-            return !(rgx.IsMatch(toCheck));
-        }
-        else
-        {
-            Regex rgx = new Regex("[^A-Za-z0-9_]");
-            return !(rgx.IsMatch(toCheck));
-        }
+        Regex rgx = new Regex("[^A-Za-z0-9_]");
+        return !(rgx.IsMatch(toCheck));
     }
 
     public static bool StringStarstsFromNumberOrUnderscore(string toCheck)
@@ -56,12 +48,14 @@ public class Util_UI : MonoBehaviour
     }
 
     public enum Input_Field { Login, Password, Nickname, Lobby_Name}
-    public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput, bool useSpace = false)
+    public static bool IsStringClearFromErrors(string stringToCheck, TMP_Text errorField, Input_Field typeOfInput, int MinLength = 5, int MaxLength = 12)
     {
-        if (IsStringCompatible(stringToCheck, useSpace) && stringToCheck.Length > 4 && stringToCheck.Length < 11 && !StringStarstsFromNumberOrUnderscore(stringToCheck))
+        if (IsStringCompatible(stringToCheck) && stringToCheck.Length >= MinLength && stringToCheck.Length <= MaxLength && !StringStarstsFromNumberOrUnderscore(stringToCheck))
             return true;
         else
         {
+            Debug.Log("Test wasn't passed, checking why");
+
             string txtToAdd = "";
             switch (typeOfInput)
             {
@@ -79,20 +73,20 @@ public class Util_UI : MonoBehaviour
                     break;
             }
 
-            if (!IsStringCompatible(stringToCheck, useSpace))
+            if (!IsStringCompatible(stringToCheck))
             {
                 errorField.text = txtToAdd + " can contain only english characters and digits";
-            }else if(stringToCheck.Length < 5)
+            }else if(stringToCheck.Length < MinLength)
             {
-                errorField.text = txtToAdd + " can't be less than 5 characters";
+                errorField.text = $"{txtToAdd} can't be less than {MinLength} characters";
             }
-            else if (stringToCheck.Length > 10)
+            else if (stringToCheck.Length > MaxLength)
             {
-                errorField.text = txtToAdd + " can't be longer than 10 characters";
+                errorField.text = $"{txtToAdd} can't be longer than {MaxLength} characters";
             }
             else if (StringStarstsFromNumberOrUnderscore(stringToCheck))
             {
-                errorField.text = txtToAdd + " can't start with digit or underscore";
+                errorField.text = $"txtToAdd can't start with digit or underscore";
             }
             return false;
         }

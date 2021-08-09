@@ -44,8 +44,7 @@ public class ConnectionManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(this);
         }
-        else
-            if (instance != this) Destroy(gameObject);
+        else Destroy(gameObject);
     }
     void InitConnectionCallbacksAndData()
     {

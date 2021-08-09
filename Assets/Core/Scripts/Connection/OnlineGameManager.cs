@@ -20,7 +20,6 @@ public class OnlineGameManager : MonoBehaviour
     private void Awake()
     {
         InitSingleton();
-        SpawnPlayer();
     }
 
     void InitSingleton()
@@ -30,11 +29,10 @@ public class OnlineGameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(this);
         }
-        else
-            if (instance != this) Destroy(gameObject);
+        else Destroy(gameObject);
     }
 
-    void SpawnPlayer()
+    public void SpawnPlayer()
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
             player = Instantiate(PrefabsHolder.instance.player_prefab, spawnPosition, Quaternion.identity);

@@ -47,7 +47,11 @@ MonoBehaviour:
     type: 3}
   opponent_prefab: {fileID: 6704527064422643022, guid: 8c69effea4eb0f540bb2daee63680c8e,
     type: 3}
+  ui_preJoinLobby_prefab: {fileID: 5772440560712462211, guid: 198bf77dac021414bb1b6c439c8e37ca,
+    type: 3}
   ui_lobbyItem_prefab: {fileID: 3082549894700822469, guid: b7ed2508f6f396740ae4c83c6c8d045e,
     type: 3}
   ui_createLobby_prefab: {fileID: 5772440560712462211, guid: 799753d8cbe7831409d3b6af5cab79df,
+    type: 3}
+  ui_messageFromServer_prefab: {fileID: 4534920730982251803, guid: 082f5f921ba929f468a6c31b3979b8fa,
     type: 3}

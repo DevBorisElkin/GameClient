@@ -81,10 +81,10 @@ public class UI_CreateLobby : MonoBehaviour
 
     public void OnClick_CreateLobby()
     {
-        if (!IsStringClearFromErrors(nameOfNewLobby, errorText, Input_Field.Lobby_Name))
+        if (!IsStringClearFromErrors(nameOfNewLobby, errorText, Input_Field.Lobby_Name, 5, 20))
             return;
 
-        if (!isPublic && !IsStringClearFromErrors(password, errorText, Input_Field.Password))
+        if (!isPublic && !IsStringClearFromErrors(password, errorText, Input_Field.Password, 5, 15))
             return;
 
         // here everything is ok, we need to send the request to create lobby and then wait
@@ -99,12 +99,12 @@ public class UI_CreateLobby : MonoBehaviour
         "Awesome_playroom",
         "Cool_lobby",
         "Clash_of_bros",
-        "Let's_kick_it",
+        "Lets_kick_it",
         "Join_all",
         "Cruel_massacre",
         "Bloody_massacre",
         "Easy_game",
         "Cool_fight",
-        "Join_me_right_now!"
+        "Join_me_right_now"
     };
 }
