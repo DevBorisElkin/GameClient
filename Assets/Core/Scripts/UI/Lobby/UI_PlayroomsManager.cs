@@ -9,12 +9,11 @@ public class UI_PlayroomsManager : MonoBehaviour
 
     List<UI_PlayroomItem> lobbyItems;
 
-    public static string latestPlayroomsData;
-    public void SpawnLobbyItems()
+    public void SpawnLobbyItems(string data)
     {
         ClearItemsHolder();
 
-        List<Playroom> playrooms = CreatePlayroomsFromNetworkResponse(latestPlayroomsData);
+        List<Playroom> playrooms = CreatePlayroomsFromNetworkResponse(data);
         Debug.Log($"found {playrooms.Count} playrooms");
 
         lobbyItems = new List<UI_PlayroomItem>();

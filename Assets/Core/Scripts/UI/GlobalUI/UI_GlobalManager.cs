@@ -141,14 +141,27 @@ public class UI_GlobalManager : MonoBehaviour
         }
     }
 
-    public void UpdatePlyroomsList()
+    public void UpdatePlyroomsList(string msg)
     {
         Action act = Action; ;
         UnityThread.executeInUpdate(act);
 
         void Action()
         {
-            UI_mainMenu.ui_PlayroomsManager.SpawnLobbyItems();
+            UI_mainMenu.ui_PlayroomsManager.SpawnLobbyItems(msg);
+        }
+    }
+    public void ShowLatestMessageFromServer(string msg)
+    {
+        Action act = Act;
+        UnityThread.executeInUpdate(act);
+
+        void Act()
+        {
+            GameObject spawnedGobj = Instantiate(PrefabsHolder.instance.ui_messageFromServer_prefab);
+            spawnedGobj.transform.SetParent(UI_mainMenu.rootForServerMessages.transform);
+            UI_MessageFromServer message = spawnedGobj.GetComponent<UI_MessageFromServer>();
+            message.SetUp(msg);
         }
     }
 

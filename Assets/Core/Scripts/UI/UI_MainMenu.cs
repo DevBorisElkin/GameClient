@@ -127,12 +127,6 @@ public class UI_MainMenu : MonoBehaviour
         auth_errorResult.color = colorNeutral;
         reg_errorResult.color =  colorNeutral;
     }
-    public void MainMenu_Authenticated(bool state)
-    {
-        panelConnect.SetActive(!state);
-        panelSendReceive.SetActive(state);
-    }
-
     public void OnClick_ChoiceAuthenticate()
     {
         introPanel.SetActive(false);

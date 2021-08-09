@@ -29,7 +29,7 @@ public class ConnectionManager : MonoBehaviour
     private void Awake()
     {
         InitSingleton();
-        InitConnectionCallbacks();
+        InitConnectionCallbacksAndData();
         UnityThread.initUnityThread();
 
         Connection.SetConnectionValues(ip, portTcp, portUdp);
@@ -45,12 +45,13 @@ public class ConnectionManager : MonoBehaviour
         else
             if (instance != this) Destroy(gameObject);
     }
-    void InitConnectionCallbacks()
+    void InitConnectionCallbacksAndData()
     {
         Connection.OnConnectedEvent += OnConnected;
         Connection.OnDisconnectedEvent += OnDisconnected;
         Connection.OnMessageReceivedEvent += OnMessageReceived;
         Connection.OnFailedToConnectEvent += OnFailededToConnectToServer;
+        clientAccessLevel = ClientAccessLevel.LowestLevel;
     }
     //_____________________________________________________________________
 
@@ -92,6 +93,7 @@ public class ConnectionManager : MonoBehaviour
     void OnDisconnected()
     {
         Debug.Log("On Disconnected " + ip);
+        clientAccessLevel = ClientAccessLevel.LowestLevel;
         UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
         Connect();
     }
@@ -107,7 +109,7 @@ public class ConnectionManager : MonoBehaviour
         try
         {
             //if (!msg.Equals("") && !msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
-            if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"[MESSAGE_FROM_SERVER][{mp}]: {msg}"); }
+            //if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"[MESSAGE_FROM_SERVER][{mp}]: {msg}"); }
 
             // KIND OF WACKY BECAUSE UNITY VERSION OF .NET DOES NOT SUPPORT SPLIT BY STRING
 
@@ -121,9 +123,8 @@ public class ConnectionManager : MonoBehaviour
             {
                 if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals(""))
                 {
-                    //Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
+                    Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
                 }
-
 
                 if (message.Equals(CLIENT_DISCONNECTED))
                 {
@@ -131,77 +132,95 @@ public class ConnectionManager : MonoBehaviour
                     Debug.Log("For some reason server disconnected you");
                     Disconnect();
                 }
-                else if (message.Contains(PLAYROOMS_DATA_RESPONSE))
-                {
-                    UI_PlayroomsManager.latestPlayroomsData = message;
-                    UI_GlobalManager.instance.UpdatePlyroomsList();
 
-                }
-                else if (message.Contains(LOG_IN_RESULT))
+
+                if(clientAccessLevel == ClientAccessLevel.LowestLevel)
                 {
-                    string[] substrings = message.Split('|');
-                    if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                    if (message.Contains(LOG_IN_RESULT))
                     {
-                        Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
+                        string[] substrings = message.Split('|');
+                        if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                        {
+                            Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
 
-                        string[] userData = substrings[2].Split(',');
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
-                        Debug.Log($"Current user data: {currentUserData}");
-                        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+                            string[] userData = substrings[2].Split(',');
+                            currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+                            Debug.Log($"Current user data: {currentUserData}");
+                            UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+                            clientAccessLevel = ClientAccessLevel.Authenticated;
 
+                        }
+                        else
+                        {
+                            // log_in_result|Fail_WrongPairLoginPassword
+                            Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
+                            Enum.TryParse(substrings[1], out RequestResult myStatus);
+                            LatestReceivedResult = myStatus;
+
+                            Action act = UI_GlobalManager.instance.SetAuthInResult;
+                            UnityThread.executeInUpdate(act);
+                        }
                     }
-                    else
+                    else if (message.Contains(REGISTER_RESULT))
                     {
-                        // log_in_result|Fail_WrongPairLoginPassword
-                        Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
-                        Enum.TryParse(substrings[1], out RequestResult myStatus);
-                        LatestReceivedResult = myStatus;
+                        string[] substrings = message.Split('|');
+                        if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                        {
+                            Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
 
-                        Action act = UI_GlobalManager.instance.SetAuthInResult;
-                        UnityThread.executeInUpdate(act);
+                            string[] userData = substrings[2].Split(',');
+                            currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+                            Debug.Log($"Current user data: {currentUserData}");
+                            UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+                            clientAccessLevel = ClientAccessLevel.Authenticated;
+
+                        }
+                        else
+                        {
+                            // log_in_result|Fail_WrongPairLoginPassword
+                            Debug.Log($"Failed to register, fail reason: {substrings[1]}");
+                            Enum.TryParse(substrings[1], out RequestResult myStatus);
+                            LatestReceivedResult = myStatus;
+
+                            Action act = UI_GlobalManager.instance.SetAuthInResult;
+                            UnityThread.executeInUpdate(act);
+                        }
                     }
                 }
-                else if (message.Contains(REGISTER_RESULT))
+                else if(clientAccessLevel == ClientAccessLevel.Authenticated)
                 {
-                    string[] substrings = message.Split('|');
-                    if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                    if (message.Contains(PLAYROOMS_DATA_RESPONSE))
                     {
-                        Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
-
-                        string[] userData = substrings[2].Split(',');
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
-                        Debug.Log($"Current user data: {currentUserData}");
-                        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
-
+                        UI_GlobalManager.instance.UpdatePlyroomsList(message);
                     }
-                    else
+                    // "reject_enter_playroom|reason_of_rejection_message|";
+                    else if (message.StartsWith(REJECT_ENTER_PLAY_ROOM))
                     {
-                        // log_in_result|Fail_WrongPairLoginPassword
-                        Debug.Log($"Failed to register, fail reason: {substrings[1]}");
-                        Enum.TryParse(substrings[1], out RequestResult myStatus);
-                        LatestReceivedResult = myStatus;
+                        string[] substrings = message.Split('|');
 
-                        Action act = UI_GlobalManager.instance.SetAuthInResult;
-                        UnityThread.executeInUpdate(act);
+                        Debug.Log($"Was not accepted to playroom [{substrings[1]}]");
+
+                        UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
+                        
                     }
-                }
-                else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
-                {
-                    string[] substrings = message.Split('|');
+                    else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
+                    {
+                        string[] substrings = message.Split('|');
 
-                    Debug.Log($"Accepted to play room [{substrings[1]}]");
+                        Debug.Log($"Accepted to play room [{substrings[1]}]");
 
-                    UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
-                }
-                else if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
-                {
-                    if (OnlineGameManager.instance != null)
-                        OnlineGameManager.instance.OnPositionMessageReceived(message);
-                }
-                else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
-                {
-                    if (OnlineGameManager.instance != null)
-                        OnlineGameManager.instance.OnPlayerDisconnectedFromPlayroom(message);
+                        UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
+                    }
+                    else if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+                    {
+                        if (OnlineGameManager.instance != null)
+                            OnlineGameManager.instance.OnPositionMessageReceived(message);
+                    }
+                    else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
+                    {
+                        if (OnlineGameManager.instance != null)
+                            OnlineGameManager.instance.OnPlayerDisconnectedFromPlayroom(message);
+                    }
                 }
             }
         }
