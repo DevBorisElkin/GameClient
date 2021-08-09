@@ -24,4 +24,6 @@ public class PrefabsHolder : MonoBehaviour
 
     public GameObject player_prefab;
     public GameObject opponent_prefab;
+
+    public GameObject ui_lobbyItem_prefab;
 }

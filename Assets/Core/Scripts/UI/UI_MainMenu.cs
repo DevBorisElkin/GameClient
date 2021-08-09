@@ -37,6 +37,11 @@ public class UI_MainMenu : MonoBehaviour
     public TMP_InputField reg_EnterNickname;
     public TMP_Text reg_errorResult;
 
+    [Header("Lobbies")]
+    public UI_PlayroomsManager ui_PlayroomsManager;
+    public GameObject panel_connection_main;
+    public GameObject panel_connection_profile;
+    public GameObject panel_connection_playrooms;
 
     [Header("Legacy")]
     public GameObject panelConnect;  // panel connect now will be the parent of 3 new panels
@@ -222,8 +227,9 @@ public class UI_MainMenu : MonoBehaviour
 
     #endregion;
 
+
     #region ALREADY CONNECTED
-    
+
     public void OnClick_Disconnect()
     {
         ConnectionManager.instance.Disconnect();
@@ -259,6 +265,27 @@ public class UI_MainMenu : MonoBehaviour
     {
         this.message = message;
     }
+
+    // _____
+
+    public void OnClick_OpenPlayroomsList()
+    {
+
+    }
+    public void OnClick_ClosePlayroomsList()
+    {
+
+    }
+    public void OnClick_RefreshPlayroomsList()
+    {
+
+    }
+
+    public void OnClick_CreatePlayroom()
+    {
+
+    }
+
 
     #endregion
 }
