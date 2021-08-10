@@ -35,12 +35,15 @@ public class OnlineGameManager : MonoBehaviour
     public void SpawnPlayer()
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
+        {
             player = Instantiate(PrefabsHolder.instance.player_prefab, spawnPosition, Quaternion.identity);
+            player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
+        }
     }
 
     public void OnPlayRoomEntered()
     {
-        opponents = new List<Player>();
+        opponents = new List<PlayerData>();
         inPlayRoom = true;
     }
 
@@ -70,7 +73,7 @@ public class OnlineGameManager : MonoBehaviour
         string[] substrings = message.Split('|');
         string leftPlayerIp = substrings[3];
 
-        Player leftPlayer = FindPlayerByIp(leftPlayerIp);
+        PlayerData leftPlayer = FindPlayerByIp(leftPlayerIp);
         if (leftPlayer != null)
         {
             leftPlayer.playerLeft = true;
@@ -83,6 +86,7 @@ public class OnlineGameManager : MonoBehaviour
     // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
     public void OnPositionMessageReceived(string message)
     {
+        //Debug.Log($"{message}|>inPlayRoom: {inPlayRoom}");
         if (!inPlayRoom) return;
         try
         {
@@ -105,11 +109,12 @@ public class OnlineGameManager : MonoBehaviour
             string[] substrings = message.Split('|');
             string[] playersData = substrings[1].Split('@');
 
+            bool noticedUnspanedPlayers = false;
             foreach (string a in playersData)
             {
                 string[] subdata = a.Split(',');
 
-                Player correctPlayer = FindPlayerByIp(subdata[1]);
+                PlayerData correctPlayer = FindPlayerByIp(subdata[1]);
 
                 string[] coordinatesXYZ = subdata[2].Split('/');
                 string[] rotation = subdata[3].Split('/');
@@ -126,7 +131,7 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     Debug.Log("Noticed a player in playroom that has not beed added yet.");
 
-                    Player newlyCreatedPlayer = new Player();
+                    PlayerData newlyCreatedPlayer = new PlayerData();
                     newlyCreatedPlayer.nickname = subdata[0];
                     newlyCreatedPlayer.ip = subdata[1];
                     newlyCreatedPlayer.position = new Vector3(float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
@@ -134,13 +139,11 @@ public class OnlineGameManager : MonoBehaviour
 
                     opponents.Add(newlyCreatedPlayer);
 
-                    // creating that player
-                    //...
+                    noticedUnspanedPlayers = true;
                 }
 
             }
-
-            if (opponents.Count > 0)
+            if (noticedUnspanedPlayers)
             {
                 Action act = CheckUnspawnedPlayers;
                 UnityThread.executeInUpdate(act);
@@ -160,13 +163,14 @@ public class OnlineGameManager : MonoBehaviour
     // basically checks if player that joined room has not been yet added as an GameObject
     void CheckUnspawnedPlayers()
     {
-        foreach (Player a in opponents)
+        foreach (PlayerData a in opponents)
         {
             if (a.controlledGameObject == null)
             {
                 try
                 {
                     a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
+                    a.controlledGameObject.GetComponentInChildren<Player>().SetUpPlayer(a);
                 }
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
             }
@@ -177,15 +181,15 @@ public class OnlineGameManager : MonoBehaviour
     {
         try
         {
-            List<Player> playersToDelete = new List<Player>();
+            List<PlayerData> playersToDelete = new List<PlayerData>();
 
-            foreach (Player a in opponents)
+            foreach (PlayerData a in opponents)
             {
                 if (a.controlledGameObject != null && a.playerLeft)
                     playersToDelete.Add(a);
             }
 
-            foreach (Player a in playersToDelete)
+            foreach (PlayerData a in playersToDelete)
             {
                 Destroy(a.controlledGameObject);
                 opponents.Remove(a);
@@ -194,10 +198,16 @@ public class OnlineGameManager : MonoBehaviour
         catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
     }
 
-    List<Player> opponents;
+    List<PlayerData> opponents;
 
-    public class Player
+    public class PlayerData
     {
+        public PlayerData() { }
+        public PlayerData(UserData userData) 
+        {
+            nickname = userData.nickname;
+        }
+
         public string nickname;
         public string ip;
 
@@ -209,9 +219,9 @@ public class OnlineGameManager : MonoBehaviour
         public GameObject controlledGameObject;
     }
 
-    public Player FindPlayerByIp(string ip)
+    public PlayerData FindPlayerByIp(string ip)
     {
-        foreach (Player a in opponents)
+        foreach (PlayerData a in opponents)
         {
             if (a.ip.Equals(ip)) return a;
         }
@@ -226,7 +236,7 @@ public class OnlineGameManager : MonoBehaviour
         {
             try
             {
-                foreach (Player a in opponents)
+                foreach (PlayerData a in opponents)
                 {
                     if (a.controlledGameObject != null)
                     {

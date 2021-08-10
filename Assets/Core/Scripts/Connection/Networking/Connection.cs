@@ -123,6 +123,7 @@ namespace BorisUnityDev.Networking
                 }
                 catch (Exception e)
                 {
+                    Debug.Log(e);
                     Disconnect();
                     break;
                 }
@@ -151,7 +152,7 @@ namespace BorisUnityDev.Networking
         // [DISCONNECT FROM THE SERVER]
         public static void Disconnect(bool notifyDisconnect = true)
         {
-            UDP.Disconnect();
+            UDP.Disconnect(true);
             ConnectionUtil.Disconnect(socket_connect);
             ConnectionUtil.Disconnect(socket_client);
             connected = false;

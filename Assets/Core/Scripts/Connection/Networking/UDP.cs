@@ -35,6 +35,7 @@ namespace BorisUnityDev.Networking
             catch (Exception e)
             {
                 Debug.Log($"Unexpected exception : {e} || {e.StackTrace} || {e.Source}");
+                Disconnect(true);
             }
         }
 
@@ -90,22 +91,16 @@ namespace BorisUnityDev.Networking
             }
             finally
             {
-                Disconnect();
+                Disconnect(true);
             }
         }
 
-        public static void Disconnect()
+        public static void Disconnect(bool forceClose = false)
         {
-            if (!connected) return;
+            if (!connected && !forceClose) return;
             connected = false;
             Debug.Log("[SYSTEM_MESSAGE]: closed udp");
-            if (udpSocket != null)
-            {
-                try { udpSocket.Shutdown(SocketShutdown.Both); }
-                catch (Exception e) { }
-                finally { udpSocket.Close(); }
-                udpSocket = null;
-            }
+            ConnectionUtil.Disconnect(udpSocket);
         }
     }
 }

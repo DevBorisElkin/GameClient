@@ -22,7 +22,7 @@ public class ConnectionManager : MonoBehaviour
     public static int portTcp = 8384;
     public static int portUdp = 8385;
 
-    UserData currentUserData;
+    public UserData currentUserData;
     public ClientAccessLevel clientAccessLevel;
     bool appIsRunning = true;
 
@@ -271,6 +271,11 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnApplicationQuit()
     {
+        if (Connection.connected)
+        {
+            Debug.Log("Force disconnect");
+            Connection.Disconnect();
+        }
         appIsRunning = false;
     }
 }
