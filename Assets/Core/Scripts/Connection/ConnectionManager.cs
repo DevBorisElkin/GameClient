@@ -153,13 +153,11 @@ public class ConnectionManager : MonoBehaviour
                         }
                         else
                         {
-                            // log_in_result|Fail_WrongPairLoginPassword
                             Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
                             Enum.TryParse(substrings[1], out RequestResult myStatus);
-                            LatestReceivedResult = myStatus;
-
-                            Action act = UI_GlobalManager.instance.SetAuthInResult;
+                            Action act = SetResult;
                             UnityThread.executeInUpdate(act);
+                            void SetResult() { UI_GlobalManager.instance.SetAuthInResult(myStatus); }
                         }
                     }
                     else if (message.Contains(REGISTER_RESULT))
@@ -178,13 +176,11 @@ public class ConnectionManager : MonoBehaviour
                         }
                         else
                         {
-                            // log_in_result|Fail_WrongPairLoginPassword
                             Debug.Log($"Failed to register, fail reason: {substrings[1]}");
                             Enum.TryParse(substrings[1], out RequestResult myStatus);
-                            LatestReceivedResult = myStatus;
-
-                            Action act = UI_GlobalManager.instance.SetAuthInResult;
+                            Action act = SetResult;
                             UnityThread.executeInUpdate(act);
+                            void SetResult() { UI_GlobalManager.instance.SetRegistrationResult(myStatus); }
                         }
                     }
                 }
@@ -232,9 +228,6 @@ public class ConnectionManager : MonoBehaviour
         }
         
     }
-    // TODO FIX
-    public static RequestResult LatestReceivedResult;
-
     public void LogIn(string login, string password)
     {
         SendMessageToServer($"{LOG_IN}|{login}|{password}", MessageProtocol.TCP);

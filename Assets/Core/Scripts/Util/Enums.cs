@@ -14,7 +14,6 @@ public static class Enums
         Disconnected,
         Connected,
         Authenticated,
-        WaitingToGetAcceptedToPlayroom,
         InPlayRoom 
     }
 

@@ -11,7 +11,7 @@ using static Util_UI;
 
 public class UI_MainMenu : MonoBehaviour
 {
-    #region variables
+    #region _____variables__________
 
     [Header("General")]
     public Color colorOkay;
@@ -37,7 +37,7 @@ public class UI_MainMenu : MonoBehaviour
     public TMP_InputField reg_EnterNickname;
     public TMP_Text reg_errorResult;
 
-    [Header("Lobbies")]
+    [Header("Logged in")]
     public UI_PlayroomsManager ui_PlayroomsManager;
     public GameObject panel_connection_main;
     public GameObject panel_connection_profile;
@@ -50,43 +50,31 @@ public class UI_MainMenu : MonoBehaviour
     public GameObject panelSendReceive;
 
     public InputField enterTextInputField;
-
-    #endregion
+    #endregion _______________
     private void Start()
     {
         UI_GlobalManager.instance.ManageSceneOnLoad();
     }
 
-    public void MainMenu_Connected(ClientStatus newClientStatus, bool alterAll = true)
+    public void MainMenu_Connected(ClientStatus newClientStatus, bool swichBetweenConnectionTypes = true)
     {
         if (newClientStatus.Equals(ClientStatus.Disconnected))
         {
             connectionStatus.text = str_disconnected;
             connectionStatus.color = colorError;
-
-            if (alterAll)
-                AlterAll_One(1);
         }
-        else if (newClientStatus.Equals(ClientStatus.Connected))
+        else if (newClientStatus.Equals(ClientStatus.Connected) || newClientStatus.Equals(ClientStatus.Authenticated))
         {
             connectionStatus.text = str_connected;
             connectionStatus.color = colorOkay;
-
-            if (alterAll)
-                AlterAll_One(1);
         }
-        else if (newClientStatus.Equals(ClientStatus.Authenticated))
-        {
-            connectionStatus.text = str_connected;
-            connectionStatus.color = colorOkay;
 
-            if (alterAll)
-                AlterAll_One(2);
-        }
+        if (swichBetweenConnectionTypes)
+            DetailedAdjustment(newClientStatus);
     }
-    void AlterAll_One(int number)
+    void DetailedAdjustment(ClientStatus status)
     {
-        if(number == 1)
+        if(status.Equals(ClientStatus.Disconnected) || status.Equals(ClientStatus.Connected))
         {
             panelConnect.SetActive(true);
             panelSendReceive.SetActive(false);
@@ -95,7 +83,7 @@ public class UI_MainMenu : MonoBehaviour
             authenticationPanel.SetActive(false);
             registrationPanel.SetActive(false);
         }
-        else if(number == 2)
+        else if(status.Equals(ClientStatus.Authenticated))
         {
             panelConnect.SetActive(false);
             panelSendReceive.SetActive(true);
@@ -127,40 +115,30 @@ public class UI_MainMenu : MonoBehaviour
         auth_errorResult.color = colorNeutral;
         reg_errorResult.color =  colorNeutral;
     }
-    public void OnClick_ChoiceAuthenticate()
+
+    public void OnClick_ChoiceAuthenticate() { Manage_IntroAuthRegister_Panels(false, true, false); }
+    public void OnClick_ChoiceRegister() { Manage_IntroAuthRegister_Panels(false, false, true); }
+    public void OnClick_BackToChoice() { Manage_IntroAuthRegister_Panels(true, false, false); }
+    void Manage_IntroAuthRegister_Panels(bool intro, bool auth, bool register)
     {
-        introPanel.SetActive(false);
-        authenticationPanel.SetActive(true);
-        registrationPanel.SetActive(false);
-    }
-    public void OnClick_ChoiceRegister()
-    {
-        introPanel.SetActive(false);
-        authenticationPanel.SetActive(false);
-        registrationPanel.SetActive(true);
-    }
-    public void OnClick_BackToChoice()
-    {
-        introPanel.SetActive(true);
-        authenticationPanel.SetActive(false);
-        registrationPanel.SetActive(false);
+        introPanel.SetActive(intro);
+        authenticationPanel.SetActive(auth);
+        registrationPanel.SetActive(register);
     }
 
     #region AUTHENTICATE VARIABLES
     string loginAuth;
     string passwordAuth;
-    public void OnEdit_AuthLogin(string text)
-    {
-        loginAuth = text;
-    }
-    public void OnEdit_AuthPassword(string text)
-    {
-        passwordAuth = text;
-    }
+    public void OnEdit_AuthLogin(string text) { loginAuth = text; }
+    public void OnEdit_AuthPassword(string text) { passwordAuth = text; }
 
     public void OnClick_TryToAuthenticate()
     {
-        // TODO CHECK CONNECTION
+        if (!UI_GlobalManager.instance.recordedStatus.Equals(ClientStatus.Connected))
+        {
+            auth_errorResult.text = "Connection to the internet required!";
+            return;
+        }
         auth_errorResult.color = colorNeutral;
         auth_errorResult.text = "";
 
@@ -171,29 +149,23 @@ public class UI_MainMenu : MonoBehaviour
             ConnectionManager.instance.LogIn(loginAuth, passwordAuth);
         }
     }
-
     #endregion
 
-    #region REGISTER VARIABLES
+    #region _____REGISTER VARIABLES__________
     string loginReg;
     string passwordReg;
     string nicknameReg;
-    public void OnEdit_RegLogin(string text)
-    {
-        loginReg = text;
-    }
-    public void OnEdit_RegPassword(string text)
-    {
-        passwordReg = text;
-    }
-    public void OnEdit_RegNickname(string text)
-    {
-        nicknameReg = text;
-    }
+    public void OnEdit_RegLogin(string text) { loginReg = text; }
+    public void OnEdit_RegPassword(string text) { passwordReg = text; }
+    public void OnEdit_RegNickname(string text) { nicknameReg = text; }
 
-    // TODO BLOCK SPECIAL SYMBOLS | , @ _ FOR USER
     public void OnClick_TryToRegister()
     {
+        if (!UI_GlobalManager.instance.recordedStatus.Equals(ClientStatus.Connected))
+        {
+            reg_errorResult.text = "Connection to the internet required!";
+            return;
+        }
         reg_errorResult.color = colorNeutral;
         reg_errorResult.text = "";
 
@@ -205,38 +177,19 @@ public class UI_MainMenu : MonoBehaviour
             ConnectionManager.instance.Register(loginReg, passwordReg, nicknameReg);
         }
     }
+    #endregion ___________________________
 
-    #endregion
-
-    #region newtwork results for authentication and registration
+    #region _____newtwork results for authentication and registration_____
 
     public void ShowAuthOrRegResult(string result, bool useForAuthentication = true)
     {
-        if (useForAuthentication)
-        {
-            auth_errorResult.text = result;
-            auth_errorResult.color = colorError;
-        }
-        else
-        {
-            reg_errorResult.text = result;
-            reg_errorResult.color = colorError;
-        }
+        if (useForAuthentication) { auth_errorResult.text = result; auth_errorResult.color = colorError; }
+        else { reg_errorResult.text = result; reg_errorResult.color = colorError; }
     }
+    #endregion ___________________________________________________________
 
-    #endregion;
-
-
-    #region ALREADY CONNECTED
-
-    public void OnClick_Disconnect()
-    {
-        ConnectionManager.instance.Disconnect();
-    }
-    public void OnClick_ConnectToPlayroom()
-    {
-        ConnectionManager.instance.ConnectToPlayroom();
-    }
+    #region _____ALREADY CONNECTED_____________
+    public void OnClick_LogOut() { ConnectionManager.instance.Disconnect(); }
     public void OnClick_SendMessage()
     {
         if (message != "")
@@ -258,14 +211,8 @@ public class UI_MainMenu : MonoBehaviour
         }
         enterTextInputField.SetTextWithoutNotify("");
     }
-
     string message;
-    public void OnEditText(string message)
-    {
-        this.message = message;
-    }
-
-    // _____
+    public void OnEditText(string message) { this.message = message; }
 
     public void OnClick_OpenPlayroomsList()
     {
@@ -273,21 +220,12 @@ public class UI_MainMenu : MonoBehaviour
         panel_connection_playrooms.SetActive(true);
         ConnectionManager.instance.RequestListOfPlayrooms();
     }
-    public void OnClick_ClosePlayroomsList()
-    {
-        panel_connection_playrooms.SetActive(false);
-    }
-    public void OnClick_RefreshPlayroomsList()
-    {
-        ConnectionManager.instance.RequestListOfPlayrooms();
-    }
+    public void OnClick_ClosePlayroomsList() { panel_connection_playrooms.SetActive(false); }
+    public void OnClick_RefreshPlayroomsList() { ConnectionManager.instance.RequestListOfPlayrooms(); }
 
     public void OnClick_CreatePlayroom()
     {
         GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab, rootForServerMessages.transform);
-        //newObj.transform.SetParent(rootForServerMessages.transform);
     }
-
-
-    #endregion
+    #endregion ________________________________
 }

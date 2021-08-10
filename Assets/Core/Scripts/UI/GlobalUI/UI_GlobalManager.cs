@@ -44,14 +44,13 @@ public class UI_GlobalManager : MonoBehaviour
     public void ManageSceneOnLoad()
     {
         Debug.Log("Manage Scene On Load()");
-        if(SceneManager.GetActiveScene().buildIndex == 0)
+        if(SceneManager.GetActiveScene().buildIndex == 0) // Intro Panel
         {
-            //UI_mainMenu.MainMenu_Connected(recordedStatus);
+            // nothing here for now
         }
-        else if (SceneManager.GetActiveScene().buildIndex == 1)
+        else if (SceneManager.GetActiveScene().buildIndex == 1) // Main Menu Panel
         {
-            UI_mainMenu.MainMenu_Connected(recordedStatus);
-            //OnlineGameManager.instance.OnPlayRoomEntered();
+            UI_mainMenu.MainMenu_Connected(recordedStatus, true);
         }
     }
     // is called manually
@@ -119,23 +118,18 @@ public class UI_GlobalManager : MonoBehaviour
         Debug.Log($"Manage Scene(); Old status [{recordedStatus}], New status [{newStatus}]");
         recordedStatus = newStatus;
     }
-
-    public void SetAuthInResult()
+    public void SetAuthInResult(RequestResult result)
     {
         if(recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
         {
-            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(LatestReceivedResult), true);
+            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), true);
         }
     }
-
     public void SetRegistrationResult(RequestResult result)
     {
         if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
         {
-            if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
-            {
-                UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
-            }
+            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
         }
     }
 
