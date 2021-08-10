@@ -64,21 +64,16 @@ public class ConnectionManager : MonoBehaviour
     {
         if (appIsRunning)
         {
-            //Thread thread = new Thread(new ThreadStart(Connection.Connect));
-            //thread.Start();
-
             Task connectionTask = Task.Factory.StartNew(Connection.Connect);
             await connectionTask;
 
             Debug.Log("Connection task was destroyed: "+taskToDestroy);
             taskToDestroy++;
-            
         }
     }
 
     public void Disconnect(bool notifDisconnect = true)
     {
-        UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
         Connection.Disconnect(notifDisconnect);
     }
     void OnFailededToConnectToServer()
@@ -131,7 +126,7 @@ public class ConnectionManager : MonoBehaviour
                 {
                     // TODO add reason
                     Debug.Log("For some reason server disconnected you");
-                    Disconnect();
+                    Disconnect(false);
                 }
 
 
@@ -242,14 +237,6 @@ public class ConnectionManager : MonoBehaviour
         SendMessageToServer($"{PLAYROOMS_DATA_REQUEST}");
     }
 
-    public void ConnectToPlayroom()
-    {
-        // send message to server for connection, and start waiting for successful reply
-        // TODO SET NICKNAME !!!
-        // TODO NOW ONLY PLAYROOM NUMBER '1'
-
-        SendMessageToServer($"{ENTER_PLAY_ROOM}|1|no_nickname", MessageProtocol.TCP);
-    }
     public void LeavePlayroom()
     {
         SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|{activePlayroom.id}|no_nickname", MessageProtocol.TCP);
@@ -267,6 +254,5 @@ public class ConnectionManager : MonoBehaviour
     void OnApplicationQuit()
     {
         appIsRunning = false;
-        Disconnect(false);
     }
 }

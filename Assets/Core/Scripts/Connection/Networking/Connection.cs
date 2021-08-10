@@ -33,7 +33,7 @@ namespace BorisUnityDev.Networking
         static int portTcp;
         static int portUdp;
 
-        static double ms_connectedCheck = 3000;
+        static double ms_connectedCheck = 4000;
         static DateTime lastConnectedConfirmed;
 
         public const int connectionTimeoutMs = 5000;

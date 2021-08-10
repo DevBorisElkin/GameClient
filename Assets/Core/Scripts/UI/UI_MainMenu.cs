@@ -68,9 +68,13 @@ public class UI_MainMenu : MonoBehaviour
             connectionStatus.text = str_connected;
             connectionStatus.color = colorOkay;
         }
-
         if (swichBetweenConnectionTypes)
             DetailedAdjustment(newClientStatus);
+
+        auth_errorResult.text = "";
+        reg_errorResult.text = "";
+        auth_errorResult.color = colorNeutral;
+        reg_errorResult.color = colorNeutral;
     }
     void DetailedAdjustment(ClientStatus status)
     {
@@ -109,11 +113,6 @@ public class UI_MainMenu : MonoBehaviour
         reg_EnterLogin.SetTextWithoutNotify("");
         reg_EnterPassword.SetTextWithoutNotify("");
         reg_EnterNickname.SetTextWithoutNotify("");
-
-        auth_errorResult.text = "";
-        reg_errorResult.text = "";
-        auth_errorResult.color = colorNeutral;
-        reg_errorResult.color =  colorNeutral;
     }
 
     public void OnClick_ChoiceAuthenticate() { Manage_IntroAuthRegister_Panels(false, true, false); }
@@ -189,7 +188,7 @@ public class UI_MainMenu : MonoBehaviour
     #endregion ___________________________________________________________
 
     #region _____ALREADY CONNECTED_____________
-    public void OnClick_LogOut() { ConnectionManager.instance.Disconnect(); }
+    public void OnClick_LogOut() { ConnectionManager.instance.Disconnect(false); }
     public void OnClick_SendMessage()
     {
         if (message != "")
