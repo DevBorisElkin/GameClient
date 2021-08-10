@@ -91,7 +91,7 @@ namespace BorisUnityDev.Networking
             }
             finally
             {
-                Disconnect(true);
+                Disconnect(false);
             }
         }
 

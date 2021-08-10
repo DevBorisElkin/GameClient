@@ -150,9 +150,9 @@ namespace BorisUnityDev.Networking
             }
         }
         // [DISCONNECT FROM THE SERVER]
-        public static void Disconnect(bool notifyDisconnect = true)
+        public static void Disconnect(bool notifyDisconnect = true, bool forceUDPclose = false)
         {
-            UDP.Disconnect(true);
+            UDP.Disconnect(forceUDPclose);
             ConnectionUtil.Disconnect(socket_connect);
             ConnectionUtil.Disconnect(socket_client);
             connected = false;

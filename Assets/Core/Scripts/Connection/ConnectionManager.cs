@@ -274,7 +274,7 @@ public class ConnectionManager : MonoBehaviour
         if (Connection.connected)
         {
             Debug.Log("Force disconnect");
-            Connection.Disconnect();
+            Connection.Disconnect(false);
         }
         appIsRunning = false;
     }
