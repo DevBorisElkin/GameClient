@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
-using static Enums;
+using static EnumsAndData;
 
 public class UI_GlobalManager : MonoBehaviour
 {

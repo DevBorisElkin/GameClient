@@ -2,8 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Enums
+public static class EnumsAndData
 {
+    public static string CODE_SAVED_LOGIN = "$code_saved_login";
+    public static string CODE_SAVED_PASSWORD = "$code_saved_password";
+
+
     public enum ClientAccessLevel
     {
         LowestLevel = 0,

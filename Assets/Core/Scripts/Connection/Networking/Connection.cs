@@ -36,7 +36,7 @@ namespace BorisUnityDev.Networking
         static double ms_connectedCheck = 4000;
         static DateTime lastConnectedConfirmed;
 
-        public const int connectionTimeoutMs = 5000;
+        public const int connectionTimeoutMs = 10000;
         #endregion
 
         public static void SetConnectionValues(string _ip, int _portTcp, int _portUdp)
@@ -66,7 +66,6 @@ namespace BorisUnityDev.Networking
 
                 if (success)
                 {
-                    //Debug.Log("Success connect");
                     socket_client = (Socket)asyncResult.AsyncState;
                     socket_client.EndConnect(asyncResult);
                     lastConnectedConfirmed = DateTime.Now;
@@ -82,8 +81,6 @@ namespace BorisUnityDev.Networking
                 }
                 else
                 {
-                    //Debug.Log("Fail connect");
-                    //socket_connect.EndConnect(asyncResult);
                     Disconnect(false);
                     OnFailedToConnect();
                 }

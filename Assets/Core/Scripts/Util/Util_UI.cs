@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using static Enums;
+using static EnumsAndData;
 
 public class Util_UI : MonoBehaviour
 {

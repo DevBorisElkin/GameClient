@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Enums;
+using static EnumsAndData;
 using static NetworkingMessageAttributes;
 using static UI_GlobalManager;
 
@@ -83,13 +83,13 @@ public class ConnectionManager : MonoBehaviour
     }
     void OnConnected(EndPoint endPoint)
     {
+        clientAccessLevel = ClientAccessLevel.LowestLevel;
         UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
         Debug.Log("On Connected " + endPoint);
     }
     void OnDisconnected()
     {
         Debug.Log("On Disconnected " + ip);
-        clientAccessLevel = ClientAccessLevel.LowestLevel;
         UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
         Connect();
     }
@@ -141,6 +141,15 @@ public class ConnectionManager : MonoBehaviour
 
                             string[] userData = substrings[2].Split(',');
                             currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+
+                            Action act = StoreUserData;
+                            UnityThread.executeInUpdate(act);
+                            void StoreUserData()
+                            {
+                                PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
+                                PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
+                            }
+
                             Debug.Log($"Current user data: {currentUserData}");
                             UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
                             clientAccessLevel = ClientAccessLevel.Authenticated;
@@ -164,6 +173,15 @@ public class ConnectionManager : MonoBehaviour
 
                             string[] userData = substrings[2].Split(',');
                             currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3]);
+
+                            Action act = StoreUserData;
+                            UnityThread.executeInUpdate(act);
+                            void StoreUserData()
+                            {
+                                PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
+                                PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
+                            }
+
                             Debug.Log($"Current user data: {currentUserData}");
                             UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
                             clientAccessLevel = ClientAccessLevel.Authenticated;

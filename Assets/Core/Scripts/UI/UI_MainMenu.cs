@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static ConnectionManager;
-using static Enums;
+using static EnumsAndData;
 using static UI_GlobalManager;
 using static Util_UI;
 
@@ -86,6 +86,23 @@ public class UI_MainMenu : MonoBehaviour
             introPanel.SetActive(true);
             authenticationPanel.SetActive(false);
             registrationPanel.SetActive(false);
+
+            string storedLogin = PlayerPrefs.GetString(CODE_SAVED_LOGIN, "");
+            string storedpassword = PlayerPrefs.GetString(CODE_SAVED_PASSWORD, "");
+            if(!string.IsNullOrEmpty(storedLogin) && !string.IsNullOrEmpty(storedpassword))
+            {
+                loginAuth = storedLogin;
+                auth_EnterLogin.SetTextWithoutNotify(storedLogin);
+                passwordAuth = storedpassword;
+                auth_EnterPassword.SetTextWithoutNotify(storedpassword);
+            }
+            else
+            {
+                loginAuth = "";
+                passwordAuth = "";
+                auth_EnterLogin.SetTextWithoutNotify("");
+                auth_EnterPassword.SetTextWithoutNotify("");
+            }
         }
         else if(status.Equals(ClientStatus.Authenticated))
         {
@@ -100,15 +117,9 @@ public class UI_MainMenu : MonoBehaviour
             panel_connection_playrooms.SetActive(false);
         }
         
-        loginAuth = "";
-        passwordAuth = "";
-
         loginReg = "";
         passwordReg = "";
         nicknameReg = "";
-
-        auth_EnterLogin.SetTextWithoutNotify("");
-        auth_EnterPassword.SetTextWithoutNotify("");
 
         reg_EnterLogin.SetTextWithoutNotify("");
         reg_EnterPassword.SetTextWithoutNotify("");

@@ -80,7 +80,7 @@ namespace BorisUnityDev.Networking
                     }
                     catch(Exception e)
                     {
-                        //Debug.Log(e.ToString());
+                        Debug.Log(e.ToString());
                     }
                 }
             }
