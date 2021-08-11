@@ -12,9 +12,14 @@ public class PlayerMovementController : MonoBehaviour
 	public float speedMovements = 5f;
 	public float speedRotation = 5f;
 
+	[Space] public float minRotationAngleToShoot = 5f;
+
 	[Space(5f)]
 	public bool online;
 	public bool debugRot;
+
+	[Space(5f)]
+	public Shoot ShoorMaster;
 
 	void Awake()
 	{
@@ -100,8 +105,21 @@ public class PlayerMovementController : MonoBehaviour
 
 
 			float yAxis = Mathf.Atan2(value.x, value.y) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(transform.rotation.x, yAxis, transform.rotation.z), speedRotation * Time.deltaTime);
+			Quaternion targetRot = Quaternion.Euler(transform.rotation.x, yAxis, transform.rotation.z);
+			transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speedRotation * Time.deltaTime);
 			lastRotation = transform.rotation;
+
+            if (aiming)
+            {
+				if(value.x < -0.5f || value.x > 0.5f || value.y < -0.5f || value.y > 0.5f)
+                {
+					if(IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
+                    {
+						ShoorMaster.TryToShoot();
+					}
+                }
+            }
+
 
 			// instant rotation
 			//transform.eulerAngles = new Vector3(transform.eulerAngles.x, yAxis, transform.eulerAngles.z);
@@ -127,7 +145,6 @@ public class PlayerMovementController : MonoBehaviour
 	}
 
 	#region Addons
-
 	bool IsAgnleToTheTargetIsNormal(Vector3 targetPos)
 	{
 		Vector3 targetDir = targetPos - transform.position;
@@ -138,10 +155,15 @@ public class PlayerMovementController : MonoBehaviour
 
 		float adjustedAngle = Mathf.Abs(angle);
 
-		if (adjustedAngle > 8) return false;
+		if (adjustedAngle > minRotationAngleToShoot) return false;
 		else return true;
 	}
-
+	bool IsAgnleToTheTargetIsNormal(Quaternion currentRot, Quaternion targetRot)
+	{
+		float angle = Quaternion.Angle(currentRot, targetRot);
+		if (angle > minRotationAngleToShoot) return false;
+		else return true;
+	}
 
 	#endregion
 }
