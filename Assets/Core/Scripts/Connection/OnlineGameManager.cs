@@ -21,7 +21,6 @@ public class OnlineGameManager : MonoBehaviour
     {
         InitSingleton();
     }
-
     void InitSingleton()
     {
         if (instance == null)
@@ -32,6 +31,11 @@ public class OnlineGameManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    private void Update()
+    {
+        UpdatePlayersPositions();
+    }
+    #region callbacks
     public void SpawnPlayer()
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
@@ -40,18 +44,17 @@ public class OnlineGameManager : MonoBehaviour
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
         }
     }
-
     public void OnPlayRoomEntered()
     {
         opponents = new List<PlayerData>();
         inPlayRoom = true;
     }
-
     public void OnPlayRoomExited()
     {
         inPlayRoom = false;
     }
-
+    #endregion
+    #region OnPlayer_unput
     public void OnPlayerMoved(Vector3 position, Vector3 rotation)
     {
         string posX = position.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
@@ -65,7 +68,20 @@ public class OnlineGameManager : MonoBehaviour
         ConnectionManager.instance.SendMessageToServer($"{CLIENT_SHARES_PLAYROOM_POSITION}|" +
             $"{posX}/{posY}/{posZ}|{rotX}/{rotY}/{rotZ}", MessageProtocol.UDP);
     }
+    #endregion
+    #region IncomingMessages
 
+    public void OnMessageFromServerRelatedToPlayroom(string message)
+    {
+        if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+        {
+            OnPositionMessageReceived(message);
+        }
+        else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
+        {
+            OnPlayerDisconnectedFromPlayroom(message);
+        }
+    }
 
     public void OnPlayerDisconnectedFromPlayroom(string message)
     {
@@ -159,7 +175,8 @@ public class OnlineGameManager : MonoBehaviour
         }
 
     }
-
+    #endregion
+    #region System
     // basically checks if player that joined room has not been yet added as an GameObject
     void CheckUnspawnedPlayers()
     {
@@ -227,11 +244,9 @@ public class OnlineGameManager : MonoBehaviour
         }
         return null;
     }
-
-    private void Update()
+    void UpdatePlayersPositions()
     {
         if (!inPlayRoom) return;
-
         if (opponents.Count > 0)
         {
             try
@@ -246,7 +261,10 @@ public class OnlineGameManager : MonoBehaviour
                 }
             }
             catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
-
         }
     }
+    #endregion
+    
+
+    
 }

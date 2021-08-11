@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-
-public class SimpleTouchController : MonoBehaviour {
+public class JoystickTouchController : MonoBehaviour
+{
 
 	// PUBLIC
 	public delegate void TouchDelegate(Vector2 value);
@@ -18,20 +18,20 @@ public class SimpleTouchController : MonoBehaviour {
 	private bool touchPresent = false;
 	private Vector2 movementVector;
 
-	public enum OldJoystickType { Left, Right }
-	public OldJoystickType joystickType;
+	public enum JoystickType { Left, Right }
+	public JoystickType joystickType;
 
 
 	public Vector2 GetTouchPosition
 	{
-		get { return movementVector;}
+		get { return movementVector; }
 	}
 
 
 	public void BeginDrag()
 	{
 		touchPresent = true;
-		if(TouchStateEvent != null)
+		if (TouchStateEvent != null)
 			TouchStateEvent(touchPresent);
 	}
 
@@ -40,20 +40,20 @@ public class SimpleTouchController : MonoBehaviour {
 		touchPresent = false;
 		joystickArea.anchoredPosition = Vector2.zero;
 
-		if(TouchStateEvent != null)
+		if (TouchStateEvent != null)
 			TouchStateEvent(touchPresent);
 
 	}
 
 	public void OnValueChanged(Vector2 value)
 	{
-		if(touchPresent)
+		if (touchPresent)
 		{
 			// convert the value between 1 0 to -1 +1
 			movementVector.x = ((1 - value.x) - 0.5f) * 2f;
 			movementVector.y = ((1 - value.y) - 0.5f) * 2f;
 
-			if(TouchEvent != null)
+			if (TouchEvent != null)
 			{
 				TouchEvent(movementVector);
 			}

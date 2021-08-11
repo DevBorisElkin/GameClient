@@ -222,15 +222,10 @@ public class ConnectionManager : MonoBehaviour
 
                         UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
                     }
-                    else if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+                    else if (DoesMessageRelatedToOnlineGameManager(message))
                     {
                         if (OnlineGameManager.instance != null)
-                            OnlineGameManager.instance.OnPositionMessageReceived(message);
-                    }
-                    else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
-                    {
-                        if (OnlineGameManager.instance != null)
-                            OnlineGameManager.instance.OnPlayerDisconnectedFromPlayroom(message);
+                            OnlineGameManager.instance.OnMessageFromServerRelatedToPlayroom(message);
                     }
                 }
             }

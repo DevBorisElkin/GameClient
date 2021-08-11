@@ -1,13 +1,14 @@
 using UnityEngine;
 using System.Collections;
-using static SimpleTouchController;
+using static JoystickTouchController;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 
 public class PlayerMovementController : MonoBehaviour
 {
-	public SimpleTouchController leftController;
-	public SimpleTouchController rightController;
+	public JoystickTouchController leftController;
+	public JoystickTouchController rightController;
 	public float speedMovements = 5f;
 	public float speedRotation = 5f;
 
@@ -25,12 +26,12 @@ public class PlayerMovementController : MonoBehaviour
     {
 		if (leftController == null || rightController == null)
 		{
-			SimpleTouchController[] controllers = FindObjectsOfType<SimpleTouchController>();
-			foreach (SimpleTouchController a in controllers)
+			JoystickTouchController[] controllers = FindObjectsOfType<JoystickTouchController>();
+			foreach (JoystickTouchController a in controllers)
 			{
 				if (a.joystickType.Equals(JoystickType.Left))
 				{
-					if(leftController == null)
+					if (leftController == null)
                     {
 						leftController = a;
 						continue;
@@ -38,12 +39,11 @@ public class PlayerMovementController : MonoBehaviour
 				}
 				if (a.joystickType.Equals(JoystickType.Right))
 				{
-					if(rightController == null)
+					if (rightController == null)
 						rightController = a;
 				}
 			}
 		}
-
 		leftController.TouchStateEvent += LeftController_TouchDetection;
 		rightController.TouchStateEvent += RightController_TouchDetection;
 	}
