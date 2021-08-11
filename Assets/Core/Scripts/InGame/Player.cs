@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     public NicknameCanvas nicknameCanvas;
     PlayerData playerData;
 
+    public Transform projectileSpawnPoint;
+
     public void SetUpPlayer(PlayerData _playerData)
     {
         playerData = _playerData;

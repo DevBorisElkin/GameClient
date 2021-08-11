@@ -9,6 +9,7 @@ public class UserData
     public string login;
     public string password;
     public string nickname;
+    public string ip;
 
     public RequestResult requestResult;
 
@@ -17,22 +18,23 @@ public class UserData
     {
         this.requestResult = requestResult;
     }
-    public UserData(int id, string login, string password, string nickname, RequestResult requestResult = RequestResult.Success)
+    public UserData(int id, string login, string password, string nickname, string ip, RequestResult requestResult = RequestResult.Success)
     {
         this.id = id;
         this.login = login;
         this.password = password;
         this.nickname = nickname;
+        this.ip = ip;
         this.requestResult = requestResult;
     }
 
     public override string ToString()
     {
-        return $"id:[{id}], login:[{login}], password:[{password}], nickname:[{nickname}]";
+        return $"id:[{id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}]";
     }
     public string ToNetworkString()
     {
-        return $"{id},{login},{password},{nickname}";
+        return $"{id},{login},{password},{nickname},{ip}";
     }
 }
 

@@ -24,8 +24,11 @@ public class PrefabsHolder : MonoBehaviour
     public GameObject player_prefab;
     public GameObject opponent_prefab;
 
+    public GameObject gravityProjectile_prefab; 
+
     public GameObject ui_preJoinLobby_prefab;
     public GameObject ui_lobbyItem_prefab;
     public GameObject ui_createLobby_prefab;
     public GameObject ui_messageFromServer_prefab;
+
 }

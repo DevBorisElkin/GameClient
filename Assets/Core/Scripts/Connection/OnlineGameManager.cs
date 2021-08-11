@@ -2,6 +2,7 @@ using BorisUnityDev.Networking;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,8 @@ public class OnlineGameManager : MonoBehaviour
     public float pos_interpolationSpeed = 5f;
     public float rot_interpolationSpeed = 7f;
     bool inPlayRoom;
+
+    ShootingManager shootingManager;
 
     GameObject player;
     private void Awake()
@@ -42,6 +45,7 @@ public class OnlineGameManager : MonoBehaviour
         {
             player = Instantiate(PrefabsHolder.instance.player_prefab, spawnPosition, Quaternion.identity);
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
+            shootingManager = FindObjectOfType<ShootingManager>();
         }
     }
     public void OnPlayRoomEntered()
@@ -54,7 +58,7 @@ public class OnlineGameManager : MonoBehaviour
         inPlayRoom = false;
     }
     #endregion
-    #region OnPlayer_unput
+    #region OnPlayer_input
     public void OnPlayerMoved(Vector3 position, Vector3 rotation)
     {
         string posX = position.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
@@ -80,6 +84,10 @@ public class OnlineGameManager : MonoBehaviour
         else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
         {
             OnPlayerDisconnectedFromPlayroom(message);
+        }
+        else if (message.StartsWith(SHOT_RESULT))
+        {
+            OnShotMessageReceived(message);
         }
     }
 
@@ -173,7 +181,56 @@ public class OnlineGameManager : MonoBehaviour
             Debug.LogError("_____EXCEPTION_____");
 
         }
+    }
+    // code|posOfShootingPoint|rotationAtRequestTime|ipOfShootingPlayer
+    // "shot_result|123/45/87|543/34/1|198.0.0.126";
+    public void OnShotMessageReceived(string message)
+    {
+        if (!inPlayRoom) return;
+        try
+        {
+            string[] substrings = message.Split('|');
+            string[] positions = substrings[1].Split('/');
+            Vector3 position = new Vector3(
+                float.Parse(positions[0], CultureInfo.InvariantCulture.NumberFormat),
+                float.Parse(positions[1], CultureInfo.InvariantCulture.NumberFormat),
+                float.Parse(positions[2], CultureInfo.InvariantCulture.NumberFormat));
 
+            string[] rotations = substrings[2].Split('/');
+            Quaternion rotation = new Quaternion(
+                float.Parse(rotations[0], CultureInfo.InvariantCulture.NumberFormat),
+                float.Parse(rotations[1], CultureInfo.InvariantCulture.NumberFormat),
+                float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat),
+                0);
+            string ip = substrings[3];
+
+            PlayerData playerToIgnore = FindPlayerByIp(ip);
+            GameObject objToIgnore = playerToIgnore.controlledGameObject;
+
+            shootingManager.MakeActualShot(position, rotation, objToIgnore);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("_____EXCEPTION_____");
+            Debug.LogError($"EXCEPTION WORKED BECAUSE OF MESSAGE\n{message}");
+            Debug.LogError(e.Message + " " + e.StackTrace);
+            Debug.LogError("_____EXCEPTION_____");
+
+        }
+    }
+
+    public void TryToShootOnline(Vector3 projectileSpawnPoint, Quaternion rotation)
+    {
+        string posX = projectileSpawnPoint.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string posY = projectileSpawnPoint.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string posZ = projectileSpawnPoint.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+        string rotX = rotation.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotY = rotation.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotZ = rotation.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+        ConnectionManager.instance.SendMessageToServer($"{SHOT_REQUEST}|{posX}/{posY}/{posZ}|" +
+            $"{rotX}/{rotY}/{rotZ}", MessageProtocol.TCP);
     }
     #endregion
     #region System

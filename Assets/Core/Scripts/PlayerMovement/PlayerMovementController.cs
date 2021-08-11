@@ -18,8 +18,9 @@ public class PlayerMovementController : MonoBehaviour
 	public bool online;
 	public bool debugRot;
 
-	[Space(5f)]
-	public Shoot ShoorMaster;
+	[HideInInspector]
+	public ShootingManager ShootMaster;
+	public Player assignedPlayer;
 
 	void Awake()
 	{
@@ -51,6 +52,8 @@ public class PlayerMovementController : MonoBehaviour
 		}
 		leftController.TouchStateEvent += LeftController_TouchDetection;
 		rightController.TouchStateEvent += RightController_TouchDetection;
+
+		ShootMaster = FindObjectOfType<ShootingManager>();
 	}
 
 	IEnumerator SendPlayerMovement()
@@ -109,20 +112,20 @@ public class PlayerMovementController : MonoBehaviour
 			transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speedRotation * Time.deltaTime);
 			lastRotation = transform.rotation;
 
-            if (aiming)
-            {
-				if(value.x < -0.5f || value.x > 0.5f || value.y < -0.5f || value.y > 0.5f)
-                {
-					if(IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
-                    {
-						ShoorMaster.TryToShoot();
-					}
-                }
-            }
+			TryToShoot(value, targetRot);
+		}
+	}
 
-
-			// instant rotation
-			//transform.eulerAngles = new Vector3(transform.eulerAngles.x, yAxis, transform.eulerAngles.z);
+	public void TryToShoot(Vector2 joystickInput, Quaternion targetRot)
+    {
+		if (!aiming) return;
+		if (joystickInput.x < -0.5f || joystickInput.x > 0.5f || joystickInput.y < -0.5f || joystickInput.y > 0.5f)
+		{
+			if (IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
+			{
+				if(online) OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.rotation);
+				else ShootMaster.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject);
+			}
 		}
 	}
 
