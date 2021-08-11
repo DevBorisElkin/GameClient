@@ -204,10 +204,26 @@ public class OnlineGameManager : MonoBehaviour
                 0);
             string ip = substrings[3];
 
-            PlayerData playerToIgnore = FindPlayerByIp(ip);
-            GameObject objToIgnore = playerToIgnore.controlledGameObject;
-
-            shootingManager.MakeActualShot(position, rotation, objToIgnore);
+            GameObject objToIgnore;
+            if (ip.Equals(ConnectionManager.instance.currentUserData.ip))
+            {
+                objToIgnore = player;
+            }
+            else
+            {
+                PlayerData plData = FindPlayerByIp(ip);
+                if (plData != null && plData.controlledGameObject != null)
+                {
+                    objToIgnore = plData.controlledGameObject;
+                }
+                else return;
+            }
+            Action act = Action;
+            UnityThread.executeInUpdate(act);
+            void Action()
+            {
+                shootingManager.MakeActualShot(position, rotation, objToIgnore);
+            }
         }
         catch (Exception e)
         {
