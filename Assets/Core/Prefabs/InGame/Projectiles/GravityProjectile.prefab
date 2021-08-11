@@ -14155,7 +14155,7 @@ GameObject:
   - component: {fileID: 5528103350925356099}
   - component: {fileID: 4999762849276384572}
   - component: {fileID: 5078351328437635217}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GravityProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

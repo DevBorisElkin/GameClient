@@ -123,7 +123,7 @@ public class PlayerMovementController : MonoBehaviour
 		{
 			if (IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
 			{
-				if(online) OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.rotation);
+				if(online) OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
 				else ShootMaster.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject);
 			}
 		}

@@ -197,11 +197,11 @@ public class OnlineGameManager : MonoBehaviour
                 float.Parse(positions[2], CultureInfo.InvariantCulture.NumberFormat));
 
             string[] rotations = substrings[2].Split('/');
-            Quaternion rotation = new Quaternion(
+            Quaternion rotation = Quaternion.Euler(
                 float.Parse(rotations[0], CultureInfo.InvariantCulture.NumberFormat),
                 float.Parse(rotations[1], CultureInfo.InvariantCulture.NumberFormat),
-                float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat),
-                0);
+                float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat)
+                );
             string ip = substrings[3];
 
             GameObject objToIgnore;
@@ -235,15 +235,15 @@ public class OnlineGameManager : MonoBehaviour
         }
     }
 
-    public void TryToShootOnline(Vector3 projectileSpawnPoint, Quaternion rotation)
+    public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)
     {
         string posX = projectileSpawnPoint.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         string posY = projectileSpawnPoint.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         string posZ = projectileSpawnPoint.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 
-        string rotX = rotation.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotY = rotation.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotZ = rotation.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotX = angleForProjectile.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotY = angleForProjectile.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotZ = angleForProjectile.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 
         ConnectionManager.instance.SendMessageToServer($"{SHOT_REQUEST}|{posX}/{posY}/{posZ}|" +
             $"{rotX}/{rotY}/{rotZ}", MessageProtocol.TCP);
