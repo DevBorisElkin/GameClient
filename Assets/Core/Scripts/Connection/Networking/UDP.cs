@@ -81,7 +81,7 @@ namespace BorisUnityDev.Networking
                     }
                     catch(Exception e)
                     {
-                        Debug.Log(e.ToString());
+                        Debug.Log("ByDesign:" + e);
                     }
                 }
             }
@@ -100,7 +100,7 @@ namespace BorisUnityDev.Networking
             if (!connected && !forceClose) return;
             connected = false;
             Debug.Log("[SYSTEM_MESSAGE]: closed udp");
-            ConnectionUtil.Disconnect(udpSocket);
+            ConnectionUtil.DisconnectUDP(udpSocket);
         }
     }
 }

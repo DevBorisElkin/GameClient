@@ -37,5 +37,15 @@ namespace BorisUnityDev.Networking
                 socket = null;
             }
         }
+        public static void DisconnectUDP(Socket socket)
+        {
+            if (socket != null)
+            {
+                if (socket.Connected)
+                    socket.Close();
+                socket.Dispose();
+                socket = null;
+            }
+        }
     }
 }

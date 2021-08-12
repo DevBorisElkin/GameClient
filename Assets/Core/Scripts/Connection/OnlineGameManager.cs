@@ -320,7 +320,7 @@ public class OnlineGameManager : MonoBehaviour
     void UpdatePlayersPositions()
     {
         if (!inPlayRoom) return;
-        if (opponents.Count > 0)
+        if (opponents!= null && opponents.Count > 0)
         {
             try
             {

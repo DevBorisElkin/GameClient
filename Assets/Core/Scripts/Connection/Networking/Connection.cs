@@ -123,7 +123,7 @@ namespace BorisUnityDev.Networking
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e);
+                    Debug.Log("ByDesign:" + e);
                     Disconnect();
                     break;
                 }
