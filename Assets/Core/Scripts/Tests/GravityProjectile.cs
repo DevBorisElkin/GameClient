@@ -20,11 +20,9 @@ public class GravityProjectile : MonoBehaviour
         playerToIgnore = _playerToIgnore;
         active = true;
     }
-
-    public void Update()
+    private void FixedUpdate()
     {
         if (!active) return;
-
         rb.MovePosition(transform.position + (transform.forward * Time.deltaTime * speed));
     }
 
@@ -33,11 +31,8 @@ public class GravityProjectile : MonoBehaviour
         if(collision.collider.gameObject != playerToIgnore)
         {
             //Debug.Log($"Projectile hit: {collision.collider.name}");
+            Instantiate(PrefabsHolder.instance.gravityProjectile_explosion, collision.GetContact(0).point - transform.forward * 0.1f, Quaternion.identity);
             Destroy(gameObject);
-        }
-        else
-        {
-            //Debug.Log("Ignoring our own object for collision");
         }
     }
 }
