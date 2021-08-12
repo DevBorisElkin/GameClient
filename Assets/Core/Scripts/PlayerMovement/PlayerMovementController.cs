@@ -7,10 +7,13 @@ using System;
 
 public class PlayerMovementController : MonoBehaviour
 {
+	#region Init
 	public JoystickTouchController leftController;
 	public JoystickTouchController rightController;
 	public float speedMovements = 5f;
 	public float speedRotation = 5f;
+
+	Rigidbody rb;
 
 	[Space] public float minRotationAngleToShoot = 5f;
 
@@ -27,7 +30,6 @@ public class PlayerMovementController : MonoBehaviour
 		InitSystems();
 		InitOnline();
 	}
-
 	void InitSystems()
     {
 		if (leftController == null || rightController == null)
@@ -53,11 +55,11 @@ public class PlayerMovementController : MonoBehaviour
 		leftController.TouchStateEvent += LeftController_TouchDetection;
 		rightController.TouchStateEvent += RightController_TouchDetection;
 
+		rb = GetComponent<Rigidbody>();
 		ShootMaster = FindObjectOfType<ShootingManager>();
 		canShootLocally = true;
 		canShootOnline = true;
 	}
-
 	IEnumerator SendPlayerMovement()
     {
         while (true)
@@ -74,27 +76,23 @@ public class PlayerMovementController : MonoBehaviour
 		StopAllCoroutines();
 		StartCoroutine(SendPlayerMovement());
     }
+    #endregion
+    void LeftController_TouchDetection(bool isTouching) { moving = isTouching; }
+	void RightController_TouchDetection(bool isTouching) { aiming = isTouching; }
 
+	bool pushingByProjectile;
 	bool moving;
 	bool aiming;
-	void LeftController_TouchDetection(bool isTouching)
-    {
-		moving = isTouching;
-    }
-	void RightController_TouchDetection(bool isTouching)
-    {
-		aiming = isTouching;
-    }
-
 	void Update()
 	{
-		if(moving)
-			MakeMovement();
+		MakeMovement();
 		UpdateAim();
 		DebugRot();
+		MakePushing();
 	}
 	void MakeMovement()
     {
+		if (!moving || pushingByProjectile) return;
 		Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
 		transform.Translate(translation, Space.World);
     }
@@ -137,13 +135,37 @@ public class PlayerMovementController : MonoBehaviour
 			}
 		}
 	}
-	bool canShootLocally;
-	bool canShootOnline;
+	void MakePushing()
+    {
+		if (!pushingByProjectile) return;
+
+		//float debugRange = 1f;
+		//Debug.DrawRay(transform.position, pushingVector * debugRange, Color.red);
+
+		RaycastHit hit;
+		if(Physics.Raycast(transform.position, pushingVector, out hit, 1f))
+        {
+            if (hit.collider.gameObject.tag.Equals("Game_Wall"))
+            {
+				pushingByProjectile = false;
+				//Debug.Log("Pushing by projectile was prevented because of a Game_Wall");
+				return;
+            }
+        }
+        else
+        {
+			Vector3 force = pushingVector * forceToApplyOnGravityShot * Time.deltaTime;
+			transform.Translate(force, Space.World);
+		}
+	}
+
 	#region Ease server calculations
 	// basically we use that mechanic to not let the player send(spam) shoot requests,
 	// until the actual shot from server side has been released
 	// Using same reload time as on the server, but as signal takes
 	// time to reach the device, effective reload time is about 1.5f
+	bool canShootLocally;
+	bool canShootOnline;
 	IEnumerator ReloadLocallyCoroutine()
     {
 		canShootLocally = false;
@@ -160,20 +182,34 @@ public class PlayerMovementController : MonoBehaviour
 		yield return new WaitForSeconds(1.4f);
 		canShootOnline = true;
 	}
-	#endregion
-	void DebugRot()
+    #endregion
+
+    public void OnCollisionEnter(Collision collision)
     {
-		if (!debugRot) return;
+		GravityProjectile gp = collision.gameObject.GetComponent<GravityProjectile>();
 
-		Debug.Log(transform.eulerAngles+"|"+transform.rotation.eulerAngles);
-
-        if (Input.GetKeyDown(KeyCode.Space))
+		if (gp != null)
         {
-			transform.rotation = Quaternion.Euler(0,0,0);
+			if(gp.playerToIgnore != gameObject)
+				StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
         }
+        if (collision.gameObject.tag.Equals("Game_Wall"))
+        {
+			//Debug.Log("Player was pushed to the wall");
+			pushingByProjectile = false;
+		}
+			
     }
-
-	void OnDestroy()
+	public float forceToApplyOnGravityShot = 1f;
+	Vector3 pushingVector;
+	IEnumerator PushbackCoroutine(Vector3 projectileDir)
+    {
+		pushingByProjectile = true;
+		pushingVector = projectileDir;
+		yield return new WaitForSeconds(0.5f);
+		pushingByProjectile = false;
+    }
+    void OnDestroy()
 	{
 		leftController.TouchStateEvent  -= LeftController_TouchDetection;
 		rightController.TouchStateEvent -= RightController_TouchDetection;
@@ -199,6 +235,16 @@ public class PlayerMovementController : MonoBehaviour
 		if (angle > minRotationAngleToShoot) return false;
 		else return true;
 	}
+	void DebugRot()
+	{
+		if (!debugRot) return;
 
+		Debug.Log(transform.eulerAngles + "|" + transform.rotation.eulerAngles);
+
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			transform.rotation = Quaternion.Euler(0, 0, 0);
+		}
+	}
 	#endregion
 }

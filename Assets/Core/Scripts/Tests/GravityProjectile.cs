@@ -8,7 +8,7 @@ public class GravityProjectile : MonoBehaviour
     bool active;
     Rigidbody rb;
 
-    GameObject playerToIgnore;
+    public GameObject playerToIgnore;
 
     private void Start()
     {
@@ -32,12 +32,12 @@ public class GravityProjectile : MonoBehaviour
     {
         if(collision.collider.gameObject != playerToIgnore)
         {
-            Debug.Log($"Projectile hit: {collision.collider.name}");
+            //Debug.Log($"Projectile hit: {collision.collider.name}");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("Ignoring our own object for collision");
+            //Debug.Log("Ignoring our own object for collision");
         }
     }
 }

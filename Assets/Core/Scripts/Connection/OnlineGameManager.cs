@@ -333,7 +333,7 @@ public class OnlineGameManager : MonoBehaviour
             {
                 foreach (PlayerData a in opponents)
                 {
-                    if (a.controlledGameObject != null)
+                    if (a != null && a.controlledGameObject != null)
                     {
                         a.controlledGameObject.transform.position = Vector3.Lerp(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
                         a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
