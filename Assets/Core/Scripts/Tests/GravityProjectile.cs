@@ -30,6 +30,11 @@ public class GravityProjectile : MonoBehaviour
     {
         if(collision.collider.gameObject != playerToIgnore)
         {
+            if(collision.collider.gameObject.GetComponent<Player>()!= null)
+            {
+                GameObject spawnedObject = Instantiate(PrefabsHolder.instance.electrizedObject_prefab, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
+                spawnedObject.transform.SetParent(collision.transform);
+            }
             //Debug.Log($"Projectile hit: {collision.collider.name}");
             Instantiate(PrefabsHolder.instance.gravityProjectile_explosion, collision.GetContact(0).point - transform.forward * 0.1f, Quaternion.identity);
             Destroy(gameObject);

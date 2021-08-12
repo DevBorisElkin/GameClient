@@ -49,6 +49,8 @@ MonoBehaviour:
     type: 3}
   electricMuzzleFlash_prefab: {fileID: 7581561781419986715, guid: dcf1699332943624eb056a412716e7f6,
     type: 3}
+  electrizedObject_prefab: {fileID: 1186896858819254580, guid: 85894ac5ca7e0144987468a5a30a07e8,
+    type: 3}
   gravityProjectile_prefab: {fileID: 4999762849276384575, guid: c45bb700e40716e428fdd2c90e48b810,
     type: 3}
   gravityProjectile_explosion: {fileID: 7388660141974864580, guid: d3ec98f37a0697f43a9f22563358fa27,
