@@ -54,6 +54,8 @@ public class PlayerMovementController : MonoBehaviour
 		rightController.TouchStateEvent += RightController_TouchDetection;
 
 		ShootMaster = FindObjectOfType<ShootingManager>();
+		canShootLocally = true;
+		canShootOnline = true;
 	}
 
 	IEnumerator SendPlayerMovement()
@@ -123,12 +125,42 @@ public class PlayerMovementController : MonoBehaviour
 		{
 			if (IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
 			{
-				if(online) OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
+                if (online)
+                {
+					if(canShootLocally && canShootOnline)
+                    {
+						StartCoroutine(ReloadLocallyCoroutine());
+						OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
+                    }
+				} 
 				else ShootMaster.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject);
 			}
 		}
 	}
-
+	bool canShootLocally;
+	bool canShootOnline;
+	#region Ease server calculations
+	// basically we use that mechanic to not let the player send(spam) shoot requests,
+	// until the actual shot from server side has been released
+	// Using same reload time as on the server, but as signal takes
+	// time to reach the device, effective reload time is about 1.5f
+	IEnumerator ReloadLocallyCoroutine()
+    {
+		canShootLocally = false;
+		yield return new WaitForSeconds(0.5f);
+		canShootLocally = true;
+    }
+	public void ForbidToShootFromServer()
+	{
+		canShootOnline = false;
+		StartCoroutine(ReloadFromServerCoroutine());
+	}
+	IEnumerator ReloadFromServerCoroutine()
+	{
+		yield return new WaitForSeconds(1.4f);
+		canShootOnline = true;
+	}
+	#endregion
 	void DebugRot()
     {
 		if (!debugRot) return;

@@ -20,6 +20,7 @@ public class OnlineGameManager : MonoBehaviour
     ShootingManager shootingManager;
 
     GameObject player;
+    PlayerMovementController playerMovementConetroller;
     private void Awake()
     {
         InitSingleton();
@@ -44,6 +45,7 @@ public class OnlineGameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
         {
             player = Instantiate(PrefabsHolder.instance.player_prefab, spawnPosition, Quaternion.identity);
+            playerMovementConetroller = player.GetComponent<PlayerMovementController>();
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
             shootingManager = FindObjectOfType<ShootingManager>();
         }
@@ -205,9 +207,13 @@ public class OnlineGameManager : MonoBehaviour
             string ip = substrings[3];
 
             GameObject objToIgnore;
+            // we know that it's our player shoots
             if (ip.Equals(ConnectionManager.instance.currentUserData.ip))
             {
                 objToIgnore = player;
+
+                Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
+                UnityThread.executeInUpdate(actForbidToShoot);
             }
             else
             {
@@ -237,6 +243,7 @@ public class OnlineGameManager : MonoBehaviour
 
     public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)
     {
+        //Debug.Log("Our player is trying to shoot online");
         string posX = projectileSpawnPoint.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         string posY = projectileSpawnPoint.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         string posZ = projectileSpawnPoint.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
