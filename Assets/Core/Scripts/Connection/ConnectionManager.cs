@@ -117,7 +117,7 @@ public class ConnectionManager : MonoBehaviour
 
             foreach (string message in parcedMessage)
             {
-                if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(SHOT_RESULT))
+                if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT))
                 {
                     Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
                 }
@@ -259,7 +259,7 @@ public class ConnectionManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(message)) return;
 
-        if(mp == MessageProtocol.TCP && !message.Contains(SHOT_REQUEST))
+        if(mp == MessageProtocol.TCP && !message.Contains(SHOT_REQUEST) && !message.Contains(JUMP_REQUEST))
             Debug.Log($"[{mp}] Sending message to server:" +message+END_OF_FILE);
 
         Connection.SendMessage(message+END_OF_FILE, mp);

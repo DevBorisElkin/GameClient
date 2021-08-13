@@ -215,7 +215,7 @@ public class PlayerMovementController : MonoBehaviour
 	IEnumerator JumpCooldownFromServerCoroutine()
 	{
 		canJumpOnline = false;
-		yield return new WaitForSeconds(4f);
+		yield return new WaitForSeconds(2f);
 		canJumpOnline = true;
 	}
 	#endregion

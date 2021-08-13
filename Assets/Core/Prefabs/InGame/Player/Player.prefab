@@ -186,7 +186,7 @@ MonoBehaviour:
   ShootMaster: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
   forceModeOnJump: 2
-  forceToApplyOnJump: 11
+  forceToApplyOnJump: 10.5
   forceToApplyOnGravityShot: 14
 --- !u!114 &3082409969823103961
 MonoBehaviour:
@@ -331,12 +331,12 @@ PrefabInstance:
     - target: {fileID: 8539919558912009678, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 143.3
+      value: 207.2559
       objectReference: {fileID: 0}
     - target: {fileID: 8539919558912009678, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 30.4466
+      value: 46.8537
       objectReference: {fileID: 0}
     - target: {fileID: 8539919558912009678, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
@@ -381,7 +381,7 @@ PrefabInstance:
     - target: {fileID: 8539919558912009678, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.5
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 8539919558912009678, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
