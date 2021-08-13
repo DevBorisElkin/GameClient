@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static GameSceneManager;
 using static NetworkingMessageAttributes;
 
 public class OnlineGameManager : MonoBehaviour
@@ -40,11 +41,13 @@ public class OnlineGameManager : MonoBehaviour
         UpdatePlayersPositions();
     }
     #region callbacks
-    public void SpawnPlayer()
+    public void SpawnPlayer(List<SpawnPosition> spawnPositions)
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
         {
-            player = Instantiate(PrefabsHolder.instance.player_prefab, spawnPosition, Quaternion.identity);
+            player = Instantiate(PrefabsHolder.instance.player_prefab, 
+                     spawnPositions[UnityEngine.Random.Range(0, spawnPositions.Count)].spawnPos.transform.position, 
+                     Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
             playerMovementConetroller = player.GetComponent<PlayerMovementController>();
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
             shootingManager = FindObjectOfType<ShootingManager>();
