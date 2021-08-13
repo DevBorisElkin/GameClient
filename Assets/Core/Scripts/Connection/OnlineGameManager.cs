@@ -21,7 +21,7 @@ public class OnlineGameManager : MonoBehaviour
     ShootingManager shootingManager;
 
     GameObject player;
-    PlayerMovementController playerMovementConetroller;
+    [HideInInspector] public PlayerMovementController playerMovementConetroller;
     private void Awake()
     {
         InitSingleton();
@@ -93,6 +93,9 @@ public class OnlineGameManager : MonoBehaviour
         else if (message.StartsWith(SHOT_RESULT))
         {
             OnShotMessageReceived(message);
+        }else if (message.StartsWith(JUMP_RESULT))
+        {
+            OnJumpMessageReceived();
         }
     }
 
@@ -242,6 +245,14 @@ public class OnlineGameManager : MonoBehaviour
             Debug.LogError("_____EXCEPTION_____");
 
         }
+    }
+
+    public void OnJumpMessageReceived()
+    {
+        if (!inPlayRoom) return;
+
+        Action act = playerMovementConetroller.MakeJumpOnline;
+        UnityThread.executeInUpdate(act);
     }
 
     public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)

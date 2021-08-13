@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using static JoystickTouchController;
+using static NetworkingMessageAttributes;
 using System;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -59,6 +60,8 @@ public class PlayerMovementController : MonoBehaviour
 		ShootMaster = FindObjectOfType<ShootingManager>();
 		canShootLocally = true;
 		canShootOnline = true;
+		canJumpLocally = true;
+		canJumpOnline = true;
 	}
 	IEnumerator SendPlayerMovement()
     {
@@ -159,7 +162,7 @@ public class PlayerMovementController : MonoBehaviour
 		}
 	}
 
-	#region Ease server calculations
+	#region Reload Addons
 	// basically we use that mechanic to not let the player send(spam) shoot requests,
 	// until the actual shot from server side has been released
 	// Using same reload time as on the server, but as signal takes
@@ -182,9 +185,42 @@ public class PlayerMovementController : MonoBehaviour
 		yield return new WaitForSeconds(1.4f);
 		canShootOnline = true;
 	}
-    #endregion
+	#endregion
 
-    public void OnCollisionEnter(Collision collision)
+	#region Jump related
+	public void TryToJump_Request()
+	{
+		if (canJumpLocally && canJumpOnline)
+		{
+			StartCoroutine(CooldownJumpLocallyCoroutine());
+			ConnectionManager.instance.SendMessageToServer($"{JUMP_REQUEST}");
+		}
+	}
+	public void MakeJumpOnline()
+	{
+		StartCoroutine(JumpCooldownFromServerCoroutine()); // olnine reload
+		rb.AddForce(Vector3.up * forceToApplyOnJump, forceModeOnJump);
+
+	}
+	bool canJumpLocally;
+	bool canJumpOnline;
+	public ForceMode forceModeOnJump;
+	public float forceToApplyOnJump = 5f;
+	IEnumerator CooldownJumpLocallyCoroutine()
+	{
+		canJumpLocally = false;
+		yield return new WaitForSeconds(0.5f);
+		canJumpLocally = true;
+	}
+	IEnumerator JumpCooldownFromServerCoroutine()
+	{
+		canJumpOnline = false;
+		yield return new WaitForSeconds(4f);
+		canJumpOnline = true;
+	}
+	#endregion
+
+	public void OnCollisionEnter(Collision collision)
     {
 		GravityProjectile gp = collision.gameObject.GetComponent<GravityProjectile>();
 

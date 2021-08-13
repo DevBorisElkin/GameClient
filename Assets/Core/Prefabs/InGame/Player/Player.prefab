@@ -185,6 +185,8 @@ MonoBehaviour:
   debugRot: 0
   ShootMaster: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
+  forceModeOnJump: 2
+  forceToApplyOnJump: 11
   forceToApplyOnGravityShot: 14
 --- !u!114 &3082409969823103961
 MonoBehaviour:

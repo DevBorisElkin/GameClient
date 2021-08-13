@@ -23,4 +23,9 @@ public class GameSceneManager : MonoBehaviour
         public int index;
         public GameObject spawnPos;
     }
+
+    public void OnClick_TryToJump()
+    {
+        OnlineGameManager.instance.playerMovementConetroller.TryToJump_Request();
+    }
 }
