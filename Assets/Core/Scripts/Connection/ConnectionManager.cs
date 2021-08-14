@@ -220,6 +220,8 @@ public class ConnectionManager : MonoBehaviour
                         string[] substrings = message.Split('|');
                         activePlayroom = new Playroom(substrings[1]);
                         Debug.Log($"Accepted to play room [{activePlayroom.id}]");
+
+                        OnlineGameManager.currentLobbyName_OnEnter = activePlayroom.name;
                         OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
 
 

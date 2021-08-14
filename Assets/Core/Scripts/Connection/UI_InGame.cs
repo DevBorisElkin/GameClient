@@ -13,7 +13,8 @@ public class UI_InGame : MonoBehaviour
     private void Start()
     {
         OnClick_CloseMenu();
-        FindObjectOfType<UI_PlayersInLobby_Manager>().SpawnLobbyItems(OnlineGameManager.currentPlayersScores_OnEnter);
+        OnlineGameManager.instance.ui_PlayersInLobby_Manager.SpawnLobbyItems(OnlineGameManager.currentPlayersScores_OnEnter);
+        txt_currentLobbyName.text = OnlineGameManager.currentLobbyName_OnEnter;
     }
 
     public void OnClick_OpenMenu()

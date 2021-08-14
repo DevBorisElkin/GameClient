@@ -21,12 +21,13 @@ public class OnlineGameManager : MonoBehaviour
     ShootingManager shootingManager;
 
     public static string currentPlayersScores_OnEnter;
+    public static string currentLobbyName_OnEnter;
 
     GameObject player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
 
     UI_PlayersInLobby_Manager _ui_PlayersInLobby_Manager;
-    UI_PlayersInLobby_Manager ui_PlayersInLobby_Manager
+    public UI_PlayersInLobby_Manager ui_PlayersInLobby_Manager
     {
         get
         {
