@@ -18,7 +18,7 @@ public class OnlineGameManager : MonoBehaviour
     public float rot_interpolationSpeed = 7f;
     bool inPlayRoom;
 
-    ShootingManager shootingManager;
+    EventManager shootingManager;
 
     public static string currentPlayersScores_OnEnter;
     public static string currentLobbyName_OnEnter;
@@ -67,7 +67,7 @@ public class OnlineGameManager : MonoBehaviour
                      Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
             playerMovementConetroller = player.GetComponent<PlayerMovementController>();
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
-            shootingManager = FindObjectOfType<ShootingManager>();
+            shootingManager = FindObjectOfType<EventManager>();
         }
     }
     public void OnPlayRoomEntered()
@@ -254,7 +254,7 @@ public class OnlineGameManager : MonoBehaviour
             UnityThread.executeInUpdate(act);
             void Action()
             {
-                shootingManager.MakeActualShot(position, rotation, objToIgnore);
+                shootingManager.MakeActualShot(position, rotation, objToIgnore, ip);
             }
         }
         catch (Exception e)

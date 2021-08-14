@@ -23,8 +23,10 @@ public class PlayerMovementController : MonoBehaviour
 	public bool debugRot;
 
 	[HideInInspector]
-	public ShootingManager ShootMaster;
+	public EventManager _EventManager;
 	public Player assignedPlayer;
+
+	[HideInInspector] public bool isAlive;
 
 	void Awake()
 	{
@@ -57,11 +59,12 @@ public class PlayerMovementController : MonoBehaviour
 		rightController.TouchStateEvent += RightController_TouchDetection;
 
 		rb = GetComponent<Rigidbody>();
-		ShootMaster = FindObjectOfType<ShootingManager>();
+		_EventManager = FindObjectOfType<EventManager>();
 		canShootLocally = true;
 		canShootOnline = true;
 		canJumpLocally = true;
 		canJumpOnline = true;
+		isAlive = true;
 	}
 	IEnumerator SendPlayerMovement()
     {
@@ -88,15 +91,18 @@ public class PlayerMovementController : MonoBehaviour
 	bool aiming;
 	void Update()
 	{
+		if (!isAlive) return;
 		MakeMovement();
 		UpdateAim();
 		DebugRot();
 		MakePushing();
 	}
+	[HideInInspector] Vector3 lastMovement;
 	void MakeMovement()
     {
-		if (!moving || pushingByProjectile) return;
+		if (!moving || pushingByProjectile) { lastMovement = Vector3.zero; return; }
 		Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
+		lastMovement = translation;
 		transform.Translate(translation, Space.World);
     }
 	Quaternion lastRotation;
@@ -134,7 +140,7 @@ public class PlayerMovementController : MonoBehaviour
 						OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
                     }
 				} 
-				else ShootMaster.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject);
+				else _EventManager.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject, "");
 			}
 		}
 	}
@@ -190,6 +196,7 @@ public class PlayerMovementController : MonoBehaviour
 	#region Jump related
 	public void TryToJump_Request()
 	{
+		if (!isAlive) return;
 		if (canJumpLocally && canJumpOnline)
 		{
 			StartCoroutine(CooldownJumpLocallyCoroutine());
@@ -282,5 +289,49 @@ public class PlayerMovementController : MonoBehaviour
 			transform.rotation = Quaternion.Euler(0, 0, 0);
 		}
 	}
-	#endregion
+    #endregion
+
+    #region DeathRelated
+
+	[EditorButton]
+	public void KillPlayer()
+    {
+		isAlive = false;
+		rb.constraints = RigidbodyConstraints.None;
+        //rb.AddForce(new Vector3(UnityEngine.Random.Range(0,10), 0, UnityEngine.Random.Range(0, 10)), ForceMode.Impulse);
+
+        if (!lastMovement.Equals(Vector3.zero))
+        {
+			rb.AddForce(new Vector3(lastMovement.x * 40, 0, lastMovement.z * 40), ForceMode.Impulse);
+			
+		}
+        else
+        {
+			bool X_Positive = UnityEngine.Random.Range(0, 2) == 1;
+			bool Z_Positive = UnityEngine.Random.Range(0, 2) == 1;
+			float xRandomForce;
+			float zRandomForce;
+
+			if (X_Positive) xRandomForce = UnityEngine.Random.Range(20, 40) * speedMovements * Time.deltaTime;
+			else xRandomForce = UnityEngine.Random.Range(-20, -40) * speedMovements * Time.deltaTime;
+
+			if (Z_Positive) zRandomForce = UnityEngine.Random.Range(20, 40) * speedMovements * Time.deltaTime;
+			else zRandomForce = UnityEngine.Random.Range(-20, -40) * speedMovements * Time.deltaTime;
+
+			rb.AddForce(new Vector3(xRandomForce, 0, zRandomForce), ForceMode.Impulse);
+		}
+		Invoke(nameof(RevivePlayer), 3f);
+    }
+
+	public void RevivePlayer()
+    {
+		rb.constraints = RigidbodyConstraints.FreezeRotation;
+		GameSceneManager gsm = FindObjectOfType<GameSceneManager>();
+		transform.position = gsm.spawnPositions[UnityEngine.Random.Range(0, gsm.spawnPositions.Count)].spawnPos.transform.position;
+		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
+
+		isAlive = true;
+	}
+
+    #endregion
 }
