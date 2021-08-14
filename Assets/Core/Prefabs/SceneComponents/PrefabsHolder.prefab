@@ -63,3 +63,5 @@ MonoBehaviour:
     type: 3}
   ui_messageFromServer_prefab: {fileID: 4534920730982251803, guid: 082f5f921ba929f468a6c31b3979b8fa,
     type: 3}
+  ui_playerInLobbyItem_prefab: {fileID: 3526926588834568985, guid: f173d41118ac0734588d1732e3ddd9f8,
+    type: 3}
