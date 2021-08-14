@@ -213,12 +213,15 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
-                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers"
+                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}"
+                    // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {
                         string[] substrings = message.Split('|');
                         activePlayroom = new Playroom(substrings[1]);
                         Debug.Log($"Accepted to play room [{activePlayroom.id}]");
+                        OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
+
 
                         UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
                     }

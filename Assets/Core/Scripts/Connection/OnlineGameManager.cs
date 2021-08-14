@@ -20,8 +20,24 @@ public class OnlineGameManager : MonoBehaviour
 
     ShootingManager shootingManager;
 
+    public static string currentPlayersScores_OnEnter;
+
     GameObject player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
+
+    UI_PlayersInLobby_Manager _ui_PlayersInLobby_Manager;
+    UI_PlayersInLobby_Manager ui_PlayersInLobby_Manager
+    {
+        get
+        {
+            if (_ui_PlayersInLobby_Manager == null)
+            {
+                _ui_PlayersInLobby_Manager = FindObjectOfType<UI_PlayersInLobby_Manager>();
+                return _ui_PlayersInLobby_Manager;
+            }
+            else return _ui_PlayersInLobby_Manager;
+        }
+    }
     private void Awake()
     {
         InitSingleton();
@@ -96,6 +112,9 @@ public class OnlineGameManager : MonoBehaviour
         }else if (message.StartsWith(JUMP_RESULT))
         {
             OnJumpMessageReceived();
+        }else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
+        {
+            OnReceivedPlayersScores(message);
         }
     }
 
@@ -358,7 +377,22 @@ public class OnlineGameManager : MonoBehaviour
         }
     }
     #endregion
-    
 
-    
+    #region Players scores
+
+    // players_scores|data@data@data
+    // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
+    public void OnReceivedPlayersScores(string message)
+    {
+        string[] msg = message.Split('|');
+        
+        Action act = Action;
+        UnityThread.executeInUpdate(act);
+        void Action() { ui_PlayersInLobby_Manager.SpawnLobbyItems(msg[1]); }
+    }
+
+    #endregion
+
+
+
 }

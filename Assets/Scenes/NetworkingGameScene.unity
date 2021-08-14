@@ -2183,9 +2183,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1280432359}
-        m_TargetAssemblyTypeName: GameSceneManager, Assembly-CSharp
-        m_MethodName: OnClick_TryToJump
+      - m_Target: {fileID: 1706108348}
+        m_TargetAssemblyTypeName: UI_InGame, Assembly-CSharp
+        m_MethodName: OnClick_OpenMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3160,7 +3160,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &445266280
 RectTransform:
   m_ObjectHideFlags: 0
@@ -72850,7 +72850,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1352112494
 RectTransform:
   m_ObjectHideFlags: 0
@@ -74774,6 +74774,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1706108347}
   - component: {fileID: 1706108348}
+  - component: {fileID: 1706108349}
   m_Layer: 0
   m_Name: InGame_UI_Manager
   m_TagString: Untagged
@@ -74807,6 +74808,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b71f584f89dd2454da41d931a23b2ec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panel_inGame: {fileID: 1352112493}
+  panel_Menu: {fileID: 445266279}
+  txt_currentLobbyName: {fileID: 1694137641}
+--- !u!114 &1706108349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706108346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26a991b63da6b0b44850290113a82fdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentForPlayerItems: {fileID: 2306878002761177459}
 --- !u!1 &1727044878
 GameObject:
   m_ObjectHideFlags: 0
@@ -76690,9 +76707,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1280432359}
-        m_TargetAssemblyTypeName: GameSceneManager, Assembly-CSharp
-        m_MethodName: OnClick_TryToJump
+      - m_Target: {fileID: 1706108348}
+        m_TargetAssemblyTypeName: UI_InGame, Assembly-CSharp
+        m_MethodName: OnClick_CloseMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -77207,7 +77224,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -77381,7 +77398,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 733.0888, y: 146.73999}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &2306878002761177459
 GameObject:
