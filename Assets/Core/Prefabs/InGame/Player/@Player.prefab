@@ -147,6 +147,14 @@ MonoBehaviour:
   rightController: {fileID: 0}
   speedMovements: 5
   speedRotation: 8
+  minRotationAngleToShoot: 5
+  online: 0
+  debugRot: 0
+  ShootMaster: {fileID: 0}
+  assignedPlayer: {fileID: 0}
+  forceModeOnJump: 0
+  forceToApplyOnJump: 5
+  forceToApplyOnGravityShot: 1
 --- !u!54 &6752891382701042608
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -182,7 +190,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f469d1c32c1557547beebce93d6a3fb9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
