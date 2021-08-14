@@ -6,7 +6,7 @@ using static OnlineGameManager;
 public class Player : MonoBehaviour
 {
     public NicknameCanvas nicknameCanvas;
-    PlayerData playerData;
+    public PlayerData playerData;
 
     public Transform projectileSpawnPoint;
 

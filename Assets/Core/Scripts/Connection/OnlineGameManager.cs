@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static EventManager;
 using static GameSceneManager;
 using static NetworkingMessageAttributes;
 
@@ -173,8 +174,30 @@ public class OnlineGameManager : MonoBehaviour
 
                 if (correctPlayer != null)
                 {
-                    correctPlayer.position = new Vector3(float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
-                    correctPlayer.rotation = Quaternion.Euler(float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
+                    Vector3 pos = new Vector3(
+                        float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture),
+                        float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture),
+                        float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
+                    Quaternion rot = Quaternion.Euler(
+                        float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture),
+                        float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture),
+                        float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
+
+                    if (correctPlayer.deathStatus == 0)
+                    {
+                        correctPlayer.position = pos;
+                        correctPlayer.rotation = rot;
+                    }
+                    else if(correctPlayer.deathStatus == 1)
+                    {
+                        if(Vector3.Distance(pos, correctPlayer.position) > 4)
+                        {
+                            correctPlayer.position = pos;
+                            correctPlayer.rotation = rot;
+                            correctPlayer.deathStatus = 2;
+                        }
+                    }
+                    
                     // updating that player's position
                     // ...
 
@@ -333,7 +356,7 @@ public class OnlineGameManager : MonoBehaviour
 
     public class PlayerData
     {
-        public PlayerData() { }
+        public PlayerData() {  }
         public PlayerData(UserData userData) 
         {
             nickname = userData.nickname;
@@ -341,6 +364,8 @@ public class OnlineGameManager : MonoBehaviour
 
         public string nickname;
         public string ip;
+
+        public int deathStatus;
 
         public bool playerLeft;
 
@@ -367,10 +392,15 @@ public class OnlineGameManager : MonoBehaviour
             {
                 foreach (PlayerData a in opponents)
                 {
-                    if (a != null && a.controlledGameObject != null)
+                    if (a != null && a.controlledGameObject != null && a.deathStatus == 0)
                     {
                         a.controlledGameObject.transform.position = Vector3.Lerp(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
                         a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
+                    }else if (a != null && a.controlledGameObject != null && a.deathStatus == 2)
+                    {
+                        a.controlledGameObject.transform.position = a.position;
+                        a.controlledGameObject.transform.rotation = a.rotation;
+                        a.deathStatus = 0;
                     }
                 }
             }

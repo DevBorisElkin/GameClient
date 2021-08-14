@@ -327,7 +327,7 @@ public class PlayerMovementController : MonoBehaviour
     {
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		GameSceneManager gsm = FindObjectOfType<GameSceneManager>();
-		transform.position = gsm.spawnPositions[UnityEngine.Random.Range(0, gsm.spawnPositions.Count)].spawnPos.transform.position;
+		transform.position = _EventManager.spawnPositions[EventManager.randowSpawnPosIndex].spawnPos.transform.position;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
 
 		isAlive = true;
