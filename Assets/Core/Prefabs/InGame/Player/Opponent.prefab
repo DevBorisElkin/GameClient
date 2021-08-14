@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6cb85de012d86404d9c130093e29349b, type: 2}
+  - {fileID: 2100000, guid: 0d08d12c59f7abe448adcfe850da52f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -198,7 +198,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f469d1c32c1557547beebce93d6a3fb9, type: 2}
+  - {fileID: 2100000, guid: bdb40c94569b6e445a4ee65bf04a2bca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -239,9 +239,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 2.1344929
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.06724644, z: 0}
 --- !u!114 &4347224485767177435
 MonoBehaviour:
   m_ObjectHideFlags: 0
