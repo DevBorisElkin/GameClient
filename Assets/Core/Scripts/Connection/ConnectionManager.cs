@@ -117,7 +117,8 @@ public class ConnectionManager : MonoBehaviour
 
             foreach (string message in parcedMessage)
             {
-                if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT))
+                if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM)
+                    && !message.Equals("") && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT))
                 {
                     Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
                 }
@@ -213,7 +214,7 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
-                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}"
+                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}|maxJumpsAmount"
                     // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {
@@ -223,6 +224,7 @@ public class ConnectionManager : MonoBehaviour
 
                         OnlineGameManager.currentLobbyName_OnEnter = activePlayroom.name;
                         OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
+                        OnlineGameManager.maxJumpsAmount = Int32.Parse(substrings[3]);
 
 
                         UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);

@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
 {
     [SerializeField]
     public List<SpawnPosition> spawnPositions = new List<SpawnPosition>();
+
+    public TMP_Text txt_jumpsLeft;
     private void Start()
     {
         OnlineGameManager.instance.OnPlayRoomEntered();

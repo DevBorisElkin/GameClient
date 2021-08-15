@@ -63,9 +63,12 @@ public class PlayerMovementController : MonoBehaviour
 		canShootLocally = true;
 		canShootOnline = true;
 		canJumpLocally = true;
-		canJumpOnline = true;
+
+		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
+
 		isAlive = true;
 	}
+
 	IEnumerator SendPlayerMovement()
     {
         while (true)
@@ -175,6 +178,7 @@ public class PlayerMovementController : MonoBehaviour
 	// time to reach the device, effective reload time is about 1.5f
 	bool canShootLocally;
 	bool canShootOnline;
+
 	IEnumerator ReloadLocallyCoroutine()
     {
 		canShootLocally = false;
@@ -197,33 +201,32 @@ public class PlayerMovementController : MonoBehaviour
 	public void TryToJump_Request()
 	{
 		if (!isAlive) return;
-		if (canJumpLocally && canJumpOnline)
+		if (canJumpLocally && localJumpsAmount > 0)
 		{
 			StartCoroutine(CooldownJumpLocallyCoroutine());
 			ConnectionManager.instance.SendMessageToServer($"{JUMP_REQUEST}");
 		}
 	}
+	public void SetLocalAmountOfJumps(int newAmount)
+	{
+		localJumpsAmount = newAmount;
+		_EventManager.txt_jumpsLeft.text = localJumpsAmount.ToString();
+	}
 	public void MakeJumpOnline()
 	{
-		StartCoroutine(JumpCooldownFromServerCoroutine()); // olnine reload
 		rb.AddForce(Vector3.up * forceToApplyOnJump, forceModeOnJump);
-
 	}
-	bool canJumpLocally;
-	bool canJumpOnline;
+	public int localJumpsAmount;
+	public bool canJumpLocally; // local reload 2 seconds
+	float localJumpReload = 2f;
+
 	public ForceMode forceModeOnJump;
 	public float forceToApplyOnJump = 5f;
 	IEnumerator CooldownJumpLocallyCoroutine()
 	{
 		canJumpLocally = false;
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(localJumpReload);
 		canJumpLocally = true;
-	}
-	IEnumerator JumpCooldownFromServerCoroutine()
-	{
-		canJumpOnline = false;
-		yield return new WaitForSeconds(2f);
-		canJumpOnline = true;
 	}
 	#endregion
 

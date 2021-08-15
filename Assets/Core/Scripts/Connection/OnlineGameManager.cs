@@ -7,7 +7,6 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static EventManager;
-using static GameSceneManager;
 using static NetworkingMessageAttributes;
 
 public class OnlineGameManager : MonoBehaviour
@@ -23,6 +22,8 @@ public class OnlineGameManager : MonoBehaviour
 
     public static string currentPlayersScores_OnEnter;
     public static string currentLobbyName_OnEnter;
+
+    public static int maxJumpsAmount = 0;
 
     GameObject player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
@@ -113,8 +114,17 @@ public class OnlineGameManager : MonoBehaviour
             OnShotMessageReceived(message);
         }else if (message.StartsWith(JUMP_RESULT))
         {
-            OnJumpMessageReceived();
-        }else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
+            string[] msg = message.Split('|');
+            int currentJumpsAmount = Int32.Parse(msg[1]);
+            OnJumpMessageReceived(currentJumpsAmount);
+        }
+        else if (message.StartsWith(JUMP_AMOUNT))
+        {
+            string[] msg = message.Split('|');
+            int currentJumpsAmount = Int32.Parse(msg[1]);
+            OnJumpsAmountMessageReceived(currentJumpsAmount);
+        }
+        else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
         {
             OnReceivedPlayersScores(message);
         }
@@ -286,12 +296,28 @@ public class OnlineGameManager : MonoBehaviour
         }
     }
 
-    public void OnJumpMessageReceived()
+    public void OnJumpMessageReceived(int currentJumps)
     {
         if (!inPlayRoom) return;
 
-        Action act = playerMovementConetroller.MakeJumpOnline;
+        Action act = Action;
         UnityThread.executeInUpdate(act);
+        void Action()
+        {
+            playerMovementConetroller.MakeJumpOnline();
+            playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
+        }
+    }
+    public void OnJumpsAmountMessageReceived(int currentJumps)
+    {
+        if (!inPlayRoom) return;
+
+        Action act = Action;
+        UnityThread.executeInUpdate(act);
+        void Action()
+        {
+            playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
+        }
     }
 
     public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)
