@@ -204,14 +204,14 @@ public class OnlineGameManager : MonoBehaviour
                     {
                         if(Vector3.Distance(pos, correctPlayer.position) > 2)
                         {
-                            Debug.Log("Changed death status");
+                            //Debug.Log("Changed death status");
                             correctPlayer.position = pos;
                             correctPlayer.rotation = rot;
                             correctPlayer.deathStatus = 2;
                         }
                         else
                         {
-                            Debug.Log("Can't change death status");
+                            //Debug.Log("Can't change death status");
                         }
                     }
                 }

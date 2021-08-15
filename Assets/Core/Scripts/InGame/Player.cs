@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
 
     public Transform projectileSpawnPoint;
 
+    public bool collidedWithSpikeTrap;
+
     public void SetUpPlayer(PlayerData _playerData)
     {
         playerData = _playerData;

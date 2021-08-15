@@ -14,6 +14,8 @@ public class PlayerMovementController : MonoBehaviour
 	public float speedMovements = 5f;
 	public float speedRotation = 5f;
 
+	public bool collidedWithSpikeTrap;
+
 	Rigidbody rb;
 
 	[Space] public float minRotationAngleToShoot = 5f;
@@ -335,6 +337,7 @@ public class PlayerMovementController : MonoBehaviour
     {
 		_EventManager.txt_jumpsLeft.text = localJumpsAmount.ToString();
 
+		collidedWithSpikeTrap = false;
 
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		transform.position = _EventManager.spawnPositions[EventManager.randowSpawnPosIndex].spawnPos.transform.position;
