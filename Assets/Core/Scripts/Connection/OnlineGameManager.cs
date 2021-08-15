@@ -202,11 +202,16 @@ public class OnlineGameManager : MonoBehaviour
                     }
                     else if(correctPlayer.deathStatus == 1)
                     {
-                        if(Vector3.Distance(pos, correctPlayer.position) > 1)
+                        if(Vector3.Distance(pos, correctPlayer.position) > 2)
                         {
+                            Debug.Log("Changed death status");
                             correctPlayer.position = pos;
                             correctPlayer.rotation = rot;
                             correctPlayer.deathStatus = 2;
+                        }
+                        else
+                        {
+                            Debug.Log("Can't change death status");
                         }
                     }
                 }
@@ -450,6 +455,7 @@ public class OnlineGameManager : MonoBehaviour
                         
                     }else if (a != null && a.controlledGameObject != null && a.deathStatus == 2)
                     {
+                        Debug.Log("Spawning death particles");
                         Instantiate(
                             PrefabsHolder.instance.playerDeathParticles_prefab,
                             a.controlledGameObject.transform.position,

@@ -7,12 +7,18 @@ using static NetworkingMessageAttributes;
 
 public class EventManager : MonoBehaviour
 {
+    public static EventManager instance;
+
+
     [SerializeField]
     public List<SpawnPosition> spawnPositions = new List<SpawnPosition>();
 
     public TMP_Text txt_jumpsLeft;
     private void Start()
     {
+        if (instance != null) Destroy(instance);
+        instance = this;
+
         OnlineGameManager.instance.OnPlayRoomEntered();
         OnlineGameManager.instance.SpawnPlayer(spawnPositions);
     }
