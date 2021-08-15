@@ -266,7 +266,7 @@ public class ConnectionManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(message)) return;
 
-        if(mp == MessageProtocol.TCP && !message.Contains(SHOT_REQUEST) && !message.Contains(JUMP_REQUEST))
+        if(mp == MessageProtocol.TCP && !message.Contains(SHOT_REQUEST) && !message.Contains(JUMP_REQUEST) && !message.Contains(PLAYER_DIED))
             Debug.Log($"[{mp}] Sending message to server:" +message+END_OF_FILE);
 
         Connection.SendMessage(message+END_OF_FILE, mp);

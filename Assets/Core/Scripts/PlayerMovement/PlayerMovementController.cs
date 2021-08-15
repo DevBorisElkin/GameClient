@@ -212,6 +212,10 @@ public class PlayerMovementController : MonoBehaviour
 		localJumpsAmount = newAmount;
 		_EventManager.txt_jumpsLeft.text = localJumpsAmount.ToString();
 	}
+	public void SetAmountOfJumps(int newAmount)
+	{
+		localJumpsAmount = newAmount;
+	}
 	public void MakeJumpOnline()
 	{
 		rb.AddForce(Vector3.up * forceToApplyOnJump, forceModeOnJump);
@@ -329,6 +333,9 @@ public class PlayerMovementController : MonoBehaviour
 
 	public void RevivePlayer()
     {
+		_EventManager.txt_jumpsLeft.text = localJumpsAmount.ToString();
+
+
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		transform.position = _EventManager.spawnPositions[EventManager.randowSpawnPosIndex].spawnPos.transform.position;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);

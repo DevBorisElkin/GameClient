@@ -118,11 +118,13 @@ public class OnlineGameManager : MonoBehaviour
             int currentJumpsAmount = Int32.Parse(msg[1]);
             OnJumpMessageReceived(currentJumpsAmount);
         }
+        // "jump_amount|2|true // 2 = current available amount of jumps // true = setAfterRevive
         else if (message.StartsWith(JUMP_AMOUNT))
         {
             string[] msg = message.Split('|');
             int currentJumpsAmount = Int32.Parse(msg[1]);
-            OnJumpsAmountMessageReceived(currentJumpsAmount);
+            bool setJumpAmountAfterRevive = bool.Parse(msg[2]);
+            OnJumpsAmountMessageReceived(currentJumpsAmount, setJumpAmountAfterRevive);
         }
         else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
         {
@@ -308,16 +310,25 @@ public class OnlineGameManager : MonoBehaviour
             playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
         }
     }
-    public void OnJumpsAmountMessageReceived(int currentJumps)
+    public void OnJumpsAmountMessageReceived(int currentJumps, bool resetAfterRevive)
     {
         if (!inPlayRoom) return;
 
-        Action act = Action;
-        UnityThread.executeInUpdate(act);
-        void Action()
+        if (!resetAfterRevive)
         {
-            playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
+            Action act = Action;
+            UnityThread.executeInUpdate(act);
+            void Action()
+            {
+                playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
+            }
         }
+        else
+        {
+            playerMovementConetroller.SetAmountOfJumps(currentJumps);
+            // gotta be ready to resetJumps after revive
+        }
+        
     }
 
     public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)

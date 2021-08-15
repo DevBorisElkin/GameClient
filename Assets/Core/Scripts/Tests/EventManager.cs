@@ -1,7 +1,9 @@
+using BorisUnityDev.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static NetworkingMessageAttributes;
 
 public class EventManager : MonoBehaviour
 {
@@ -64,11 +66,13 @@ public class EventManager : MonoBehaviour
         }
     }
     public static int randowSpawnPosIndex;
+
+    // "player_died|killer_ip|reasonOfDeath
     void KillPlayer()
     {
         mc.KillPlayer();
 
-        // TODO tell the server that player has been killed and the latest hitter
+        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|null|null");
     }
 
     IEnumerator SetDeathStatus(Player player)
