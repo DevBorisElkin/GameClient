@@ -330,7 +330,6 @@ public class PlayerMovementController : MonoBehaviour
 	public void RevivePlayer()
     {
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
-		GameSceneManager gsm = FindObjectOfType<GameSceneManager>();
 		transform.position = _EventManager.spawnPositions[EventManager.randowSpawnPosIndex].spawnPos.transform.position;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
 
