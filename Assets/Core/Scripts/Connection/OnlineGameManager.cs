@@ -172,17 +172,17 @@ public class OnlineGameManager : MonoBehaviour
                 string[] coordinatesXYZ = subdata[2].Split('/');
                 string[] rotation = subdata[3].Split('/');
 
-                if (correctPlayer != null)
-                {
-                    Vector3 pos = new Vector3(
+                Vector3 pos = new Vector3(
                         float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture),
                         float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture),
                         float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
-                    Quaternion rot = Quaternion.Euler(
-                        float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture),
-                        float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture),
-                        float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
+                Quaternion rot = Quaternion.Euler(
+                    float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
 
+                if (correctPlayer != null)
+                {
                     if (correctPlayer.deathStatus == 0)
                     {
                         correctPlayer.position = pos;
@@ -190,17 +190,13 @@ public class OnlineGameManager : MonoBehaviour
                     }
                     else if(correctPlayer.deathStatus == 1)
                     {
-                        if(Vector3.Distance(pos, correctPlayer.position) > 4)
+                        if(Vector3.Distance(pos, correctPlayer.position) > 1)
                         {
                             correctPlayer.position = pos;
                             correctPlayer.rotation = rot;
                             correctPlayer.deathStatus = 2;
                         }
                     }
-                    
-                    // updating that player's position
-                    // ...
-
                 }
                 else
                 {
@@ -209,8 +205,8 @@ public class OnlineGameManager : MonoBehaviour
                     PlayerData newlyCreatedPlayer = new PlayerData();
                     newlyCreatedPlayer.nickname = subdata[0];
                     newlyCreatedPlayer.ip = subdata[1];
-                    newlyCreatedPlayer.position = new Vector3(float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
-                    newlyCreatedPlayer.rotation = Quaternion.Euler(float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture), float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
+                    newlyCreatedPlayer.position = pos; // TODO No initial connection of position with server
+                    newlyCreatedPlayer.rotation = rot;
 
                     opponents.Add(newlyCreatedPlayer);
 
@@ -315,6 +311,7 @@ public class OnlineGameManager : MonoBehaviour
     #endregion
     #region System
     // basically checks if player that joined room has not been yet added as an GameObject
+    Vector3 spawnDefaultPos = new Vector3(0, 100, 0);
     void CheckUnspawnedPlayers()
     {
         foreach (PlayerData a in opponents)
@@ -323,7 +320,9 @@ public class OnlineGameManager : MonoBehaviour
             {
                 try
                 {
-                    a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
+                    a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, spawnDefaultPos, a.rotation);
+                    a.controlledGameObject.transform.position = spawnDefaultPos;
+                    Debug.Log($"Spawned opponent at position {a.controlledGameObject.transform.position}");
                     a.controlledGameObject.GetComponentInChildren<Player>().SetUpPlayer(a);
                 }
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
@@ -356,10 +355,11 @@ public class OnlineGameManager : MonoBehaviour
 
     public class PlayerData
     {
-        public PlayerData() {  }
+        public PlayerData() { deathStatus = 0; }
         public PlayerData(UserData userData) 
         {
             nickname = userData.nickname;
+            deathStatus = 0;
         }
 
         public string nickname;
@@ -394,10 +394,28 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     if (a != null && a.controlledGameObject != null && a.deathStatus == 0)
                     {
-                        a.controlledGameObject.transform.position = Vector3.Lerp(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
-                        a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
+                        // check if player changes position too fast, prefered to teleport him instead of interpolating
+                        if(Vector3.Distance(a.controlledGameObject.transform.position, a.position) > 5f)
+                        {
+                            if (!a.position.Equals(Vector3.zero))
+                            {
+                                Debug.Log($"Teleported player {a.ip} {a.nickname}, initial pos was {a.controlledGameObject.transform.position}, result pos became {a.position}");
+                                a.controlledGameObject.transform.position = a.position;
+                                a.controlledGameObject.transform.rotation = a.rotation;
+                            }
+                        }
+                        else
+                        {
+                            a.controlledGameObject.transform.position = Vector3.Lerp(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
+                            a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
+                        }
+                        
                     }else if (a != null && a.controlledGameObject != null && a.deathStatus == 2)
                     {
+                        Instantiate(
+                            PrefabsHolder.instance.playerDeathParticles_prefab,
+                            a.controlledGameObject.transform.position,
+                            a.controlledGameObject.transform.rotation);
                         a.controlledGameObject.transform.position = a.position;
                         a.controlledGameObject.transform.rotation = a.rotation;
                         a.deathStatus = 0;

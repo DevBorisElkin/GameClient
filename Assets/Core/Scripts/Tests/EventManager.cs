@@ -55,6 +55,7 @@ public class EventManager : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if(player != null)
             {
+                Debug.Log("Opponent entered death zone");
                 StartCoroutine(SetDeathStatus(player));
             }
         }

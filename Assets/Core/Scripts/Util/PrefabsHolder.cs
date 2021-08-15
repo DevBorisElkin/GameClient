@@ -23,6 +23,7 @@ public class PrefabsHolder : MonoBehaviour
 
     public GameObject player_prefab;
     public GameObject opponent_prefab;
+    public GameObject playerDeathParticles_prefab;
 
     public GameObject electricMuzzleFlash_prefab;
     public GameObject electrizedObject_prefab;
