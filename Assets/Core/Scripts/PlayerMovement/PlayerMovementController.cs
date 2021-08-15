@@ -244,12 +244,13 @@ public class PlayerMovementController : MonoBehaviour
 			
     }
 	public float forceToApplyOnGravityShot = 1f;
+	public float pushbackDuration = 0.75f;
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
 		pushingByProjectile = true;
 		pushingVector = projectileDir;
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
     }
     void OnDestroy()
@@ -302,7 +303,7 @@ public class PlayerMovementController : MonoBehaviour
 
         if (!lastMovement.Equals(Vector3.zero))
         {
-			rb.AddForce(new Vector3(lastMovement.x * 40, 0, lastMovement.z * 40), ForceMode.Impulse);
+			rb.AddForce(new Vector3(lastMovement.x * 50, 0, lastMovement.z * 50), ForceMode.Impulse);
 			
 		}
         else
@@ -312,11 +313,11 @@ public class PlayerMovementController : MonoBehaviour
 			float xRandomForce;
 			float zRandomForce;
 
-			if (X_Positive) xRandomForce = UnityEngine.Random.Range(20, 40) * speedMovements * Time.deltaTime;
-			else xRandomForce = UnityEngine.Random.Range(-20, -40) * speedMovements * Time.deltaTime;
+			if (X_Positive) xRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
+			else xRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
 
-			if (Z_Positive) zRandomForce = UnityEngine.Random.Range(20, 40) * speedMovements * Time.deltaTime;
-			else zRandomForce = UnityEngine.Random.Range(-20, -40) * speedMovements * Time.deltaTime;
+			if (Z_Positive) zRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
+			else zRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
 
 			rb.AddForce(new Vector3(xRandomForce, 0, zRandomForce), ForceMode.Impulse);
 		}

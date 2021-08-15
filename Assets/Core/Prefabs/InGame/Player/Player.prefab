@@ -178,16 +178,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftController: {fileID: 0}
   rightController: {fileID: 0}
-  speedMovements: 5
+  speedMovements: 4.25
   speedRotation: 8
   minRotationAngleToShoot: 5
   online: 1
   debugRot: 0
-  ShootMaster: {fileID: 0}
+  _EventManager: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
+  isAlive: 0
   forceModeOnJump: 2
   forceToApplyOnJump: 10.5
-  forceToApplyOnGravityShot: 14
+  forceToApplyOnGravityShot: 22
+  pushbackDuration: 0.95
 --- !u!114 &3082409969823103961
 MonoBehaviour:
   m_ObjectHideFlags: 0

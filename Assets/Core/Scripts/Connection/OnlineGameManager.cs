@@ -383,6 +383,7 @@ public class OnlineGameManager : MonoBehaviour
         }
         return null;
     }
+    public float interpolateIfDiscanceGreater = 7f;
     void UpdatePlayersPositions()
     {
         if (!inPlayRoom) return;
@@ -395,7 +396,7 @@ public class OnlineGameManager : MonoBehaviour
                     if (a != null && a.controlledGameObject != null && a.deathStatus == 0)
                     {
                         // check if player changes position too fast, prefered to teleport him instead of interpolating
-                        if(Vector3.Distance(a.controlledGameObject.transform.position, a.position) > 5f)
+                        if(Vector3.Distance(a.controlledGameObject.transform.position, a.position) > interpolateIfDiscanceGreater)
                         {
                             if (!a.position.Equals(Vector3.zero))
                             {
