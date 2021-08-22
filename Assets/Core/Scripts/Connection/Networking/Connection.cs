@@ -15,7 +15,7 @@ namespace BorisUnityDev.Networking
         public delegate void OnConnectedDelegate(EndPoint endPoint);
         public static event OnConnectedDelegate OnConnectedEvent;
 
-        public delegate void OnDisconnectedDelegate();
+        public delegate void OnDisconnectedDelegate(int ms_delayToReconnect = 0);
         public static event OnDisconnectedDelegate OnDisconnectedEvent;
 
         public delegate void OnMessageReceivedDelegate(string message, MessageProtocol protocol);
@@ -33,7 +33,8 @@ namespace BorisUnityDev.Networking
         static int portTcp;
         static int portUdp;
 
-        static double ms_connectedCheck = 4000;
+        static double ms_totalConnectedCheck = 6000;
+        static int ms_checkDisconnectedClient = 2000;
         static DateTime lastConnectedConfirmed;
 
         public const int connectionTimeoutMs = 10000;
@@ -46,8 +47,10 @@ namespace BorisUnityDev.Networking
             portUdp = _portUdp;
         }
         // [CONNECT TO SERVER AND START RECEIVING MESSAGES]
-        public static void Connect()
+        public static void Connect(object delayToConnect)
         {
+            int delay = (int)delayToConnect;
+            if (delay > 0) Thread.Sleep(delay);
             try
             {
                 IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(ip), portTcp);
@@ -134,14 +137,14 @@ namespace BorisUnityDev.Networking
         {
             while (connected)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(ms_checkDisconnectedClient);
 
                 var msSinceLastConnectionConfirmed = (DateTime.Now - lastConnectedConfirmed).TotalMilliseconds;
-                if (msSinceLastConnectionConfirmed > ms_connectedCheck)
+                if (msSinceLastConnectionConfirmed > ms_totalConnectedCheck)
                 {
                     // Connection timed out, disconnect client
-                    Debug.Log($"[CLIENT_MESSAGE]: connection to server [{ip}] timed out [{msSinceLastConnectionConfirmed} > {ms_connectedCheck}]");
-                    Disconnect();
+                    Debug.Log($"[CLIENT_MESSAGE]: connection to server [{ip}] timed out [{msSinceLastConnectionConfirmed} > {ms_totalConnectedCheck}]");
+                    Disconnect(true, false, 2000);
                 }
                 else
                 {
@@ -150,14 +153,16 @@ namespace BorisUnityDev.Networking
             }
         }
         // [DISCONNECT FROM THE SERVER]
-        public static void Disconnect(bool notifyDisconnect = true, bool forceUDPclose = false)
+        public static void Disconnect(bool notifyDisconnect = true, bool forceConnectionClose = false, int delayToReconnect = 0)
         {
-            UDP.Disconnect(forceUDPclose);
+            if (!connected && !forceConnectionClose) return;
+
+            UDP.Disconnect(forceConnectionClose);
             ConnectionUtil.Disconnect(socket_connect);
             ConnectionUtil.Disconnect(socket_client);
             connected = false;
 
-            if(notifyDisconnect) OnDisconnected();
+            if(notifyDisconnect) OnDisconnected(delayToReconnect);
         }
 
         // [SEND MESSAGE TO SERVER]
@@ -185,7 +190,7 @@ namespace BorisUnityDev.Networking
         }
         // [CALLBACKS]
         static void OnConnected(EndPoint endPoint) { OnConnectedEvent?.Invoke(endPoint); }
-        static void OnDisconnected() { OnDisconnectedEvent?.Invoke(); }
+        static void OnDisconnected(int delayToReconnect = 0) { OnDisconnectedEvent?.Invoke(delayToReconnect); }
         public static void OnMessageReceived(string message, MessageProtocol mp = MessageProtocol.TCP) { OnMessageReceivedEvent?.Invoke(message, mp); }
 
         static void OnFailedToConnect() { OnFailedToConnectEvent?.Invoke(); }

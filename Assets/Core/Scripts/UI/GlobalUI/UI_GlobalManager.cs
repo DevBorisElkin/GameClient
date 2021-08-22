@@ -43,7 +43,7 @@ public class UI_GlobalManager : MonoBehaviour
     // is called ONLY when new scene loaded (at Start() methods of UI_1 & UI_2)
     public void ManageSceneOnLoad()
     {
-        Debug.Log("Manage Scene On Load()");
+        // Debug.Log("Manage Scene On Load()");
         if(SceneManager.GetActiveScene().buildIndex == 0) // Intro Panel
         {
             // nothing here for now

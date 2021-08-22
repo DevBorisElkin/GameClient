@@ -59,16 +59,12 @@ public class ConnectionManager : MonoBehaviour
     // Connection attempt proceeds successfull up until 12 seconds after connection,
     // to safely reconnect decided to lauch the same process after 16 seconds
 
-    int taskToDestroy = 1;
-    public async void Connect()
+    public void Connect(int ms_delayToConnect = 0)
     {
         if (appIsRunning)
         {
-            Task connectionTask = Task.Factory.StartNew(Connection.Connect);
-            await connectionTask;
-
-            Debug.Log("Connection task was destroyed: "+taskToDestroy);
-            taskToDestroy++;
+            object delay = ms_delayToConnect;
+            Task connectionTask = Task.Factory.StartNew(Connection.Connect, delay);
         }
     }
 
@@ -87,11 +83,11 @@ public class ConnectionManager : MonoBehaviour
         UI_GlobalManager.instance.ManageScene(ClientStatus.Connected);
         Debug.Log("On Connected " + endPoint);
     }
-    void OnDisconnected()
+    void OnDisconnected(int ms_delayToReconnect = 0)
     {
         Debug.Log("On Disconnected " + ip);
         UI_GlobalManager.instance.ManageScene(ClientStatus.Disconnected);
-        Connect();
+        Connect(ms_delayToReconnect);
     }
 
     void OnMessageReceived(string message, MessageProtocol mp)
@@ -104,11 +100,7 @@ public class ConnectionManager : MonoBehaviour
 
         try
         {
-            //if (!msg.Equals("") && !msg.Contains(CHECK_CONNECTED)) { Debug.Log($"{msg}"); }
-            //if (!msg.Contains(CHECK_CONNECTED)) { Debug.Log($"[MESSAGE_FROM_SERVER][{mp}]: {msg}"); }
-
             // KIND OF WACKY BECAUSE UNITY VERSION OF .NET DOES NOT SUPPORT SPLIT BY STRING
-
             StringBuilder builder = new StringBuilder(msg);
             builder.Replace($"{END_OF_FILE}", "*");
             string res = builder.ToString();
@@ -120,16 +112,16 @@ public class ConnectionManager : MonoBehaviour
                 if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM)
                     && !message.Equals("") && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT))
                 {
-                    Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message}");
+                    Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message} | {DateTime.Now}");
                 }
+                if (message.Contains(CHECK_CONNECTED)) continue;
 
                 if (message.Equals(CLIENT_DISCONNECTED))
                 {
                     // TODO add reason
                     Debug.Log("For some reason server disconnected you");
-                    Disconnect(false);
+                    Disconnect();
                 }
-
 
                 if(clientAccessLevel == ClientAccessLevel.LowestLevel)
                 {
