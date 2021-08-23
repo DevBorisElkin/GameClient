@@ -9,30 +9,24 @@ public class EventManager : MonoBehaviour
 {
     public static EventManager instance;
 
-
-    [SerializeField]
-    public List<SpawnPosition> spawnPositions = new List<SpawnPosition>();
-
     public TMP_Text txt_jumpsLeft;
+
+    public static bool isAlive;
+    public static bool sendCoordinatesToServer;
+    public static Vector3 spawnPositionFromServer;
+
     private void Start()
     {
         if (instance != null) Destroy(instance);
         instance = this;
 
         OnlineGameManager.instance.OnPlayRoomEntered();
-        OnlineGameManager.instance.SpawnPlayer(spawnPositions);
+        OnlineGameManager.instance.SpawnPlayer(spawnPositionFromServer);
     }
 
     private void OnDestroy()
     {
         OnlineGameManager.instance.OnPlayRoomExited();
-    }
-
-    [System.Serializable]
-    public class SpawnPosition
-    {
-        public int index;
-        public GameObject spawnPos;
     }
     public void OnClick_TryToJump()
     {
@@ -40,6 +34,15 @@ public class EventManager : MonoBehaviour
     }
 
     PlayerMovementController mc;
+    public PlayerMovementController MC
+    {
+        get
+        {
+            if(mc == null) mc = FindObjectOfType<PlayerMovementController>();
+            return mc;
+        }
+        set { if (mc == null) mc = value; }
+    }
     public void MakeActualShot(Vector3 projectileSpawnPoint, Quaternion rotation, GameObject gameObjectToIgnore, string ipOfPlayerWhoWadeShot)
     {
         // for muzzle flash
@@ -57,33 +60,20 @@ public class EventManager : MonoBehaviour
         PlayerMovementController movementController = other.GetComponent<PlayerMovementController>();
         if (movementController != null)
         {
-            mc = movementController;
-            randowSpawnPosIndex = UnityEngine.Random.Range(0, spawnPositions.Count);
+            MC = movementController;
             Invoke(nameof(KillPlayer), 0.2f);
         }
-        else
-        {
-            Player player = other.GetComponent<Player>();
-            if(player != null)
-            {
-                Debug.Log("Opponent entered death zone");
-                StartCoroutine(SetDeathStatus(player));
-            }
-        }
     }
-    public static int randowSpawnPosIndex;
-
     // "player_died|killer_ip|reasonOfDeath
-    void KillPlayer()
+    public void KillPlayer()
     {
-        mc.KillPlayer();
-
-        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|null|null");
+        EventManager.isAlive = false;
+        Invoke(nameof(InvocableDeath), 2f);
+        MC.KillPlayer();
     }
-
-    IEnumerator SetDeathStatus(Player player)
+    void InvocableDeath()
     {
-        yield return new WaitForSeconds(2.5f);
-        player.playerData.deathStatus = 1;
+        sendCoordinatesToServer = false;
+        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|null|null");
     }
 }

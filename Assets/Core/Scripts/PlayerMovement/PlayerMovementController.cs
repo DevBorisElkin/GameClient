@@ -28,8 +28,6 @@ public class PlayerMovementController : MonoBehaviour
 	public EventManager _EventManager;
 	public Player assignedPlayer;
 
-	[HideInInspector] public bool isAlive;
-
 	void Awake()
 	{
 		InitSystems();
@@ -68,7 +66,8 @@ public class PlayerMovementController : MonoBehaviour
 
 		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
 
-		isAlive = true;
+		EventManager.isAlive = true;
+		EventManager.sendCoordinatesToServer = true;
 	}
 
 	IEnumerator SendPlayerMovement()
@@ -96,7 +95,7 @@ public class PlayerMovementController : MonoBehaviour
 	bool aiming;
 	void Update()
 	{
-		if (!isAlive) return;
+		if (!EventManager.isAlive) return;
 		MakeMovement();
 		UpdateAim();
 		DebugRot();
@@ -202,7 +201,7 @@ public class PlayerMovementController : MonoBehaviour
 	#region Jump related
 	public void TryToJump_Request()
 	{
-		if (!isAlive) return;
+		if (!EventManager.isAlive) return;
 		if (canJumpLocally && localJumpsAmount > 0)
 		{
 			StartCoroutine(CooldownJumpLocallyCoroutine());
@@ -306,9 +305,7 @@ public class PlayerMovementController : MonoBehaviour
 	[EditorButton]
 	public void KillPlayer()
     {
-		isAlive = false;
 		rb.constraints = RigidbodyConstraints.None;
-        //rb.AddForce(new Vector3(UnityEngine.Random.Range(0,10), 0, UnityEngine.Random.Range(0, 10)), ForceMode.Impulse);
 
         if (!lastMovement.Equals(Vector3.zero))
         {
@@ -330,20 +327,18 @@ public class PlayerMovementController : MonoBehaviour
 
 			rb.AddForce(new Vector3(xRandomForce, 0, zRandomForce), ForceMode.Impulse);
 		}
-		Invoke(nameof(RevivePlayer), 3f);
     }
 
-	public void RevivePlayer()
+	public void RevivePlayer(Vector3 spawnPosition, int newJumpsAmount)
     {
-		_EventManager.txt_jumpsLeft.text = localJumpsAmount.ToString();
-
+		SetLocalAmountOfJumps(newJumpsAmount);
 		collidedWithSpikeTrap = false;
 
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
-		transform.position = _EventManager.spawnPositions[EventManager.randowSpawnPosIndex].spawnPos.transform.position;
+		transform.position = spawnPosition;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
-
-		isAlive = true;
+		EventManager.sendCoordinatesToServer = true;
+		EventManager.isAlive = true;
 	}
 
     #endregion

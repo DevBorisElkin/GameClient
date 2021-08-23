@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -97,24 +98,16 @@ public class ConnectionManager : MonoBehaviour
 
     void ParseMessage(string msg, MessageProtocol mp)
     {
-
         try
         {
-            // KIND OF WACKY BECAUSE UNITY VERSION OF .NET DOES NOT SUPPORT SPLIT BY STRING
-            StringBuilder builder = new StringBuilder(msg);
-            builder.Replace($"{END_OF_FILE}", "*");
-            string res = builder.ToString();
-            char[] spearator = { '*' };
-            string[] parcedMessage = res.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string message in parcedMessage)
+            foreach (string message in ParceMessageIntoArrays(msg))
             {
-                if (!message.Contains(CHECK_CONNECTED) && !message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM)
-                    && !message.Equals("") && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT))
+                if (message.Contains(CHECK_CONNECTED)) continue;
+                if (!message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("")
+                    && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT) && !message.Contains(PLAYER_REVIVED))
                 {
                     Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message} | {DateTime.Now}");
                 }
-                if (message.Contains(CHECK_CONNECTED)) continue;
 
                 if (message.Equals(CLIENT_DISCONNECTED))
                 {
@@ -122,7 +115,6 @@ public class ConnectionManager : MonoBehaviour
                     Debug.Log("For some reason server disconnected you");
                     Disconnect();
                 }
-
                 if(clientAccessLevel == ClientAccessLevel.LowestLevel)
                 {
                     if (message.Contains(LOG_IN_RESULT))
@@ -206,8 +198,8 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
-                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}|maxJumpsAmount"
-                    // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
+ // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition"
+ // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {
                         string[] substrings = message.Split('|');
@@ -218,7 +210,13 @@ public class ConnectionManager : MonoBehaviour
                         OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
                         OnlineGameManager.maxJumpsAmount = Int32.Parse(substrings[3]);
 
-
+                        string[] coordinates = substrings[4].Split('/');
+                        EventManager.spawnPositionFromServer = new Vector3(
+                                float.Parse(coordinates[0], CultureInfo.InvariantCulture),
+                                float.Parse(coordinates[1], CultureInfo.InvariantCulture),
+                                float.Parse(coordinates[2], CultureInfo.InvariantCulture)
+                        );
+                        
                         UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
                     }
                     else if (DoesMessageRelatedToOnlineGameManager(message))
@@ -233,7 +231,14 @@ public class ConnectionManager : MonoBehaviour
         {
             Console.WriteLine(e.ToString());
         }
-        
+    }
+    string[] ParceMessageIntoArrays(string msg)
+    {
+        StringBuilder builder = new StringBuilder(msg);
+        builder.Replace($"{END_OF_FILE}", "*");
+        string res = builder.ToString();
+        char[] spearator = { '*' };
+        return res.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
     }
     public void LogIn(string login, string password)
     {

@@ -60,12 +60,12 @@ public class OnlineGameManager : MonoBehaviour
         UpdatePlayersPositions();
     }
     #region callbacks
-    public void SpawnPlayer(List<SpawnPosition> spawnPositions)
+    public void SpawnPlayer(Vector3 spawnPosition)
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
         {
             player = Instantiate(PrefabsHolder.instance.player_prefab, 
-                     spawnPositions[UnityEngine.Random.Range(0, spawnPositions.Count)].spawnPos.transform.position, 
+                     spawnPosition, 
                      Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
             playerMovementConetroller = player.GetComponent<PlayerMovementController>();
             player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
@@ -85,13 +85,14 @@ public class OnlineGameManager : MonoBehaviour
     #region OnPlayer_input
     public void OnPlayerMoved(Vector3 position, Vector3 rotation)
     {
-        string posX = position.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string posY = position.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string posZ = position.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        if (!sendCoordinatesToServer) return;
+        string posX = position.x.ToString("0.###", CultureInfo.InvariantCulture);
+        string posY = position.y.ToString("0.###", CultureInfo.InvariantCulture);
+        string posZ = position.z.ToString("0.###", CultureInfo.InvariantCulture);
 
-        string rotX = rotation.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotY = rotation.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotZ = rotation.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotX = rotation.x.ToString("0.###", CultureInfo.InvariantCulture);
+        string rotY = rotation.y.ToString("0.###", CultureInfo.InvariantCulture);
+        string rotZ = rotation.z.ToString("0.###", CultureInfo.InvariantCulture);
 
         ConnectionManager.instance.SendMessageToServer($"{CLIENT_SHARES_PLAYROOM_POSITION}|" +
             $"{posX}/{posY}/{posZ}|{rotX}/{rotY}/{rotZ}", MessageProtocol.UDP);
@@ -129,6 +130,30 @@ public class OnlineGameManager : MonoBehaviour
         else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
         {
             OnReceivedPlayersScores(message);
+        }
+        else if (message.StartsWith(PLAYER_REVIVED))
+        {
+            OnMessagePlayerRevived(message);
+        }else if (message.StartsWith(SPAWN_DEATH_PARTICLES))
+        {
+            string[] msg = message.Split('|');
+            string[] position = msg[1].Split('/');
+            string[] rotation = msg[2].Split('/');
+
+            Vector3 spawnPosition = new Vector3(
+                float.Parse(position[0], CultureInfo.InvariantCulture),
+                float.Parse(position[1], CultureInfo.InvariantCulture),
+                float.Parse(position[2], CultureInfo.InvariantCulture)
+                );
+            Quaternion spawnRotation = Quaternion.Euler(
+                float.Parse(rotation[0], CultureInfo.InvariantCulture),
+                float.Parse(rotation[1], CultureInfo.InvariantCulture),
+                float.Parse(rotation[2], CultureInfo.InvariantCulture)
+                );
+            UnityThread.executeInUpdate(() => {
+                Debug.Log("Spawning death particles");
+                Instantiate( PrefabsHolder.instance.playerDeathParticles_prefab, spawnPosition, spawnRotation);
+            });
         }
     }
 
@@ -185,35 +210,18 @@ public class OnlineGameManager : MonoBehaviour
                 string[] rotation = subdata[3].Split('/');
 
                 Vector3 pos = new Vector3(
-                        float.Parse(coordinatesXYZ[0], System.Globalization.CultureInfo.InvariantCulture),
-                        float.Parse(coordinatesXYZ[1], System.Globalization.CultureInfo.InvariantCulture),
-                        float.Parse(coordinatesXYZ[2], System.Globalization.CultureInfo.InvariantCulture));
+                        float.Parse(coordinatesXYZ[0], CultureInfo.InvariantCulture),
+                        float.Parse(coordinatesXYZ[1], CultureInfo.InvariantCulture),
+                        float.Parse(coordinatesXYZ[2], CultureInfo.InvariantCulture));
                 Quaternion rot = Quaternion.Euler(
-                    float.Parse(rotation[0], System.Globalization.CultureInfo.InvariantCulture),
-                    float.Parse(rotation[1], System.Globalization.CultureInfo.InvariantCulture),
-                    float.Parse(rotation[2], System.Globalization.CultureInfo.InvariantCulture));
+                    float.Parse(rotation[0], CultureInfo.InvariantCulture),
+                    float.Parse(rotation[1], CultureInfo.InvariantCulture),
+                    float.Parse(rotation[2], CultureInfo.InvariantCulture));
 
                 if (correctPlayer != null)
                 {
-                    if (correctPlayer.deathStatus == 0)
-                    {
-                        correctPlayer.position = pos;
-                        correctPlayer.rotation = rot;
-                    }
-                    else if(correctPlayer.deathStatus == 1)
-                    {
-                        if(Vector3.Distance(pos, correctPlayer.position) > 2)
-                        {
-                            //Debug.Log("Changed death status");
-                            correctPlayer.position = pos;
-                            correctPlayer.rotation = rot;
-                            correctPlayer.deathStatus = 2;
-                        }
-                        else
-                        {
-                            //Debug.Log("Can't change death status");
-                        }
-                    }
+                    correctPlayer.position = pos;
+                    correctPlayer.rotation = rot;
                 }
                 else
                 {
@@ -397,17 +405,14 @@ public class OnlineGameManager : MonoBehaviour
 
     public class PlayerData
     {
-        public PlayerData() { deathStatus = 0; }
+        public PlayerData() {}
         public PlayerData(UserData userData) 
         {
             nickname = userData.nickname;
-            deathStatus = 0;
         }
 
         public string nickname;
         public string ip;
-
-        public int deathStatus;
 
         public bool playerLeft;
 
@@ -435,7 +440,7 @@ public class OnlineGameManager : MonoBehaviour
             {
                 foreach (PlayerData a in opponents)
                 {
-                    if (a != null && a.controlledGameObject != null && a.deathStatus == 0)
+                    if (a != null && a.controlledGameObject != null)
                     {
                         // check if player changes position too fast, prefered to teleport him instead of interpolating
                         if(Vector3.Distance(a.controlledGameObject.transform.position, a.position) > interpolateIfDiscanceGreater)
@@ -453,16 +458,6 @@ public class OnlineGameManager : MonoBehaviour
                             a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
                         }
                         
-                    }else if (a != null && a.controlledGameObject != null && a.deathStatus == 2)
-                    {
-                        Debug.Log("Spawning death particles");
-                        Instantiate(
-                            PrefabsHolder.instance.playerDeathParticles_prefab,
-                            a.controlledGameObject.transform.position,
-                            a.controlledGameObject.transform.rotation);
-                        a.controlledGameObject.transform.position = a.position;
-                        a.controlledGameObject.transform.rotation = a.rotation;
-                        a.deathStatus = 0;
                     }
                 }
             }
@@ -482,6 +477,32 @@ public class OnlineGameManager : MonoBehaviour
         Action act = Action;
         UnityThread.executeInUpdate(act);
         void Action() { ui_PlayersInLobby_Manager.SpawnLobbyItems(msg[1]); }
+    }
+
+    #endregion
+
+    #region Revive player
+
+    // "player_revived|0/0/0|current_amount_of_jumps
+    public void OnMessagePlayerRevived(string message)
+    {
+        string[] msg = message.Split('|');
+        string[] coordinates = msg[1].Split('/');
+        try
+        {
+            Vector3 spawnPosition = new Vector3(
+                float.Parse(coordinates[0], CultureInfo.InvariantCulture),
+                float.Parse(coordinates[1], CultureInfo.InvariantCulture),
+                float.Parse(coordinates[2], CultureInfo.InvariantCulture)
+                );
+            int currentJumpsAmount = Int32.Parse(msg[2], CultureInfo.InvariantCulture);
+
+            UnityThread.executeInUpdate(() => {
+                playerMovementConetroller.RevivePlayer(spawnPosition, currentJumpsAmount);
+            });
+        }
+        catch(Exception e) { Debug.Log(e); }
+
     }
 
     #endregion

@@ -27,39 +27,8 @@ public class SpikeTrap : MonoBehaviour
         if (movementController != null && !movementController.collidedWithSpikeTrap)
         {
             movementController.collidedWithSpikeTrap = true;
-            mc = movementController;
-            randomSpawnPosIndex = UnityEngine.Random.Range(0, EventManager.instance.spawnPositions.Count);
-            Invoke(nameof(KillPlayer), 0.2f);
-
-            Debug.Log("Flag 1");
+            if (mc == null) mc = movementController;
+            EventManager.instance.KillPlayer();
         }
-        else
-        {
-            Player player = collision.gameObject.GetComponent<Player>();
-            if (player != null && !player.collidedWithSpikeTrap)
-            {
-                Debug.Log("Opponent collided with spike trap");
-                player.collidedWithSpikeTrap = true;
-                StartCoroutine(SetDeathStatus(player));
-            }
-            else
-            {
-                Debug.Log("Error 1");
-            }
-        }
-    }
-    // "player_died|killer_ip|reasonOfDeath
-    void KillPlayer()
-    {
-        mc.KillPlayer();
-
-        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|null|null");
-    }
-
-    IEnumerator SetDeathStatus(Player player)
-    {
-        yield return new WaitForSeconds(2.5f);
-        player.collidedWithSpikeTrap = false;
-        player.playerData.deathStatus = 1;
     }
 }
