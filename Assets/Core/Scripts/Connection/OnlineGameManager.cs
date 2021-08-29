@@ -13,9 +13,23 @@ using static EnumsAndData;
 
 public class OnlineGameManager : MonoBehaviour
 {
+    #region Singleton
     public static OnlineGameManager instance;
+    private void Awake()
+    {
+        InitSingleton();
+    }
+    void InitSingleton()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this);
+        }
+        else Destroy(gameObject);
+    }
+    #endregion
 
-    public Vector3 spawnPosition;
     public float pos_interpolationSpeed = 5f;
     public float rot_interpolationSpeed = 7f;
     bool inPlayRoom;
@@ -43,19 +57,7 @@ public class OnlineGameManager : MonoBehaviour
             else return _ui_PlayersInLobby_Manager;
         }
     }
-    private void Awake()
-    {
-        InitSingleton();
-    }
-    void InitSingleton()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this);
-        }
-        else Destroy(gameObject);
-    }
+    
 
     private void Update()
     {
@@ -175,142 +177,61 @@ public class OnlineGameManager : MonoBehaviour
         }
     }
 
-    // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
     public void OnPositionMessageReceived(string message)
     {
-        //Debug.Log($"{message}|>inPlayRoom: {inPlayRoom}");
         if (!inPlayRoom) return;
-        try
+
+        List<PlayerData> retrievedPlayerData = MessageParser.ParseOnPositionsMessage(message);
+        if (retrievedPlayerData == null || retrievedPlayerData.Count <= 0) return;
+
+        bool noticedUnspanedPlayers = false;
+        foreach (PlayerData a in retrievedPlayerData)
         {
-            if (message.Length <= "players_positions_in_playroom|".Length) return;
-
-            int firstIndex = message.IndexOf(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM);
-            int lastIndex = message.LastIndexOf(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM);
-
-            if (firstIndex != lastIndex)
-            {  // 2 or more occourences, removing all except the first one
-
-                int countedLenght = MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM.Length;
-                string tmp = message.Substring(countedLenght + 1);
-                int indexOfSecondOccourence = tmp.IndexOf(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM);
-                int realIndexOfSecOcc = indexOfSecondOccourence + countedLenght + 1;
-                message = message.Substring(0, realIndexOfSecOcc);
-            }
-
-
-            string[] substrings = message.Split('|');
-            string[] playersData = substrings[1].Split('@');
-
-            bool noticedUnspanedPlayers = false;
-            foreach (string a in playersData)
+            PlayerData correctPlayer = FindPlayerByIp(a.ip);
+            if(correctPlayer != null)
             {
-                string[] subdata = a.Split(',');
-
-                PlayerData correctPlayer = FindPlayerByIp(subdata[1]);
-
-                string[] coordinatesXYZ = subdata[2].Split('/');
-                string[] rotation = subdata[3].Split('/');
-
-                Vector3 pos = new Vector3(
-                        float.Parse(coordinatesXYZ[0], CultureInfo.InvariantCulture),
-                        float.Parse(coordinatesXYZ[1], CultureInfo.InvariantCulture),
-                        float.Parse(coordinatesXYZ[2], CultureInfo.InvariantCulture));
-                Quaternion rot = Quaternion.Euler(
-                    float.Parse(rotation[0], CultureInfo.InvariantCulture),
-                    float.Parse(rotation[1], CultureInfo.InvariantCulture),
-                    float.Parse(rotation[2], CultureInfo.InvariantCulture));
-
-                if (correctPlayer != null)
-                {
-                    correctPlayer.position = pos;
-                    correctPlayer.rotation = rot;
-                }
-                else
-                {
-                    Debug.Log("Noticed a player in playroom that has not beed added yet.");
-
-                    PlayerData newlyCreatedPlayer = new PlayerData();
-                    newlyCreatedPlayer.nickname = subdata[0];
-                    newlyCreatedPlayer.ip = subdata[1];
-                    newlyCreatedPlayer.position = pos; // TODO No initial connection of position with server
-                    newlyCreatedPlayer.rotation = rot;
-
-                    opponents.Add(newlyCreatedPlayer);
-
-                    noticedUnspanedPlayers = true;
-                }
-
+                correctPlayer.position = a.position;
+                correctPlayer.rotation = a.rotation;
             }
-            if (noticedUnspanedPlayers)
+            else
             {
-                Action act = CheckUnspawnedPlayers;
-                UnityThread.executeInUpdate(act);
+                PlayerData newlyCreatedPlayer = new PlayerData();
+                newlyCreatedPlayer.nickname = a.nickname;
+                newlyCreatedPlayer.ip = a.ip;
+                newlyCreatedPlayer.position = a.position; // TODO No initial connection of position with server
+                newlyCreatedPlayer.rotation = a.rotation;
+                opponents.Add(newlyCreatedPlayer);
+
+                noticedUnspanedPlayers = true;
             }
         }
-        catch (Exception e)
-        {
-            Debug.LogError("_____EXCEPTION_____");
-            Debug.LogError($"EXCEPTION WORKED BECAUSE OF MESSAGE\n{message}");
-            Debug.LogError(e.Message + " " + e.StackTrace);
-            Debug.LogError("_____EXCEPTION_____");
-
-        }
+        if (noticedUnspanedPlayers)  UnityThread.executeInUpdate(() => { CheckUnspawnedPlayers(); });
     }
     // code|posOfShootingPoint|rotationAtRequestTime|ipOfShootingPlayer
     // "shot_result|123/45/87|543/34/1|198.0.0.126";
     public void OnShotMessageReceived(string message)
     {
         if (!inPlayRoom) return;
-        try
+        MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out string ip);
+
+        GameObject objToIgnore;
+        // we know that it's our player shoots
+        if (ip.Equals(ConnectionManager.instance.currentUserData.ip))
         {
-            string[] substrings = message.Split('|');
-            string[] positions = substrings[1].Split('/');
-            Vector3 position = new Vector3(
-                float.Parse(positions[0], CultureInfo.InvariantCulture.NumberFormat),
-                float.Parse(positions[1], CultureInfo.InvariantCulture.NumberFormat),
-                float.Parse(positions[2], CultureInfo.InvariantCulture.NumberFormat));
-
-            string[] rotations = substrings[2].Split('/');
-            Quaternion rotation = Quaternion.Euler(
-                float.Parse(rotations[0], CultureInfo.InvariantCulture.NumberFormat),
-                float.Parse(rotations[1], CultureInfo.InvariantCulture.NumberFormat),
-                float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat)
-                );
-            string ip = substrings[3];
-
-            GameObject objToIgnore;
-            // we know that it's our player shoots
-            if (ip.Equals(ConnectionManager.instance.currentUserData.ip))
-            {
-                objToIgnore = player;
-
-                Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
-                UnityThread.executeInUpdate(actForbidToShoot);
-            }
-            else
-            {
-                PlayerData plData = FindPlayerByIp(ip);
-                if (plData != null && plData.controlledGameObject != null)
-                {
-                    objToIgnore = plData.controlledGameObject;
-                }
-                else return;
-            }
-            Action act = Action;
-            UnityThread.executeInUpdate(act);
-            void Action()
-            {
-                shootingManager.MakeActualShot(position, rotation, objToIgnore, ip);
-            }
+            objToIgnore = player;
+            Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
+            UnityThread.executeInUpdate(actForbidToShoot);
         }
-        catch (Exception e)
+        else
         {
-            Debug.LogError("_____EXCEPTION_____");
-            Debug.LogError($"EXCEPTION WORKED BECAUSE OF MESSAGE\n{message}");
-            Debug.LogError(e.Message + " " + e.StackTrace);
-            Debug.LogError("_____EXCEPTION_____");
-
+            PlayerData plData = FindPlayerByIp(ip);
+            if (plData != null && plData.controlledGameObject != null)
+                objToIgnore = plData.controlledGameObject;
+            else return;
         }
+        Action act = Action;
+        UnityThread.executeInUpdate(act);
+        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, ip);
     }
 
     public void OnJumpMessageReceived(int currentJumps)
@@ -329,33 +250,22 @@ public class OnlineGameManager : MonoBehaviour
     {
         if (!inPlayRoom) return;
 
-        if (!resetAfterRevive)
-        {
-            Action act = Action;
-            UnityThread.executeInUpdate(act);
-            void Action()
-            {
-                playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
-            }
-        }
-        else
-        {
-            playerMovementConetroller.SetAmountOfJumps(currentJumps);
-            // gotta be ready to resetJumps after revive
-        }
-        
+        if (!resetAfterRevive) 
+            UnityThread.executeInUpdate(() => { playerMovementConetroller.SetLocalAmountOfJumps(currentJumps); });
+        else 
+            playerMovementConetroller.SetAmountOfJumps(currentJumps); // resetting after revive
     }
 
     public void TryToShootOnline(Vector3 projectileSpawnPoint, Vector3 angleForProjectile)
     {
         //Debug.Log("Our player is trying to shoot online");
-        string posX = projectileSpawnPoint.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string posY = projectileSpawnPoint.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string posZ = projectileSpawnPoint.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string posX = projectileSpawnPoint.x.ToString("0.###", CultureInfo.InvariantCulture);
+        string posY = projectileSpawnPoint.y.ToString("0.###", CultureInfo.InvariantCulture);
+        string posZ = projectileSpawnPoint.z.ToString("0.###", CultureInfo.InvariantCulture);
 
-        string rotX = angleForProjectile.x.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotY = angleForProjectile.y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
-        string rotZ = angleForProjectile.z.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        string rotX = angleForProjectile.x.ToString("0.###", CultureInfo.InvariantCulture);
+        string rotY = angleForProjectile.y.ToString("0.###", CultureInfo.InvariantCulture);
+        string rotZ = angleForProjectile.z.ToString("0.###", CultureInfo.InvariantCulture);
 
         ConnectionManager.instance.SendMessageToServer($"{SHOT_REQUEST}|{posX}/{posY}/{posZ}|" +
             $"{rotX}/{rotY}/{rotZ}", MessageProtocol.TCP);
