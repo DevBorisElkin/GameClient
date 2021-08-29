@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using static NetworkingMessageAttributes;
 using static Util_UI;
+using static DataTypes;
+using static EnumsAndData;
 
 public class UI_PreJoinLobby : MonoBehaviour
 {

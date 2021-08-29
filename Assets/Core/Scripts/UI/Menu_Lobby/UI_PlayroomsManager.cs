@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static NetworkingMessageAttributes;
+using static DataTypes;
+using static EnumsAndData;
 
 public class UI_PlayroomsManager : MonoBehaviour
 {

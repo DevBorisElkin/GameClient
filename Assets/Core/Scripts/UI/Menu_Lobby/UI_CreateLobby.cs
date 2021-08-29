@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Playroom;
+using static DataTypes;
+using static EnumsAndData;
 using static Util_UI;
 using static NetworkingMessageAttributes;
 

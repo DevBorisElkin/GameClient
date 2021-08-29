@@ -9,9 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static EnumsAndData;
 using static NetworkingMessageAttributes;
 using static UI_GlobalManager;
+using static DataTypes;
+using static EnumsAndData;
 
 public class ConnectionManager : MonoBehaviour
 {

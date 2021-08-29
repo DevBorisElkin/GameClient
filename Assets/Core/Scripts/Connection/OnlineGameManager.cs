@@ -8,6 +8,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using static EventManager;
 using static NetworkingMessageAttributes;
+using static DataTypes;
+using static EnumsAndData;
 
 public class OnlineGameManager : MonoBehaviour
 {

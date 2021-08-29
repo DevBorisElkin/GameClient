@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static DataTypes;
+using static EnumsAndData;
 
 public class UI_PlayroomItem : MonoBehaviour
 {
