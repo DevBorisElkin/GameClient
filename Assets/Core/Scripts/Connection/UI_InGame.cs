@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static EnumsAndData;
+using static NetworkingMessageAttributes;
 
 public class UI_InGame : MonoBehaviour
 {
@@ -35,6 +37,11 @@ public class UI_InGame : MonoBehaviour
 
     public void OnClick_LeavePlayRoom()
     {
+        PlayerMovementController pl = FindObjectOfType<PlayerMovementController>();
+        // ensure that players won't abuse leaving from playroom to avoid giving opponents score points
+        if (!pl.ipOfLastHitPlayer.Equals("") && EventManager.isAlive)
+            ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{pl.ipOfLastHitPlayer}|{DeathDetails.FellOutOfMap}");
+
         Debug.Log("OnClick_LeavePlayroom();");
         ConnectionManager.instance.LeavePlayroom();
     }

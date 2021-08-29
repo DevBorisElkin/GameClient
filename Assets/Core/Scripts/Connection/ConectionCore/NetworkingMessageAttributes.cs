@@ -202,7 +202,7 @@ class NetworkingMessageAttributes
     public const string PLAYERS_SCORES_IN_PLAYROOM = "players_scores";
 
     // message to server, informing that the player has died
-    // "player_died|killer_ip|reasonOfDeath
+    // "player_died|killer_ip|deathDetails
     public const string PLAYER_DIED = "player_died";
 
     // message to the player, informing that he has been revived

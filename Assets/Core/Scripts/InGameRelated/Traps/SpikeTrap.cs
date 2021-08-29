@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static NetworkingMessageAttributes;
+using static EnumsAndData;
 
 public class SpikeTrap : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class SpikeTrap : MonoBehaviour
         {
             movementController.collidedWithSpikeTrap = true;
             if (mc == null) mc = movementController;
-            EventManager.instance.KillPlayer();
+            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
         }
     }
 }

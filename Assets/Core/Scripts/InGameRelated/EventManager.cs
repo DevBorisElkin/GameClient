@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static NetworkingMessageAttributes;
+using static EnumsAndData;
 
 public class EventManager : MonoBehaviour
 {
@@ -55,25 +56,31 @@ public class EventManager : MonoBehaviour
         gravP.LaunchProjectile(gameObjectToIgnore, ipOfPlayerWhoWadeShot);
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other) // level death zone collider
     {
         PlayerMovementController movementController = other.GetComponent<PlayerMovementController>();
         if (movementController != null)
         {
             MC = movementController;
-            Invoke(nameof(KillPlayer), 0.2f);
+            StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0.2f));
         }
     }
     // "player_died|killer_ip|reasonOfDeath
-    public void KillPlayer()
+    public IEnumerator KillPlayer(DeathDetails deathDetails, float initialDelay = 0)
     {
+        string killer = string.Copy(MC.ipOfLastHitPlayer);
+        if (killer.Equals("")) killer = "none";
+
+        if (MC.hitAssignedToPlayer != null) StopCoroutine(MC.hitAssignedToPlayer);
+        MC.ipOfLastHitPlayer = "";
+
+        yield return new WaitForSeconds(initialDelay);
         EventManager.isAlive = false;
-        Invoke(nameof(InvocableDeath), 2f);
         MC.KillPlayer();
-    }
-    void InvocableDeath()
-    {
+
+        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killer}|{deathDetails}");
+        yield return new WaitForSeconds(2f);
+
         sendCoordinatesToServer = false;
-        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|null|null");
     }
 }

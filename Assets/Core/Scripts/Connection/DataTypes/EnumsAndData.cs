@@ -7,7 +7,6 @@ public static class EnumsAndData
     public static string CODE_SAVED_LOGIN = "$code_saved_login";
     public static string CODE_SAVED_PASSWORD = "$code_saved_password";
 
-
     public enum ClientAccessLevel
     {
         LowestLevel = 0,
@@ -34,4 +33,7 @@ public static class EnumsAndData
     }
     public enum Map { DefaultMap = 0 }
     //public enum Map { DefaultMap = 0, IcyMap = 1, DesertMap = 2 }
+
+    public enum ReasonOfDeath { ByOtherPlayer, Suicide }
+    public enum DeathDetails { FellOutOfMap, TouchedSpikes }
 }

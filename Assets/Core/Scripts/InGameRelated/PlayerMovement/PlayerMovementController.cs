@@ -223,25 +223,33 @@ public class PlayerMovementController : MonoBehaviour
 		canJumpLocally = true;
 	}
 	#endregion
-
-	public void OnCollisionEnter(Collision collision)
+	#region Got Hit By Projectile
+    public void OnCollisionEnter(Collision collision)
     {
 		GravityProjectile gp = collision.gameObject.GetComponent<GravityProjectile>();
 
 		if (gp != null)
         {
 			if(gp.playerToIgnore != gameObject)
+            {
 				StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
+
+				if (hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
+				hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(gp.ipOfPlayerWhoMadeShot);
+				StartCoroutine(hitAssignedToPlayer);
+            }
         }
         if (collision.gameObject.tag.Equals("Game_Wall"))
         {
 			//Debug.Log("Player was pushed to the wall");
 			pushingByProjectile = false;
 		}
-			
     }
 	public float forceToApplyOnGravityShot = 1f;
 	public float pushbackDuration = 0.75f;
+
+	float hitIsReferencedToPlayer = 5f;
+	public string ipOfLastHitPlayer = "";
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
@@ -250,10 +258,21 @@ public class PlayerMovementController : MonoBehaviour
 		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
     }
-    void OnDestroy()
+	public IEnumerator hitAssignedToPlayer;
+	IEnumerator HitReferencedToPlayerTimeoutCoroutine(string ipOfHitter)
+	{
+		ipOfLastHitPlayer = ipOfHitter;
+		yield return new WaitForSeconds(hitIsReferencedToPlayer);
+		ipOfLastHitPlayer = "";
+	}
+
+	#endregion
+	void OnDestroy()
 	{
 		leftController.TouchStateEvent  -= LeftController_TouchDetection;
 		rightController.TouchStateEvent -= RightController_TouchDetection;
+
+		StopAllCoroutines();
 	}
 
     #region DeathRelated
