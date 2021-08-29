@@ -76,4 +76,30 @@ public static class MessageParser
         }
         return null; 
     }
+    public static void ParseOnSpawnDeathParticlesMessage(string message, out Vector3 spawnPosition, out Quaternion spawnRotation)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            string[] position = msg[1].Split('/');
+            string[] rotation = msg[2].Split('/');
+
+            spawnPosition = new Vector3(
+                float.Parse(position[0], CultureInfo.InvariantCulture),
+                float.Parse(position[1], CultureInfo.InvariantCulture),
+                float.Parse(position[2], CultureInfo.InvariantCulture)
+                );
+            spawnRotation = Quaternion.Euler(
+                float.Parse(rotation[0], CultureInfo.InvariantCulture),
+                float.Parse(rotation[1], CultureInfo.InvariantCulture),
+                float.Parse(rotation[2], CultureInfo.InvariantCulture)
+                );
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            spawnPosition = new Vector3();
+            spawnRotation = new Quaternion();
+        }
+    }
 }

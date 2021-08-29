@@ -140,22 +140,8 @@ public class OnlineGameManager : MonoBehaviour
             OnMessagePlayerRevived(message);
         }else if (message.StartsWith(SPAWN_DEATH_PARTICLES))
         {
-            string[] msg = message.Split('|');
-            string[] position = msg[1].Split('/');
-            string[] rotation = msg[2].Split('/');
-
-            Vector3 spawnPosition = new Vector3(
-                float.Parse(position[0], CultureInfo.InvariantCulture),
-                float.Parse(position[1], CultureInfo.InvariantCulture),
-                float.Parse(position[2], CultureInfo.InvariantCulture)
-                );
-            Quaternion spawnRotation = Quaternion.Euler(
-                float.Parse(rotation[0], CultureInfo.InvariantCulture),
-                float.Parse(rotation[1], CultureInfo.InvariantCulture),
-                float.Parse(rotation[2], CultureInfo.InvariantCulture)
-                );
+            MessageParser.ParseOnSpawnDeathParticlesMessage(message, out Vector3 spawnPosition, out Quaternion spawnRotation);
             UnityThread.executeInUpdate(() => {
-                Debug.Log("Spawning death particles");
                 Instantiate( PrefabsHolder.instance.playerDeathParticles_prefab, spawnPosition, spawnRotation);
             });
         }

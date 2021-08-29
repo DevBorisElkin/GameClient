@@ -70,7 +70,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         while (true)
         {
-			yield return new WaitForSeconds(0.05f);
+			yield return new WaitForSeconds(0.02f); // 50 times a sec
 			//Debug.Log("OnPlayerMoved|"+transform.position+"|"+transform.rotation);
 			OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
 		}
@@ -102,7 +102,6 @@ public class PlayerMovementController : MonoBehaviour
 		lastMovement = translation;
 		transform.Translate(translation, Space.World);
     }
-	Quaternion lastRotation;
 	void UpdateAim()
 	{
 		Vector2 value;
@@ -116,7 +115,6 @@ public class PlayerMovementController : MonoBehaviour
 			float yAxis = Mathf.Atan2(value.x, value.y) * Mathf.Rad2Deg;
 			Quaternion targetRot = Quaternion.Euler(transform.rotation.x, yAxis, transform.rotation.z);
 			transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speedRotation * Time.deltaTime);
-			lastRotation = transform.rotation;
 
 			TryToShoot(value, targetRot);
 		}
@@ -137,12 +135,15 @@ public class PlayerMovementController : MonoBehaviour
 			}
 		}
 	}
+	bool IsAgnleToTheTargetIsNormal(Quaternion currentRot, Quaternion targetRot)
+	{
+		float angle = Quaternion.Angle(currentRot, targetRot);
+		if (angle > minRotationAngleToShoot) return false;
+		else return true;
+	}
 	void MakePushing()
     {
 		if (!pushingByProjectile) return;
-
-		//float debugRange = 1f;
-		//Debug.DrawRay(transform.position, pushingVector * debugRange, Color.red);
 
 		RaycastHit hit;
 		if(Physics.Raycast(transform.position, pushingVector, out hit, 1f))
@@ -150,7 +151,6 @@ public class PlayerMovementController : MonoBehaviour
             if (hit.collider.gameObject.tag.Equals("Game_Wall"))
             {
 				pushingByProjectile = false;
-				//Debug.Log("Pushing by projectile was prevented because of a Game_Wall");
 				return;
             }
         }
@@ -255,28 +255,6 @@ public class PlayerMovementController : MonoBehaviour
 		leftController.TouchStateEvent  -= LeftController_TouchDetection;
 		rightController.TouchStateEvent -= RightController_TouchDetection;
 	}
-
-	#region Addons
-	bool IsAgnleToTheTargetIsNormal(Vector3 targetPos)
-	{
-		Vector3 targetDir = targetPos - transform.position;
-		targetDir = targetDir.normalized;
-
-		float dot = Vector3.Dot(targetDir, transform.forward);
-		float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
-
-		float adjustedAngle = Mathf.Abs(angle);
-
-		if (adjustedAngle > minRotationAngleToShoot) return false;
-		else return true;
-	}
-	bool IsAgnleToTheTargetIsNormal(Quaternion currentRot, Quaternion targetRot)
-	{
-		float angle = Quaternion.Angle(currentRot, targetRot);
-		if (angle > minRotationAngleToShoot) return false;
-		else return true;
-	}
-    #endregion
 
     #region DeathRelated
 
