@@ -20,10 +20,6 @@ public class PlayerMovementController : MonoBehaviour
 
 	[Space] public float minRotationAngleToShoot = 5f;
 
-	[Space(5f)]
-	public bool online;
-	public bool debugRot;
-
 	[HideInInspector]
 	public EventManager _EventManager;
 	public Player assignedPlayer;
@@ -81,8 +77,6 @@ public class PlayerMovementController : MonoBehaviour
 	}
 	void InitOnline()
     {
-		if (!online) return;
-
 		StopAllCoroutines();
 		StartCoroutine(SendPlayerMovement());
     }
@@ -98,7 +92,6 @@ public class PlayerMovementController : MonoBehaviour
 		if (!EventManager.isAlive) return;
 		MakeMovement();
 		UpdateAim();
-		DebugRot();
 		MakePushing();
 	}
 	[HideInInspector] Vector3 lastMovement;
@@ -136,15 +129,11 @@ public class PlayerMovementController : MonoBehaviour
 		{
 			if (IsAgnleToTheTargetIsNormal(transform.rotation, targetRot))
 			{
-                if (online)
-                {
-					if(canShootLocally && canShootOnline)
-                    {
-						StartCoroutine(ReloadLocallyCoroutine());
-						OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
-                    }
-				} 
-				else _EventManager.MakeActualShot(assignedPlayer.projectileSpawnPoint.position, transform.rotation, gameObject, "");
+				if (canShootLocally && canShootOnline)
+				{
+					StartCoroutine(ReloadLocallyCoroutine());
+					OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
+				}
 			}
 		}
 	}
@@ -286,17 +275,6 @@ public class PlayerMovementController : MonoBehaviour
 		float angle = Quaternion.Angle(currentRot, targetRot);
 		if (angle > minRotationAngleToShoot) return false;
 		else return true;
-	}
-	void DebugRot()
-	{
-		if (!debugRot) return;
-
-		Debug.Log(transform.eulerAngles + "|" + transform.rotation.eulerAngles);
-
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			transform.rotation = Quaternion.Euler(0, 0, 0);
-		}
 	}
     #endregion
 
