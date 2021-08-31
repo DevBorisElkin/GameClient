@@ -1,0 +1,54 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static EnumsAndData;
+
+public class UI_InGameMsgEventsManager : MonoBehaviour
+{
+    #region Singleton
+    public static UI_InGameMsgEventsManager instance;
+
+    private void Awake()
+    {
+        InitSingleton();
+    }
+    void InitSingleton()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else Destroy(gameObject);
+    }
+    #endregion
+
+    public Transform parentForEventMessages;
+
+    // player_was_killed_message|playerDeadNickname/playerDeadIP|playerKillerNickname/playerKilledIP|deathDetails
+    public void FromServerEventMessageReceived(string message)
+    {
+        string[] substring1 = message.Split('|');
+        string[] playerDeadSubstring = substring1[1].Split('/');
+        string[] killerSubstring = substring1[2].Split('/');
+        string deathDetailsStr = substring1[3];
+        Enum.TryParse<DeathDetails>(deathDetailsStr, out DeathDetails deathDetailsResult);
+
+        MessageType messageType;
+        ReasonOfDeath reasonOfDeath;
+        if (killerSubstring[0].Equals("none"))
+        {
+            messageType = MessageType.Suicide;
+            reasonOfDeath = ReasonOfDeath.Suicide;
+        }
+        else
+        {
+            messageType = MessageType.Kill;
+            reasonOfDeath = ReasonOfDeath.ByOtherPlayer;
+        }
+
+        GameObject msgEventPanel = Instantiate(PrefabsHolder.instance.ui_inGameEventMessage, parentForEventMessages);
+        UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
+        item.SetUp(messageType, deathDetailsResult, reasonOfDeath, killerSubstring[0], playerDeadSubstring[0]);
+    }
+}

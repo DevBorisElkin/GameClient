@@ -144,6 +144,14 @@ public class OnlineGameManager : MonoBehaviour
             UnityThread.executeInUpdate(() => {
                 Instantiate( PrefabsHolder.instance.playerDeathParticles_prefab, spawnPosition, spawnRotation);
             });
+        }else if (message.Contains(PLAYER_WAS_KILLED_MESSAGE))
+        {
+            UnityThread.executeInUpdate(() => {
+                if(UI_InGameMsgEventsManager.instance != null)
+                {
+                    UI_InGameMsgEventsManager.instance.FromServerEventMessageReceived(message);
+                }
+            });
         }
     }
 

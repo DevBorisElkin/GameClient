@@ -37,4 +37,5 @@ public class PrefabsHolder : MonoBehaviour
 
     public GameObject ui_playerInLobbyItem_prefab;
 
+    public GameObject ui_inGameEventMessage;
 }
