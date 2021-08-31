@@ -67,5 +67,5 @@ MonoBehaviour:
     type: 3}
   ui_playerInLobbyItem_prefab: {fileID: 3526926588834568985, guid: f173d41118ac0734588d1732e3ddd9f8,
     type: 3}
-  ui_inGameEventMessage: {fileID: 6554342251049632790, guid: c6fce01b7599e8e4d801d36f395a3fde,
+  ui_inGameEventMessage: {fileID: 5501849137847562106, guid: c6fce01b7599e8e4d801d36f395a3fde,
     type: 3}

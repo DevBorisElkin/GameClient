@@ -30,19 +30,16 @@ public class UI_InGameEventMessageItem : MonoBehaviour
     public Image suicideImage;
     public Image spikesSuicideImage;
 
-    public void SetUp(MessageType messageType, DeathDetails deathDetails, ReasonOfDeath reasonOfDeath, string killerNick, string victimNick)
+    [Header("Enter Exit Event")]
+    public GameObject panelEnterExit;
+
+    public TMP_Text enterExitNickname;
+
+    public Image enterImg;
+    public Image exitImg;
+    public void SetUpDeathMessage(MessageType messageType, DeathDetails deathDetails, ReasonOfDeath reasonOfDeath, string killerNick, string victimNick)
     {
-        //Debug.Log("messageType: "+messageType);
-        //Debug.Log("deathDetails: "+ deathDetails);
-        //Debug.Log("reasonOfDeath: " + reasonOfDeath);
-
-
-        panelKillEvent.SetActive(false);
-        panelSuicideEvent.SetActive(false);
-        weaponImage.gameObject.SetActive(false);
-        spikesImage.gameObject.SetActive(false);
-        suicideImage.gameObject.SetActive(false);
-        spikesSuicideImage.gameObject.SetActive(false);
+        DefaultPanel();
 
         if (messageType.Equals(MessageType.Kill))
         {
@@ -75,6 +72,38 @@ public class UI_InGameEventMessageItem : MonoBehaviour
             }
         }
         StartCoroutine(DestroyCoroutine());
+    }
+
+    public void OnEnterExitMessage(MessageType messageType, string nicnameOfPlayer)
+    {
+        DefaultPanel();
+
+        panelEnterExit.SetActive(true);
+        enterExitNickname.text = nicnameOfPlayer;
+        if (messageType.Equals(MessageType.Enter))
+        {
+            enterImg.gameObject.SetActive(true);
+            exitImg.gameObject.SetActive(false);
+        }
+        else
+        {
+            enterImg.gameObject.SetActive(false);
+            exitImg.gameObject.SetActive(true);
+        }
+        StartCoroutine(DestroyCoroutine());
+    }
+
+    void DefaultPanel()
+    {
+        panelKillEvent.SetActive(false);
+        panelSuicideEvent.SetActive(false);
+        weaponImage.gameObject.SetActive(false);
+        spikesImage.gameObject.SetActive(false);
+        suicideImage.gameObject.SetActive(false);
+        spikesSuicideImage.gameObject.SetActive(false);
+        panelEnterExit.SetActive(false);
+        enterImg.gameObject.SetActive(false);
+        exitImg.gameObject.SetActive(false);
     }
 
     IEnumerator DestroyCoroutine()

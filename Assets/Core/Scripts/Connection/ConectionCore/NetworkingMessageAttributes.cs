@@ -67,8 +67,8 @@ class NetworkingMessageAttributes
 
     // message for all other players that the player joined playroom
     // example of message
-    //         the code, playroom id, spawn coordinates, nickname
-    // "client_connected_to_playroom|2342|0,0,0|nickname|ip"
+    //         the code, ip, nickname
+    // "client_connected_to_playroom|192.148.65.11|Bond_EA"
     public const string CLIENT_CONNECTED_TO_THE_PLAYROOM = "client_connected_to_playroom";
 
     // message for all other players that the player disconnected from playroom
@@ -128,7 +128,7 @@ class NetworkingMessageAttributes
     }
 
     // Messages that client receives from server, related to playroom action
-    public static string[] MessagesToClient_RelatedToPlayroom = new string[9]
+    public static string[] MessagesToClient_RelatedToPlayroom = new string[10]
     {
             MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM,
             CLIENT_DISCONNECTED_FROM_THE_PLAYROOM,
@@ -138,7 +138,8 @@ class NetworkingMessageAttributes
             PLAYERS_SCORES_IN_PLAYROOM,
             PLAYER_REVIVED,
             SPAWN_DEATH_PARTICLES,
-            PLAYER_WAS_KILLED_MESSAGE
+            PLAYER_WAS_KILLED_MESSAGE,
+            CLIENT_CONNECTED_TO_THE_PLAYROOM
     };
     public static bool DoesMessageRelatedToOnlineGameManager(string message)
     {

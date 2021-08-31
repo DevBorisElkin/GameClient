@@ -149,9 +149,19 @@ public class OnlineGameManager : MonoBehaviour
             UnityThread.executeInUpdate(() => {
                 if(UI_InGameMsgEventsManager.instance != null)
                 {
-                    UI_InGameMsgEventsManager.instance.FromServerEventMessageReceived(message);
+                    UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
                 }
             });
+        }else if (message.Contains(CLIENT_CONNECTED_TO_THE_PLAYROOM))
+        {
+            string[] substrings = message.Split('|');
+            UnityThread.executeInUpdate(() => {
+                if (UI_InGameMsgEventsManager.instance != null)
+                {
+                    UI_InGameMsgEventsManager.instance.FromServer_PlayerJoinedPlayroomMessageReceived(substrings[2]);
+                }
+            });
+
         }
     }
 
@@ -164,10 +174,13 @@ public class OnlineGameManager : MonoBehaviour
         PlayerData leftPlayer = FindPlayerByIp(leftPlayerIp);
         if (leftPlayer != null)
         {
-            leftPlayer.playerLeft = true;
+            UnityThread.executeInUpdate(() => 
+            {
+                UI_InGameMsgEventsManager.instance.FromServer_PlayerExitedPlayroomMessageReceived(leftPlayer.nickname);
+                leftPlayer.playerLeft = true;
+                CheckRemoveAndDeleteLeftPlayers();
 
-            Action act = CheckRemoveAndDeleteLeftPlayers;
-            UnityThread.executeInUpdate(act);
+            });
         }
     }
 
