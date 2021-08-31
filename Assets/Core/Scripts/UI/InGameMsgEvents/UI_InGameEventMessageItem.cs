@@ -59,7 +59,7 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         }else if (messageType.Equals(MessageType.Suicide))
         {
             panelSuicideEvent.SetActive(true);
-            victimSuicideTxt.text = victimNick;
+            victimSuicideTxt.text = $"{victimNick} Made a wrong choice";
             if (deathDetails.Equals(DeathDetails.FellOutOfMap))
             {
                 suicideImage.gameObject.SetActive(true);
@@ -79,14 +79,15 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         DefaultPanel();
 
         panelEnterExit.SetActive(true);
-        enterExitNickname.text = nicnameOfPlayer;
         if (messageType.Equals(MessageType.Enter))
         {
+            enterExitNickname.text = $"{nicnameOfPlayer} Joined playroom";
             enterImg.gameObject.SetActive(true);
             exitImg.gameObject.SetActive(false);
         }
         else
         {
+            enterExitNickname.text = $"{nicnameOfPlayer} left Playroom";
             enterImg.gameObject.SetActive(false);
             exitImg.gameObject.SetActive(true);
         }
@@ -97,11 +98,11 @@ public class UI_InGameEventMessageItem : MonoBehaviour
     {
         panelKillEvent.SetActive(false);
         panelSuicideEvent.SetActive(false);
+        panelEnterExit.SetActive(false);
         weaponImage.gameObject.SetActive(false);
         spikesImage.gameObject.SetActive(false);
         suicideImage.gameObject.SetActive(false);
         spikesSuicideImage.gameObject.SetActive(false);
-        panelEnterExit.SetActive(false);
         enterImg.gameObject.SetActive(false);
         exitImg.gameObject.SetActive(false);
     }
