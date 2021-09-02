@@ -115,19 +115,19 @@ public class UI_CreateLobby : MonoBehaviour
         additionalSettingsPanel.SetActive(false);
     }
     
-    public void OnSlider_PlayersToStartChanged(int val)
+    public void OnSlider_PlayersToStartChanged(float val)
     {
-        playersToStartMatch = val;
+        playersToStartMatch = (int)val;
         playersToStartMatchTxt.text = playersToStartMatch.ToString();
     }
-    public void OnSlider_KillsToFinishChanged(int val)
+    public void OnSlider_KillsToFinishChanged(float val)
     {
-        killsToFinishMatch = val;
+        killsToFinishMatch = (int)val;
         killsToFinishMatchTxt.text = killsToFinishMatch.ToString();
     }
-    public void OnSlider_TimeOfMatchChanged(int val)
+    public void OnSlider_TimeOfMatchChanged(float val)
     {
-        timeOfMatch = val;
+        timeOfMatch = (int)val;
         timeOfMatchTxt.text = timeOfMatch.ToString();
     }
 

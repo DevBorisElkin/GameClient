@@ -30,7 +30,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1741241101848151057}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -226,7 +226,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5772440560712462215}
         m_TargetAssemblyTypeName: UI_CreateLobby, Assembly-CSharp
-        m_MethodName: OnSlider_MaxPlayersChanged
+        m_MethodName: OnSlider_KillsToFinishChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -620,7 +620,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5772440560712462215}
         m_TargetAssemblyTypeName: UI_CreateLobby, Assembly-CSharp
-        m_MethodName: OnSlider_MaxPlayersChanged
+        m_MethodName: OnSlider_TimeOfMatchChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1326,7 +1326,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5772440560712462215}
         m_TargetAssemblyTypeName: UI_CreateLobby, Assembly-CSharp
-        m_MethodName: OnSlider_MaxPlayersChanged
+        m_MethodName: OnSlider_PlayersToStartChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1375,7 +1375,6 @@ RectTransform:
   - {fileID: 5772440559943027631}
   - {fileID: 5772440560584474808}
   - {fileID: 6515804307785325074}
-  - {fileID: 424833135089512087}
   - {fileID: 5772440560216757080}
   - {fileID: 5772440560588230310}
   - {fileID: 80868062}
@@ -2884,7 +2883,7 @@ RectTransform:
   m_Children:
   - {fileID: 5772440561293835916}
   m_Father: {fileID: 1741241101848151057}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3617,7 +3616,7 @@ RectTransform:
   m_Children:
   - {fileID: 5772440561468679438}
   m_Father: {fileID: 1741241101848151057}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3818,9 +3817,9 @@ MonoBehaviour:
   playersToStartMatchSlider: {fileID: 8692468382130342677}
   killsToFinishMatchSlider: {fileID: 1067658793247905279}
   timeOfMatchSlider: {fileID: 2763633726307292561}
-  playersToStartMatchTxt: {fileID: 2841975528587801604}
-  killsToFinishMatchTxt: {fileID: 9005157041623579888}
-  timeOfMatchTxt: {fileID: 5552251272271555055}
+  playersToStartMatchTxt: {fileID: 6274045556097350041}
+  killsToFinishMatchTxt: {fileID: 3581252595196023035}
+  timeOfMatchTxt: {fileID: 8755151908250025358}
 --- !u!1 &5772440560777957828
 GameObject:
   m_ObjectHideFlags: 0
@@ -6520,12 +6519,12 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1741241101848151057}
-  m_RootOrder: 10
+  m_Father: {fileID: 6515804307785325074}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 343, y: -31.999828}
+  m_AnchoredPosition: {x: -50, y: 0.00017166138}
   m_SizeDelta: {x: 175.4654, y: 110.000305}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6847497386541106491
@@ -6656,6 +6655,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5798317181396014312}
+  - {fileID: 424833135089512087}
   m_Father: {fileID: 1741241101848151057}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

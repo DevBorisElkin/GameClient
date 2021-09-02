@@ -106,63 +106,125 @@ public class OnlineGameManager : MonoBehaviour
 
     public void OnMessageFromServerRelatedToPlayroom(string message)
     {
-        if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+        try
         {
-            OnPositionMessageReceived(message);
-        }
-        else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
-        {
-            OnPlayerDisconnectedFromPlayroom(message);
-        }
-        else if (message.StartsWith(SHOT_RESULT))
-        {
-            OnShotMessageReceived(message);
-        }else if (message.StartsWith(JUMP_RESULT))
-        {
-            string[] msg = message.Split('|');
-            int currentJumpsAmount = Int32.Parse(msg[1]);
-            OnJumpMessageReceived(currentJumpsAmount);
-        }
-        // "jump_amount|2|true // 2 = current available amount of jumps // true = setAfterRevive
-        else if (message.StartsWith(JUMP_AMOUNT))
-        {
-            string[] msg = message.Split('|');
-            int currentJumpsAmount = Int32.Parse(msg[1]);
-            bool setJumpAmountAfterRevive = bool.Parse(msg[2]);
-            OnJumpsAmountMessageReceived(currentJumpsAmount, setJumpAmountAfterRevive);
-        }
-        else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
-        {
-            OnReceivedPlayersScores(message);
-        }
-        else if (message.StartsWith(PLAYER_REVIVED))
-        {
-            OnMessagePlayerRevived(message);
-        }else if (message.StartsWith(SPAWN_DEATH_PARTICLES))
-        {
-            MessageParser.ParseOnSpawnDeathParticlesMessage(message, out Vector3 spawnPosition, out Quaternion spawnRotation);
-            UnityThread.executeInUpdate(() => {
-                Instantiate( PrefabsHolder.instance.playerDeathParticles_prefab, spawnPosition, spawnRotation);
-            });
-        }else if (message.Contains(PLAYER_WAS_KILLED_MESSAGE))
-        {
-            UnityThread.executeInUpdate(() => {
-                if(UI_InGameMsgEventsManager.instance != null)
-                {
-                    UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
-                }
-            });
-        }else if (message.Contains(CLIENT_CONNECTED_TO_THE_PLAYROOM))
-        {
-            string[] substrings = message.Split('|');
-            UnityThread.executeInUpdate(() => {
-                if (UI_InGameMsgEventsManager.instance != null)
-                {
-                    UI_InGameMsgEventsManager.instance.FromServer_PlayerJoinedPlayroomMessageReceived(substrings[2]);
-                }
-            });
+            if (message.StartsWith(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM))
+            {
+                OnPositionMessageReceived(message);
+            }
+            else if (message.StartsWith(CLIENT_DISCONNECTED_FROM_THE_PLAYROOM))
+            {
+                OnPlayerDisconnectedFromPlayroom(message);
+            }
+            else if (message.StartsWith(SHOT_RESULT))
+            {
+                OnShotMessageReceived(message);
+            }
+            else if (message.StartsWith(JUMP_RESULT))
+            {
+                string[] msg = message.Split('|');
+                int currentJumpsAmount = Int32.Parse(msg[1]);
+                OnJumpMessageReceived(currentJumpsAmount);
+            }
+            // "jump_amount|2|true // 2 = current available amount of jumps // true = setAfterRevive
+            else if (message.StartsWith(JUMP_AMOUNT))
+            {
+                string[] msg = message.Split('|');
+                int currentJumpsAmount = Int32.Parse(msg[1]);
+                bool setJumpAmountAfterRevive = bool.Parse(msg[2]);
+                OnJumpsAmountMessageReceived(currentJumpsAmount, setJumpAmountAfterRevive);
+            }
+            else if (message.StartsWith(PLAYERS_SCORES_IN_PLAYROOM))
+            {
+                OnReceivedPlayersScores(message);
+            }
+            else if (message.StartsWith(PLAYER_REVIVED))
+            {
+                OnMessagePlayerRevived(message);
+            }
+            else if (message.StartsWith(SPAWN_DEATH_PARTICLES))
+            {
+                MessageParser.ParseOnSpawnDeathParticlesMessage(message, out Vector3 spawnPosition, out Quaternion spawnRotation);
+                UnityThread.executeInUpdate(() => {
+                    Instantiate(PrefabsHolder.instance.playerDeathParticles_prefab, spawnPosition, spawnRotation);
+                });
+            }
+            else if (message.Contains(PLAYER_WAS_KILLED_MESSAGE))
+            {
+                UnityThread.executeInUpdate(() => {
+                    if (UI_InGameMsgEventsManager.instance != null)
+                    {
+                        UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
+                    }
+                });
+            }
+            else if (message.Contains(CLIENT_CONNECTED_TO_THE_PLAYROOM))
+            {
+                string[] substrings = message.Split('|');
+                UnityThread.executeInUpdate(() => {
+                    if (UI_InGameMsgEventsManager.instance != null)
+                    {
+                        UI_InGameMsgEventsManager.instance.FromServer_PlayerJoinedPlayroomMessageReceived(substrings[2]);
+                    }
+                });
+            }
+            else if (message.Contains(MATCH_STARTED_FORCE_OVERRIDE_POSITION_AND_JUMPS))
+            {
+                Debug.Log(message);
 
+                string[] substrings = message.Split('|');
+                Debug.Log(substrings[1]);
+                int newJumpsAmount = Int32.Parse(substrings[1]);
+                string[] position = substrings[2].Split('/');
+                Vector3 spawnPosition = new Vector3(
+                    float.Parse(position[0], CultureInfo.InvariantCulture),
+                    float.Parse(position[1], CultureInfo.InvariantCulture),
+                    float.Parse(position[2], CultureInfo.InvariantCulture)
+                    );
+                UnityThread.executeInUpdate(() => {
+                    UI_InGame.instance.OnNewMatchState(MatchState.InGame);
+                    playerMovementConetroller.RevivePlayer(spawnPosition, newJumpsAmount); 
+                
+                });
+            }
+            else if (message.Contains(MATCH_TIME_REMAINING))
+            {
+                UnityThread.executeInUpdate(() => { UI_InGame.instance.UpdateTimeLeftTxt(Int32.Parse(message.Split('|')[1])); });
+            }
+            else if (message.Contains(MATCH_FINISHED))
+            {
+                UnityThread.executeInUpdate(() =>
+                {
+                    EventManager.isAlive = false;
+                    string[] substrings = message.Split('|');
+                    ConnectionManager.activePlayroom.matchState = MatchState.Finished;
+                    ConnectionManager.activePlayroom.winnerNickname = substrings[2];
+                    Enum.TryParse(substrings[3], out MatchResult _res);
+                    ConnectionManager.activePlayroom.matchResult = _res;
+
+                    UI_InGame.instance.OnMatchResult(_res);
+                });
+            }
         }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+        }
+        
+        /*
+         * 
+         // match_started_force_override|Vector3-position(/)|newJumpsAmount
+         public const string MATCH_STARTED_FORCE_OVERRIDE_POSITION_AND_JUMPS = "match_started_force_override";
+         
+         // message to all players notifying how much seconds left till the end of match
+         // "match_time_remaining|327 // 327 = time in seconds left
+         public const string MATCH_TIME_REMAINING = "match_time_remaining";
+         
+         // message to all players notifying that the match has finished
+         // "match_finished|winnerIP|winnerNickname|matchResult
+         public const string MATCH_FINISHED = "match_finished";
+         * 
+         */
     }
 
     public void OnPlayerDisconnectedFromPlayroom(string message)
@@ -320,7 +382,7 @@ public class OnlineGameManager : MonoBehaviour
         catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
     }
 
-    List<PlayerData> opponents;
+    public List<PlayerData> opponents;
 
     public class PlayerData
     {

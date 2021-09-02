@@ -28,7 +28,7 @@ public class ConnectionManager : MonoBehaviour
     public ClientAccessLevel clientAccessLevel;
     bool appIsRunning = true;
 
-    Playroom activePlayroom;
+    public static Playroom activePlayroom;
 
     private void Awake()
     {
@@ -104,7 +104,7 @@ public class ConnectionManager : MonoBehaviour
             foreach (string message in ParceMessageIntoArrays(msg))
             {
                 if (message.Contains(CHECK_CONNECTED)) continue;
-                if (!message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("")
+                if (!message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(MATCH_TIME_REMAINING)
                     && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT) && !message.Contains(PLAYER_REVIVED))
                 {
                     Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message} | {DateTime.Now}");
@@ -199,8 +199,8 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
- // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition"
- // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
+                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
+                    // |{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|"
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {
                         string[] substrings = message.Split('|');
@@ -255,9 +255,9 @@ public class ConnectionManager : MonoBehaviour
         SendMessageToServer($"{PLAYROOMS_DATA_REQUEST}");
     }
 
-    public void LeavePlayroom()
+    public void LeavePlayroom(bool notifyServerOnLeave = true)
     {
-        SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|{activePlayroom.id}|no_nickname", MessageProtocol.TCP);
+        if(notifyServerOnLeave) SendMessageToServer($"{CLIENT_DISCONNECTED_FROM_THE_PLAYROOM}|{activePlayroom.id}|no_nickname", MessageProtocol.TCP);
         UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
     }
     public void SendMessageToServer(string message, MessageProtocol mp = MessageProtocol.TCP)

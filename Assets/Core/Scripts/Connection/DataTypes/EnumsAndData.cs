@@ -37,4 +37,7 @@ public static class EnumsAndData
     public enum ReasonOfDeath { ByOtherPlayer, Suicide }
     public enum DeathDetails { FellOutOfMap, TouchedSpikes }
     public enum MessageType { Kill, Suicide, Enter, Exit} // TODO add more events
+    public enum MatchState { WaitingForPlayers, InGame, Finished }
+    public enum MatchResult { PlayerWon, Draw, Discarded }
+    public enum MatchFinishReason { FinishedByKills, FinishedByTime, Discarded }
 }

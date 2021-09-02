@@ -17,7 +17,18 @@ public static class DataTypes
         public int playersCurrAmount;
         public int maxPlayers;
 
+        public MatchState matchState;
+        public int playersToStart;
+        public int killsToFinish;
+        public int totalTimeToFinishInSeconds;
+        public MatchResult matchResult;
+
+        public string winnerNickname;
+
         public Playroom() { }
+        // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/
+        // matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
+
         public Playroom(string createFrom)
         {
             try
@@ -32,12 +43,16 @@ public static class DataTypes
                 playersCurrAmount = Int32.Parse(substrings[5]);
                 maxPlayers = Int32.Parse(substrings[6]);
 
+                Enum.TryParse(substrings[7], out MatchState _matchState);
+                matchState = _matchState;
+                playersToStart = Int32.Parse(substrings[8]);
+                totalTimeToFinishInSeconds = Int32.Parse(substrings[9]);
+                killsToFinish = Int32.Parse(substrings[10]);
             }
             catch (Exception e)
             {
                 Debug.Log(e.ToString());
             }
-
         }
     }
     public class UserData
