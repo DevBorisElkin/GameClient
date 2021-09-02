@@ -10,6 +10,7 @@ using static NetworkingMessageAttributes;
 
 public class UI_CreateLobby : MonoBehaviour
 {
+    [Header("MainSettings")]
     public TMP_InputField lobbyName_inputField;
 
     public Toggle isPublic_toggle;
@@ -28,6 +29,22 @@ public class UI_CreateLobby : MonoBehaviour
     string password;
     Map map;
     int maxPlayers;
+
+    [Header("AdditionalSettings")]
+    public GameObject additionalSettingsPanel;
+
+    public Slider playersToStartMatchSlider;
+    public Slider killsToFinishMatchSlider;
+    public Slider timeOfMatchSlider;
+
+    public TMP_Text playersToStartMatchTxt;
+    public TMP_Text killsToFinishMatchTxt;
+    public TMP_Text timeOfMatchTxt;
+
+    int playersToStartMatch;
+    int killsToFinishMatch;
+    int timeOfMatch;
+    
 
     private void Start()
     {
@@ -49,6 +66,19 @@ public class UI_CreateLobby : MonoBehaviour
         maxPlayers = 4;
         playersInLobby_txt.text = maxPlayers.ToString();
         maxPlayersSlider.SetValueWithoutNotify(maxPlayers);
+
+        // additional settings
+        playersToStartMatch = 2;
+        playersToStartMatchTxt.text = playersToStartMatch.ToString();
+        playersToStartMatchSlider.SetValueWithoutNotify(playersToStartMatch);
+
+        killsToFinishMatch = 10;
+        killsToFinishMatchTxt.text = killsToFinishMatch.ToString();
+        killsToFinishMatchSlider.SetValueWithoutNotify(killsToFinishMatch);
+
+        timeOfMatch = 15;
+        timeOfMatchTxt.text = timeOfMatch.ToString();
+        timeOfMatchSlider.SetValueWithoutNotify(timeOfMatch);
     }
 
     public void OnEditInputField_SetLobbyName(string text)
@@ -75,6 +105,32 @@ public class UI_CreateLobby : MonoBehaviour
         playersInLobby_txt.text = maxPlayers.ToString();
     }
 
+    // Additional settings
+    public void OnClick_OpenAdditionalSettings()
+    {
+        additionalSettingsPanel.SetActive(true);
+    }
+    public void OnClick_CloseAdditionalSettings()
+    {
+        additionalSettingsPanel.SetActive(false);
+    }
+    
+    public void OnSlider_PlayersToStartChanged(int val)
+    {
+        playersToStartMatch = val;
+        playersToStartMatchTxt.text = playersToStartMatch.ToString();
+    }
+    public void OnSlider_KillsToFinishChanged(int val)
+    {
+        killsToFinishMatch = val;
+        killsToFinishMatchTxt.text = killsToFinishMatch.ToString();
+    }
+    public void OnSlider_TimeOfMatchChanged(int val)
+    {
+        timeOfMatch = val;
+        timeOfMatchTxt.text = timeOfMatch.ToString();
+    }
+
     public void OnClick_Cancel()
     {
         Destroy(gameObject);
@@ -89,8 +145,8 @@ public class UI_CreateLobby : MonoBehaviour
             return;
 
         // here everything is ok, we need to send the request to create lobby and then wait
-        // "create_playroom|nameOfRoom|is_public|password|map|maxPlayers";
-        ConnectionManager.instance.SendMessageToServer($"{CREATE_PLAY_ROOM}|{nameOfNewLobby}|{isPublic}|{password}|{map}|{maxPlayers}");
+        ConnectionManager.instance.SendMessageToServer($"{CREATE_PLAY_ROOM}|{nameOfNewLobby}|{isPublic}|{password}|{map}|{maxPlayers}|" +
+            $"{playersToStartMatch}|{killsToFinishMatch}|{timeOfMatch}");
     }
 
 
