@@ -22,6 +22,7 @@ public class CamSimpleFollow : MonoBehaviour
     public float camAbovePlayerOnFall = 17f;
 
     public CamFollowOnDeath camFollowOnDeath;
+    [HideInInspector] public NicknameCanvas nicknamePlayerCanvas;
 
     private void Start()
     {
@@ -55,6 +56,7 @@ public class CamSimpleFollow : MonoBehaviour
     {
         if (newState && useRandomCamAnimOnFall) camFollowOnDeath = (CamFollowOnDeath)UnityEngine.Random.Range(0, 2);
         if (!newState) transform.rotation = baseRotation;
+        if (nicknamePlayerCanvas != null) nicknamePlayerCanvas.isMainPlayerFalling = newState;
         isFalling = newState;
     }
 

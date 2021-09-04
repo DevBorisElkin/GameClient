@@ -16,6 +16,7 @@ public class NicknameCanvas : MonoBehaviour
     PlayerData playerData;
 
     public bool activated;
+    public bool isMainPlayerFalling;
 
     private void Update()
     {
@@ -33,7 +34,7 @@ public class NicknameCanvas : MonoBehaviour
     private void LateUpdate()
     {
         Quaternion targetRotation = Quaternion.LookRotation(lookAtTarget.transform.position - transform.position);
-        targetRotation = Quaternion.Euler(targetRotation.eulerAngles.x, 180, targetRotation.eulerAngles.z);
+        if(!isMainPlayerFalling) targetRotation = Quaternion.Euler(targetRotation.eulerAngles.x, 180, targetRotation.eulerAngles.z);
         transform.rotation = targetRotation;
     }
 
@@ -49,6 +50,9 @@ public class NicknameCanvas : MonoBehaviour
         nicknameTxt.text = playerData.nickname;
 
         activated = true;
+
+        // we know it's attached to the core player
+        if (_playerData.nickname == ConnectionManager.instance.currentUserData.nickname) EventManager.instance.camSimpleFollow.nicknamePlayerCanvas = this;
     }
     public TMP_Text nicknameTxt;
 }
