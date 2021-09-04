@@ -25,9 +25,9 @@ public class SpikeTrap : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         PlayerMovementController movementController = collision.gameObject.GetComponent<PlayerMovementController>();
-        if (movementController != null && !movementController.collidedWithSpikeTrap)
+        if (movementController != null && EventManager.isAlive)
         {
-            movementController.collidedWithSpikeTrap = true;
+            EventManager.isAlive = false;
             if (mc == null) mc = movementController;
             StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
         }

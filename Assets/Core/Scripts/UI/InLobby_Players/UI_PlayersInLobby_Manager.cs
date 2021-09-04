@@ -16,7 +16,7 @@ public class UI_PlayersInLobby_Manager : MonoBehaviour
         ClearItemsHolder();
 
         List<PlayerInLobbyData> playersData = CreatePlayersScoresFromNetworkResponse(data);
-        Debug.Log($"found {playersData.Count} player datas");
+        //Debug.Log($"found {playersData.Count} player datas");
 
         playersItems = new List<UI_InLobby_PlayerDataItem>();
 

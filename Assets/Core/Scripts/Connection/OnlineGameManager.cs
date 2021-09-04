@@ -189,7 +189,9 @@ public class OnlineGameManager : MonoBehaviour
             }
             else if (message.Contains(MATCH_TIME_REMAINING))
             {
-                UnityThread.executeInUpdate(() => { UI_InGame.instance.UpdateTimeLeftTxt(Int32.Parse(message.Split('|')[1])); });
+                UnityThread.executeInUpdate(() => { 
+                    if (UI_InGame.instance != null) UI_InGame.instance.UpdateTimeLeftTxt(Int32.Parse(message.Split('|')[1]));
+                });
             }
             else if (message.Contains(MATCH_FINISHED))
             {
@@ -359,6 +361,7 @@ public class OnlineGameManager : MonoBehaviour
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
             }
         }
+        UI_InGame.instance.UpdateWaitingForPlayersText(opponents.Count);
     }
 
     void CheckRemoveAndDeleteLeftPlayers()
@@ -378,6 +381,8 @@ public class OnlineGameManager : MonoBehaviour
                 Destroy(a.controlledGameObject);
                 opponents.Remove(a);
             }
+
+            UI_InGame.instance.UpdateWaitingForPlayersText(opponents.Count);
         }
         catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
     }

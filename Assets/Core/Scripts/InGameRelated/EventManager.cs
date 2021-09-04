@@ -59,8 +59,9 @@ public class EventManager : MonoBehaviour
     public void OnTriggerEnter(Collider other) // level death zone collider
     {
         PlayerMovementController movementController = other.GetComponent<PlayerMovementController>();
-        if (movementController != null)
+        if (movementController != null && EventManager.isAlive)
         {
+            EventManager.isAlive = false;
             MC = movementController;
             StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0.2f));
         }

@@ -74,6 +74,11 @@ public class UI_InGame : MonoBehaviour
             killsToFinishPanel.SetActive(false);
         }
     }
+
+    public void UpdateWaitingForPlayersText(int opponentsCount)
+    {
+        waitingForPlayersTxt.text = waitingForPlayersString + $"{(ConnectionManager.activePlayroom.playersToStart - opponentsCount - 1)}";
+    }
     public void UpdateTimeLeftTxt(int newSeconds)
     {
         timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(newSeconds);
