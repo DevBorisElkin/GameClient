@@ -59,6 +59,8 @@ public class PlayerMovementController : MonoBehaviour
 		canShootLocally = true;
 		canShootOnline = true;
 		canJumpLocally = true;
+		pushingByProjectile = false;
+		pushingByProjectile_cantJump = false;
 
 		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
 
@@ -85,6 +87,7 @@ public class PlayerMovementController : MonoBehaviour
 	void RightController_TouchDetection(bool isTouching) { aiming = isTouching; }
 
 	bool pushingByProjectile;
+	bool pushingByProjectile_cantJump;
 	bool moving;
 	bool aiming;
 	void FixedUpdate()
@@ -191,7 +194,7 @@ public class PlayerMovementController : MonoBehaviour
 	public void TryToJump_Request()
 	{
 		if (!EventManager.isAlive) return;
-		if (canJumpLocally && localJumpsAmount > 0)
+		if (!pushingByProjectile_cantJump && canJumpLocally && localJumpsAmount > 0)
 		{
 			StartCoroutine(CooldownJumpLocallyCoroutine());
 			ConnectionManager.instance.SendMessageToServer($"{JUMP_REQUEST}");
@@ -254,10 +257,13 @@ public class PlayerMovementController : MonoBehaviour
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
 		pushingByProjectile = true;
+		pushingByProjectile_cantJump = true;
 		pushingVector = projectileDir;
 		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
-    }
+		yield return new WaitForSeconds(0.45f);
+		pushingByProjectile_cantJump = false;
+	}
 	public IEnumerator hitAssignedToPlayer;
 	IEnumerator HitReferencedToPlayerTimeoutCoroutine(string ipOfHitter)
 	{
@@ -309,6 +315,8 @@ public class PlayerMovementController : MonoBehaviour
 		EventManager.instance.camSimpleFollow.SetFalling(false);
 		SetLocalAmountOfJumps(newJumpsAmount);
 		collidedWithSpikeTrap = false;
+		pushingByProjectile = false;
+		pushingByProjectile_cantJump = false;
 
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		transform.position = spawnPosition;
