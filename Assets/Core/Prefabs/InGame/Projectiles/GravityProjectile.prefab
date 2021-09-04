@@ -14273,6 +14273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 25
   playerToIgnore: {fileID: 0}
+  ipOfPlayerWhoMadeShot: 
 --- !u!114 &4999762849276384572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14285,7 +14286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb37a24ae75570c4791a9adaf07b0b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyAfter: 7
+  destroyAfter: 4.5
 --- !u!135 &5078351328437635217
 SphereCollider:
   m_ObjectHideFlags: 0
