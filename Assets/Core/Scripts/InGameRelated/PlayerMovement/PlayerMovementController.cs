@@ -87,7 +87,7 @@ public class PlayerMovementController : MonoBehaviour
 	bool pushingByProjectile;
 	bool moving;
 	bool aiming;
-	void Update()
+	void FixedUpdate()
 	{
 		if (!EventManager.isAlive) return;
 		MakeMovement();
@@ -306,6 +306,7 @@ public class PlayerMovementController : MonoBehaviour
 
 	public void RevivePlayer(Vector3 spawnPosition, int newJumpsAmount)
     {
+		EventManager.instance.camSimpleFollow.SetFalling(false);
 		SetLocalAmountOfJumps(newJumpsAmount);
 		collidedWithSpikeTrap = false;
 

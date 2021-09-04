@@ -16,11 +16,14 @@ public class EventManager : MonoBehaviour
     public static bool sendCoordinatesToServer;
     public static Vector3 spawnPositionFromServer;
 
+    [HideInInspector] public CamSimpleFollow camSimpleFollow;
+
     private void Start()
     {
         if (instance != null) Destroy(instance);
         instance = this;
 
+        camSimpleFollow = FindObjectOfType<CamSimpleFollow>();
         OnlineGameManager.instance.OnPlayRoomEntered();
         OnlineGameManager.instance.SpawnPlayer(spawnPositionFromServer);
     }
@@ -64,6 +67,7 @@ public class EventManager : MonoBehaviour
             EventManager.isAlive = false;
             MC = movementController;
             StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0.2f));
+            camSimpleFollow.SetFalling(true);
         }
     }
     // "player_died|killer_ip|reasonOfDeath
