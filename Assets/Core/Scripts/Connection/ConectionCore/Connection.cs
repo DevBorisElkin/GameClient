@@ -120,6 +120,7 @@ namespace BorisUnityDev.Networking
                     }
                     else if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
                     {
+                        Debug.Log(message);
                         string msg = message.Replace(END_OF_FILE, "");
                         string[] substrings = msg.Split('|');
                         int localClientId = Int32.Parse(substrings[1]);
