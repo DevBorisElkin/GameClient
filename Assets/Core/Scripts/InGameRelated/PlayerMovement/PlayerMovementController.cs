@@ -256,11 +256,13 @@ public class PlayerMovementController : MonoBehaviour
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
+		rb.isKinematic = true;
 		pushingByProjectile = true;
 		pushingByProjectile_cantJump = true;
 		pushingVector = projectileDir;
 		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
+		rb.isKinematic = false;
 		yield return new WaitForSeconds(0.45f);
 		pushingByProjectile_cantJump = false;
 	}
@@ -319,6 +321,7 @@ public class PlayerMovementController : MonoBehaviour
 		pushingByProjectile = false;
 		pushingByProjectile_cantJump = false;
 
+		rb.isKinematic = false;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		transform.position = spawnPosition;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
