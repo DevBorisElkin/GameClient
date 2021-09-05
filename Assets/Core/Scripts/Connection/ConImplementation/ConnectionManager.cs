@@ -118,7 +118,13 @@ public class ConnectionManager : MonoBehaviour
                 }
                 if(clientAccessLevel == ClientAccessLevel.LowestLevel)
                 {
-                    if (message.Contains(LOG_IN_RESULT))
+                    if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
+                    {
+                        string[] substrings = message.Split('|');
+                        int localClientId = Int32.Parse(substrings[1]);
+                        UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}");
+                    }
+                    else if (message.Contains(LOG_IN_RESULT))
                     {
                         string[] substrings = message.Split('|');
                         if (substrings[1].Equals("Success") && substrings.Length >= 3)

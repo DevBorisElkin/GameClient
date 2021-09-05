@@ -52,7 +52,7 @@ namespace BorisUnityDev.Networking
             try
             {
                 //DelayedInitCall();
-                SendMessageUdp("init_udp");
+                //SendMessageUdp("init_udp");
 
                 connected = true;
 

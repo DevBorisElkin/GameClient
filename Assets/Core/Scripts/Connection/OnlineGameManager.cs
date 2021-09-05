@@ -462,7 +462,12 @@ public class OnlineGameManager : MonoBehaviour
         
         Action act = Action;
         UnityThread.executeInUpdate(act);
-        void Action() { ui_PlayersInLobby_Manager.SpawnLobbyItems(msg[1]); }
+        void Action() 
+        { 
+            if(ui_PlayersInLobby_Manager != null)
+            ui_PlayersInLobby_Manager.SpawnLobbyItems(msg[1]); 
+        
+        }
     }
 
     #endregion
