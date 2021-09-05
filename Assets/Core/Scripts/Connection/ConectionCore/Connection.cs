@@ -120,7 +120,8 @@ namespace BorisUnityDev.Networking
                     }
                     else if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
                     {
-                        string[] substrings = message.Split('|');
+                        string msg = message.Replace(END_OF_FILE, "");
+                        string[] substrings = msg.Split('|');
                         int localClientId = Int32.Parse(substrings[1]);
                         UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}");
                     }

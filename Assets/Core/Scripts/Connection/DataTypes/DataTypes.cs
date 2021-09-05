@@ -82,7 +82,7 @@ public static class DataTypes
 
         public override string ToString()
         {
-            return $"id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}]";
+            return $"db_id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}]";
         }
         public string ToNetworkString()
         {
