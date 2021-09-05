@@ -29,7 +29,8 @@ public static class EnumsAndData
         Fail_NoConnectionToDB = 3,
         Fail_WrongPairLoginPassword = 4,
         Fail_LoginAlreadyTaken = 5,
-        Fail_NoUserWithGivenLogin = 6
+        Fail_NicknameAlreadyTaken = 6,
+        Fail_NoUserWithGivenLogin = 7
     }
     public enum Map { DefaultMap = 0 }
     //public enum Map { DefaultMap = 0, IcyMap = 1, DesertMap = 2 }

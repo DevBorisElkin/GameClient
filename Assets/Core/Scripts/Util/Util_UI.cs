@@ -19,6 +19,7 @@ public class Util_UI : MonoBehaviour
             case RequestResult.Fail_NoConnectionToDB: return "Couldn't read data, no database connection";
             case RequestResult.Fail_WrongPairLoginPassword: return "Can't authenticate: login or password - incorrect";
             case RequestResult.Fail_LoginAlreadyTaken: return "Can't register account because such login is already taken";
+            case RequestResult.Fail_NicknameAlreadyTaken: return "Can't register account because such nickname is already taken";
             case RequestResult.Fail_NoUserWithGivenLogin: return "Didn't find user with such login";
             default: return "Response negative";
         }
