@@ -57,7 +57,7 @@ public static class DataTypes
     }
     public class UserData
     {
-        public int id;
+        public int db_id;
         public string login;
         public string password;
         public string nickname;
@@ -70,9 +70,9 @@ public static class DataTypes
         {
             this.requestResult = requestResult;
         }
-        public UserData(int id, string login, string password, string nickname, string ip, RequestResult requestResult = RequestResult.Success)
+        public UserData(int dbID, string login, string password, string nickname, string ip, RequestResult requestResult = RequestResult.Success)
         {
-            this.id = id;
+            this.db_id = dbID;
             this.login = login;
             this.password = password;
             this.nickname = nickname;
@@ -82,11 +82,11 @@ public static class DataTypes
 
         public override string ToString()
         {
-            return $"id:[{id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}]";
+            return $"id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}]";
         }
         public string ToNetworkString()
         {
-            return $"{id},{login},{password},{nickname},{ip}";
+            return $"{db_id},{login},{password},{nickname},{ip}";
         }
     }
 }

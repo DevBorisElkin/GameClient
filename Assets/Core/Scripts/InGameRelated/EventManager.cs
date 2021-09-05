@@ -47,7 +47,7 @@ public class EventManager : MonoBehaviour
         }
         set { if (mc == null) mc = value; }
     }
-    public void MakeActualShot(Vector3 projectileSpawnPoint, Quaternion rotation, GameObject gameObjectToIgnore, string ipOfPlayerWhoWadeShot)
+    public void MakeActualShot(Vector3 projectileSpawnPoint, Quaternion rotation, GameObject gameObjectToIgnore, int dbIdOfPlayerWhoMadeShot)
     {
         // for muzzle flash
         Player player = gameObjectToIgnore.GetComponent<Player>();
@@ -56,7 +56,7 @@ public class EventManager : MonoBehaviour
 
         GameObject projectile = Instantiate(PrefabsHolder.instance.gravityProjectile_prefab, projectileSpawnPoint, rotation);
         GravityProjectile gravP = projectile.GetComponent<GravityProjectile>();
-        gravP.LaunchProjectile(gameObjectToIgnore, ipOfPlayerWhoWadeShot);
+        gravP.LaunchProjectile(gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
     }
 
     public void OnTriggerEnter(Collider other) // level death zone collider
@@ -73,17 +73,17 @@ public class EventManager : MonoBehaviour
     // "player_died|killer_ip|reasonOfDeath
     public IEnumerator KillPlayer(DeathDetails deathDetails, float initialDelay = 0)
     {
-        string killer = string.Copy(MC.ipOfLastHitPlayer);
-        if (killer.Equals("")) killer = "none";
+        int killerDbId = MC.dbIdOflastHitPlayer;
+        //if (killerDbId.Equals("")) killerDbId = "none";
 
         if (MC.hitAssignedToPlayer != null) StopCoroutine(MC.hitAssignedToPlayer);
-        MC.ipOfLastHitPlayer = "";
+        MC.dbIdOflastHitPlayer = -1;
 
         yield return new WaitForSeconds(initialDelay);
         EventManager.isAlive = false;
         MC.KillPlayer();
 
-        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killer}|{deathDetails}");
+        ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killerDbId}|{deathDetails}");
         yield return new WaitForSeconds(2f);
 
         sendCoordinatesToServer = false;

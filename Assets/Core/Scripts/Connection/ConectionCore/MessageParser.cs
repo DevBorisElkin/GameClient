@@ -8,9 +8,9 @@ using static OnlineGameManager;
 public static class MessageParser
 {
     // message to players - shows shot data
-    // code|posOfShootingPoint|rotationAtRequestTime|ipOfShootingPlayer
-    // "shot_result|123/45/87|543/34/1|198.0.0.126";
-    public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out string ipOfPlayerWhoMadeShot)
+    // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer
+    // "shot_result|123/45/87|543/34/1|13";
+    public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out int dbIdOfPlayerWhoMadeShot)
     {
         try
         {
@@ -27,16 +27,16 @@ public static class MessageParser
                 float.Parse(rotations[1], CultureInfo.InvariantCulture.NumberFormat),
                 float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat)
                 );
-            ipOfPlayerWhoMadeShot = substrings[3];
+            dbIdOfPlayerWhoMadeShot = Int32.Parse(substrings[3]);
         }catch(Exception e)
         {
             Debug.Log(e);
             posOfShot = new Vector3();
             rotOfShot = new Quaternion();
-            ipOfPlayerWhoMadeShot = "";
+            dbIdOfPlayerWhoMadeShot = -1;
         }
     }
-    // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
+    // "players_positions_in_playroom|nickname,db_id,position,rotation@nickname,db_id,position,rotation@enc..."
     public static List<PlayerData> ParseOnPositionsMessage(string message)
     {
         try
@@ -62,7 +62,7 @@ public static class MessageParser
 
                 PlayerData playerData = new PlayerData();
                 playerData.nickname = subdata[0];
-                playerData.ip = subdata[1];
+                playerData.db_id = Int32.Parse(subdata[1]);
                 playerData.position = pos; // TODO No initial connection of position with server
                 playerData.rotation = rot;
 

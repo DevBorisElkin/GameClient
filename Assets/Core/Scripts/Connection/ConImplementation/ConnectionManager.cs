@@ -199,7 +199,7 @@ public class ConnectionManager : MonoBehaviour
                         UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
                         
                     }
-                    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
+                    // "confirm_enter_playroom|idOfRoom/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
                     // |{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|"
                     else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
                     {

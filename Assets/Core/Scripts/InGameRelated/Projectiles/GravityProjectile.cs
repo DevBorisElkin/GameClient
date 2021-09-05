@@ -9,17 +9,17 @@ public class GravityProjectile : MonoBehaviour
     Rigidbody rb;
 
     public GameObject playerToIgnore;
-    public string ipOfPlayerWhoMadeShot;
+    public int dbIdOfPleyerWhoMadeLaunch;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    public void LaunchProjectile(GameObject _playerToIgnore, string _ipOfPhalyerWhoMadeShot)
+    public void LaunchProjectile(GameObject _playerToIgnore, int _dbIdOfPlayerWhoMadeLaunch)
     {
         playerToIgnore = _playerToIgnore;
-        ipOfPlayerWhoMadeShot = _ipOfPhalyerWhoMadeShot;
+        dbIdOfPleyerWhoMadeLaunch = _dbIdOfPlayerWhoMadeLaunch;
         active = true;
     }
     private void FixedUpdate()

@@ -19,7 +19,7 @@ class NetworkingMessageAttributes
     // "log_in_result|success_or_failure_plus_reason_if_failure";
 
     // more detailed response
-    // user data: id, login, password, nickname, ip
+    // user data: db_id, login, password, nickname, ip
     // "log_in_result|Success|1,Bond_EA,test_password,Boris228,198.0.0.196";
     // "log_in_result|Fail_WrongPairLoginPassword"
     public const string LOG_IN_RESULT = "log_in_result";
@@ -34,7 +34,7 @@ class NetworkingMessageAttributes
     // message from server to player whether player's request was accepted or not
     // example of message
     // "register_result|success_or_failure_plus_reason_if_failure|complete_user_data";
-    // user data: id,login,password,nickname,ip
+    // user data: db_id,login,password,nickname,ip
     public const string REGISTER_RESULT = "register_result";
 
 
@@ -56,8 +56,7 @@ class NetworkingMessageAttributes
 
     // confirmation code for the player that he got accepted to the playroom
     // example of message
-    // "confirm_enter_playroom|id/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers|{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|" +
-    // +"MatchState|PlayersToStartTheMatch|TimeTillTheEndOfMatch|KillsForVictory"
+    // "confirm_enter_playroom|idOfRoom/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/MatchState/PlayersToStartTheMatch/TimeTillTheEndOfMatch/KillsForVictory|{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|"
     // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
     public const string CONFIRM_ENTER_PLAY_ROOM = "confirm_enter_playroom";
 
@@ -76,23 +75,22 @@ class NetworkingMessageAttributes
     // example of message
     //
     // when player sends to the server
-    // client_disconnected_from_playroom|1|no_nickname
+    // client_disconnected_from_playroom|playroomId|playerNickname
     // when server sends to all other clients
-    //         the code, playroom id, nickname
-    // "client_disconnected_from_playroom|2342|nickname|ip" 
-    // TODO REMOVE UNNECESARRY ITEMS
+    //         the code, playroom id, clientDbID
+    // "client_disconnected_from_playroom|playroomId|nickname|clientDbId" 
     public const string CLIENT_DISCONNECTED_FROM_THE_PLAYROOM = "client_disconnected_from_playroom";
 
     // message from client to server about client position and rotation
     // example of message
-    //         the code, playroom number, coordinates, rotation
+    //         the code, coordinates, rotation
     // "client_shares_playroom_position|0/0/0|0/0/0"
     public const string CLIENT_SHARES_PLAYROOM_POSITION = "client_shares_playroom_position";
 
     // message to all clients about other clients in playroom position and rotation
     // example of message
     //
-    // "players_positions_in_playroom|nickname,ip,position,rotation@nickname,ip,position,rotation@enc..."
+    // "players_positions_in_playroom|nickname,db_id,position,rotation@nickname,db_id,position,rotation@enc..."
     public const string MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM = "players_positions_in_playroom";
 
     // message from client - request to get active playrooms data
@@ -185,8 +183,8 @@ class NetworkingMessageAttributes
     public const string SHOT_REQUEST = "shot_request";
 
     // message to players - shows shot data
-    // code|posOfShootingPoint|rotationAtRequestTime|ipOfShootingPlayer
-    // "shot_result|123/45/87|543/34/1|198.0.0.126";
+    // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer
+    // "shot_result|123/45/87|543/34/1|13";
     public const string SHOT_RESULT = "shot_result";
 
     // message to server - request to make a jump
@@ -205,15 +203,15 @@ class NetworkingMessageAttributes
     // _______________________PLAYERS_SCORE_IN_PLAYROOM_______________________
     // message to players with scores of all existing players in the playroom
     // players_scores|data@data@data
-    // {fullFataOfPlayersInThatRoom} => ip/nickname/kills/deaths@ip/nickname/kills/deaths@ip/nickname/kills/deaths
+    // {fullFataOfPlayersInThatRoom} => db_id/nickname/kills/deaths@db_id/nickname/kills/deaths@db_id/nickname/kills/deaths
     public const string PLAYERS_SCORES_IN_PLAYROOM = "players_scores";
 
     // message to players notifying that a player in the playroom was killed
-    // player_was_killed_message|playerDeadNickname/playerDeadIP|playerKillerNickname/playerKilledIP|deathDetails
+    // player_was_killed_message|playerDeadNickname/playerDeadDbID|playerKillerNickname/playerKillerDbId|deathDetails
     public const string PLAYER_WAS_KILLED_MESSAGE = "player_was_killed_message";
 
     // message to server, informing that the player has died
-    // "player_died|killer_ip|deathDetails
+    // "player_died|killer_dbId|deathDetails
     public const string PLAYER_DIED = "player_died";
 
     // message to the player, informing that he has been revived
@@ -240,7 +238,7 @@ class NetworkingMessageAttributes
     public const string MATCH_TIME_REMAINING = "match_time_remaining";
 
     // message to all players notifying that the match has finished
-    // "match_finished|winnerIP|winnerNickname|matchResult
+    // "match_finished|winnerDbId|winnerNickname|matchResult
     public const string MATCH_FINISHED = "match_finished";
 
 }

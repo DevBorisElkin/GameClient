@@ -112,8 +112,8 @@ public class UI_InGame : MonoBehaviour
     {
         PlayerMovementController pl = FindObjectOfType<PlayerMovementController>();
         // ensure that players won't abuse leaving from playroom to avoid giving opponents score points
-        if (!pl.ipOfLastHitPlayer.Equals("") && EventManager.isAlive)
-            ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{pl.ipOfLastHitPlayer}|{DeathDetails.FellOutOfMap}");
+        if (!pl.dbIdOflastHitPlayer.Equals("") && EventManager.isAlive)
+            ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{pl.dbIdOflastHitPlayer}|{DeathDetails.FellOutOfMap}");
 
         Debug.Log("OnClick_LeavePlayroom();");
         ConnectionManager.instance.LeavePlayroom();

@@ -228,14 +228,14 @@ public class OnlineGameManager : MonoBehaviour
          * 
          */
     }
-
+    // "client_disconnected_from_playroom|playroomId|nickname|clientDbId" 
     public void OnPlayerDisconnectedFromPlayroom(string message)
     {
         if (!inPlayRoom) return;
         string[] substrings = message.Split('|');
-        string leftPlayerIp = substrings[3];
+        int leftPlayerDbId = Int32.Parse(substrings[3]);
 
-        PlayerData leftPlayer = FindPlayerByIp(leftPlayerIp);
+        PlayerData leftPlayer = FindPlayerByDbId(leftPlayerDbId);
         if (leftPlayer != null)
         {
             UnityThread.executeInUpdate(() => 
@@ -247,7 +247,7 @@ public class OnlineGameManager : MonoBehaviour
             });
         }
     }
-
+    // "players_positions_in_playroom|nickname,db_id,position,rotation@nickname,db_id,position,rotation@enc..."
     public void OnPositionMessageReceived(string message)
     {
         if (!inPlayRoom) return;
@@ -258,7 +258,7 @@ public class OnlineGameManager : MonoBehaviour
         bool noticedUnspanedPlayers = false;
         foreach (PlayerData a in retrievedPlayerData)
         {
-            PlayerData correctPlayer = FindPlayerByIp(a.ip);
+            PlayerData correctPlayer = FindPlayerByDbId(a.db_id);
             if(correctPlayer != null)
             {
                 correctPlayer.position = a.position;
@@ -268,7 +268,7 @@ public class OnlineGameManager : MonoBehaviour
             {
                 PlayerData newlyCreatedPlayer = new PlayerData();
                 newlyCreatedPlayer.nickname = a.nickname;
-                newlyCreatedPlayer.ip = a.ip;
+                newlyCreatedPlayer.db_id = a.db_id;
                 newlyCreatedPlayer.position = a.position; // TODO No initial connection of position with server
                 newlyCreatedPlayer.rotation = a.rotation;
                 opponents.Add(newlyCreatedPlayer);
@@ -278,16 +278,16 @@ public class OnlineGameManager : MonoBehaviour
         }
         if (noticedUnspanedPlayers)  UnityThread.executeInUpdate(() => { CheckUnspawnedPlayers(); });
     }
-    // code|posOfShootingPoint|rotationAtRequestTime|ipOfShootingPlayer
-    // "shot_result|123/45/87|543/34/1|198.0.0.126";
+    // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer
+    // "shot_result|123/45/87|543/34/1|13";
     public void OnShotMessageReceived(string message)
     {
         if (!inPlayRoom) return;
-        MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out string ip);
+        MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out int db_id);
 
         GameObject objToIgnore;
         // we know that it's our player shoots
-        if (ip.Equals(ConnectionManager.instance.currentUserData.ip))
+        if (db_id.Equals(ConnectionManager.instance.currentUserData.db_id))
         {
             objToIgnore = player;
             Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
@@ -295,14 +295,14 @@ public class OnlineGameManager : MonoBehaviour
         }
         else
         {
-            PlayerData plData = FindPlayerByIp(ip);
+            PlayerData plData = FindPlayerByDbId(db_id);
             if (plData != null && plData.controlledGameObject != null)
                 objToIgnore = plData.controlledGameObject;
             else return;
         }
         Action act = Action;
         UnityThread.executeInUpdate(act);
-        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, ip);
+        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, db_id);
     }
 
     public void OnJumpMessageReceived(int currentJumps)
@@ -398,7 +398,7 @@ public class OnlineGameManager : MonoBehaviour
         }
 
         public string nickname;
-        public string ip;
+        public int db_id;
 
         public bool playerLeft;
 
@@ -408,11 +408,11 @@ public class OnlineGameManager : MonoBehaviour
         public GameObject controlledGameObject;
     }
 
-    public PlayerData FindPlayerByIp(string ip)
+    public PlayerData FindPlayerByDbId(int dbId)
     {
         foreach (PlayerData a in opponents)
         {
-            if (a.ip.Equals(ip)) return a;
+            if (a.db_id.Equals(dbId)) return a;
         }
         return null;
     }
@@ -433,7 +433,7 @@ public class OnlineGameManager : MonoBehaviour
                         {
                             if (!a.position.Equals(Vector3.zero))
                             {
-                                Debug.Log($"Teleported player {a.ip} {a.nickname}, initial pos was {a.controlledGameObject.transform.position}, result pos became {a.position}");
+                                Debug.Log($"Teleported player {a.db_id} {a.nickname}, initial pos was {a.controlledGameObject.transform.position}, result pos became {a.position}");
                                 a.controlledGameObject.transform.position = a.position;
                                 a.controlledGameObject.transform.rotation = a.rotation;
                             }

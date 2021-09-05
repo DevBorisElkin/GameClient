@@ -238,7 +238,7 @@ public class PlayerMovementController : MonoBehaviour
 				StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
 
 				if (hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
-				hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(gp.ipOfPlayerWhoMadeShot);
+				hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(gp.dbIdOfPleyerWhoMadeLaunch);
 				StartCoroutine(hitAssignedToPlayer);
             }
         }
@@ -252,7 +252,7 @@ public class PlayerMovementController : MonoBehaviour
 	public float pushbackDuration = 0.75f;
 
 	float hitIsReferencedToPlayer = 5f;
-	public string ipOfLastHitPlayer = "";
+	public int dbIdOflastHitPlayer = -1;
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
@@ -265,11 +265,11 @@ public class PlayerMovementController : MonoBehaviour
 		pushingByProjectile_cantJump = false;
 	}
 	public IEnumerator hitAssignedToPlayer;
-	IEnumerator HitReferencedToPlayerTimeoutCoroutine(string ipOfHitter)
+	IEnumerator HitReferencedToPlayerTimeoutCoroutine(int dbIdOfHitter)
 	{
-		ipOfLastHitPlayer = ipOfHitter;
+		dbIdOflastHitPlayer = dbIdOfHitter;
 		yield return new WaitForSeconds(hitIsReferencedToPlayer);
-		ipOfLastHitPlayer = "";
+		dbIdOflastHitPlayer = -1;
 	}
 
 	#endregion
