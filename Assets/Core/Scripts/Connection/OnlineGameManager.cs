@@ -466,7 +466,6 @@ public class OnlineGameManager : MonoBehaviour
         { 
             if(ui_PlayersInLobby_Manager != null)
             ui_PlayersInLobby_Manager.SpawnLobbyItems(msg[1]); 
-        
         }
     }
 

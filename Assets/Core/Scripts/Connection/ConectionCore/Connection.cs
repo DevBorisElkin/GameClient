@@ -118,6 +118,12 @@ namespace BorisUnityDev.Networking
                             break;
                         }
                     }
+                    else if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
+                    {
+                        string[] substrings = message.Split('|');
+                        int localClientId = Int32.Parse(substrings[1]);
+                        UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}");
+                    }
                     else
                     {
                         lastConnectedConfirmed = DateTime.Now;
