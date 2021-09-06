@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: ca9531c6ebdde4a4b9a8ae48375afcc2
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Designosaur
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 41e5746010fbb6e4f8ba8d95d9ed4eec, type: 3}
+  - {fileID: 12800000, guid: 6752618b64740044c845111ffcb7baa3, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 59c0231d814f7a646bb9a5c0c2162df2
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Asket Condensed
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: f64c1013864280049a53746afdba212c, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 8ab567660e86fb9468470019f38aad15
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Lumberjack
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 79777bfd44b86714cae127ea9362c7dd, type: 3}
+  - {fileID: 12800000, guid: d49d472e14aeb0b409f7fb4c3dc3b8d7, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

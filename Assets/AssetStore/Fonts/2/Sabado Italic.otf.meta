@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: a6ca13da2ed04ec45ba8e9f31c051e95
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Sabado
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: c1c772b06def2a048b2dd7a97b5f378d, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
