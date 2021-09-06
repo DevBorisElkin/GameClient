@@ -178,18 +178,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftController: {fileID: 0}
   rightController: {fileID: 0}
-  speedMovements: 4.25
+  speedMovements: 5.6
   speedRotation: 8
+  collidedWithSpikeTrap: 0
   minRotationAngleToShoot: 5
-  online: 1
-  debugRot: 0
   _EventManager: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
-  isAlive: 0
+  localJumpsAmount: 0
+  canJumpLocally: 0
   forceModeOnJump: 2
   forceToApplyOnJump: 10.5
   forceToApplyOnGravityShot: 22
   pushbackDuration: 0.95
+  dbIdOflastHitPlayer: -1
 --- !u!114 &3082409969823103961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,6 +205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nicknameCanvas: {fileID: 1875451228046213183}
   projectileSpawnPoint: {fileID: 3779142853768192501}
+  collidedWithSpikeTrap: 0
 --- !u!54 &6752891382701042608
 Rigidbody:
   m_ObjectHideFlags: 0

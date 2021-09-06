@@ -101,7 +101,8 @@ public class PlayerMovementController : MonoBehaviour
 	void MakeMovement()
     {
 		if (!moving || pushingByProjectile) { lastMovement = Vector3.zero; return; }
-		Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
+		//Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
+		Vector3 translation = new Vector3(leftController.GetTouchPosition.x, 0, leftController.GetTouchPosition.y).normalized * speedMovements * Time.deltaTime;
 		lastMovement = translation;
 		transform.Translate(translation, Space.World);
     }
