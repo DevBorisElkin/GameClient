@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LightFadeDown : MonoBehaviour
 {
-    Light light;
+    Light lightComponent;
 
     public float waitUntilStartFading = 0.3f;
     public float totalFadeTime = 1f;
@@ -12,7 +12,7 @@ public class LightFadeDown : MonoBehaviour
 
     void Start()
     {
-        light = GetComponent<Light>();
+        lightComponent = GetComponent<Light>();
         StartCoroutine(LightFadeCoroutine());
     }
 
@@ -20,14 +20,14 @@ public class LightFadeDown : MonoBehaviour
     {
         yield return new WaitForSeconds(waitUntilStartFading);
 
-        float removeEachIteration = light.intensity / (totalFadeTime / iterationTime);
-        while(light.intensity > 0)
+        float removeEachIteration = lightComponent.intensity / (totalFadeTime / iterationTime);
+        while(lightComponent.intensity > 0)
         {
-            if (light.intensity - removeEachIteration > 0)
-                light.intensity -= removeEachIteration;
+            if (lightComponent.intensity - removeEachIteration > 0)
+                lightComponent.intensity -= removeEachIteration;
             else
             {
-                light.intensity = 0;
+                lightComponent.intensity = 0;
                 yield break;
             }
 
