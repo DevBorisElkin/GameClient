@@ -3599,7 +3599,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 852820830}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1515844427}
+        m_TargetAssemblyTypeName: UI_MainMenu, Assembly-CSharp
+        m_MethodName: OnClick_OpenSettingsPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &852820830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6677,7 +6689,19 @@ MonoBehaviour:
       m_Image: {fileID: 21300000, guid: a17541c93f41686408015349bf669ff6, type: 3}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1515844429}
+        m_TargetAssemblyTypeName: UI_Settings, Assembly-CSharp
+        m_MethodName: OnGraphicsChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &1271092466
 MonoBehaviour:
@@ -6878,7 +6902,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1284976758}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1515844427}
+        m_TargetAssemblyTypeName: UI_MainMenu, Assembly-CSharp
+        m_MethodName: OnClick_CloseSettingsPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1284976758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8278,6 +8314,7 @@ GameObject:
   - component: {fileID: 1515844426}
   - component: {fileID: 1515844427}
   - component: {fileID: 1515844428}
+  - component: {fileID: 1515844429}
   m_Layer: 5
   m_Name: UI_MainMenu
   m_TagString: Untagged
@@ -8342,6 +8379,8 @@ MonoBehaviour:
   panelConnect: {fileID: 1027456254}
   panelSendReceive: {fileID: 511800064}
   enterTextInputField: {fileID: 953671897}
+  settingsPanel: {fileID: 266924293}
+  ui_settings: {fileID: 1515844429}
 --- !u!114 &1515844428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8355,6 +8394,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentForLobbyItems: {fileID: 1663211702}
+--- !u!114 &1515844429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515844425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854e1c1e472456842bca5beca2db6a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropdownGraphics: {fileID: 1271092465}
 --- !u!1 &1547177849
 GameObject:
   m_ObjectHideFlags: 0

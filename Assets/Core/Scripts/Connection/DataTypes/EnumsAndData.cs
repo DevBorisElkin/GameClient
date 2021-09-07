@@ -7,6 +7,10 @@ public static class EnumsAndData
     public static string CODE_SAVED_LOGIN = "$code_saved_login";
     public static string CODE_SAVED_PASSWORD = "$code_saved_password";
 
+    public static string CODE_GRAPHICS_SETTINGS = "code_settings";
+
+    public enum GraphicsSettings { High = 0, Medium = 1, Low = 2 }
+
     public enum ClientAccessLevel
     {
         LowestLevel = 0,

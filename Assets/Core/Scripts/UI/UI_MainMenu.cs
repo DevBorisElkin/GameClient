@@ -124,6 +124,8 @@ public class UI_MainMenu : MonoBehaviour
         reg_EnterLogin.SetTextWithoutNotify("");
         reg_EnterPassword.SetTextWithoutNotify("");
         reg_EnterNickname.SetTextWithoutNotify("");
+
+        settingsPanel.SetActive(false);
     }
 
     public void OnClick_ChoiceAuthenticate() { Manage_IntroAuthRegister_Panels(false, true, false); }
@@ -238,4 +240,21 @@ public class UI_MainMenu : MonoBehaviour
         GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab, rootForServerMessages.transform);
     }
     #endregion ________________________________
+
+    #region ______SETTINGS_PANEL______
+    [Header("Settings")]
+    public GameObject settingsPanel;
+    public UI_Settings ui_settings;
+
+    public void OnClick_OpenSettingsPanel()
+    {
+        settingsPanel.SetActive(true);
+        ui_settings.OnPanelOpened();
+    }
+    public void OnClick_CloseSettingsPanel()
+    {
+        settingsPanel.SetActive(false);
+    }
+
+    #endregion
 }
