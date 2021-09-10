@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using TMPro;
 
 //[System.Serializable]
 public class EasyFps : MonoBehaviour {
@@ -31,7 +32,7 @@ public class EasyFps : MonoBehaviour {
     float timeCounter = 0.0f;
     float lastFramerate = 0.0f;
     bool acttxt = true;
-    Text txt;                          // COMMENT THIS LINE
+    TMP_Text txt;                          // COMMENT THIS LINE
     //TMPro.TextMeshPro txt;          // UNCOMMENT THIS LINE
     [SerializeField]
     public float FPS
@@ -52,9 +53,7 @@ public class EasyFps : MonoBehaviour {
     }
 
     void Start () {
-
-        txt = transform.Find("Text").GetComponent<Text>();                         // COMMENT THIS LINE
-        //txt = transform.Find("Text").GetComponent<TMPro.TextMeshPro>();         // UNCOMMENT THIS LINE
+        txt = transform.Find("Text").GetComponent<TMPro.TextMeshPro>();
 
         if (ncm == true)
         {
@@ -126,11 +125,11 @@ public class EasyFps : MonoBehaviour {
             {
                 if (lastFramerate <= MaxFrameRate)
                 {
-                    txt.text = lastfrInt.ToString();
+                    txt.text = "FPS: "+lastfrInt.ToString();
                 }
                 else
                 {
-                    txt.text = MaxFrameRate + "+";
+                    txt.text = "FPS: " + MaxFrameRate + "+";
                 }
             }
             frameCounter = 0;
