@@ -32,8 +32,7 @@ public class EasyFps : MonoBehaviour {
     float timeCounter = 0.0f;
     float lastFramerate = 0.0f;
     bool acttxt = true;
-    TMP_Text txt;                          // COMMENT THIS LINE
-    //TMPro.TextMeshPro txt;          // UNCOMMENT THIS LINE
+    [SerializeField] public TMP_Text txt;
     [SerializeField]
     public float FPS
     {
@@ -53,7 +52,7 @@ public class EasyFps : MonoBehaviour {
     }
 
     void Start () {
-        txt = transform.Find("Text").GetComponent<TMPro.TextMeshPro>();
+        if(txt == null) txt = transform.Find("Text").GetComponent<TMPro.TextMeshPro>();
 
         if (ncm == true)
         {

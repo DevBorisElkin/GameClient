@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 893792171822871645}
   - component: {fileID: 893792171822871642}
   - component: {fileID: 893792171822871643}
-  - component: {fileID: 893792171822871644}
+  - component: {fileID: 8243302917243001523}
   m_Layer: 5
   m_Name: FPS_counter
   m_TagString: Untagged
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &893792171822871644
+--- !u!114 &8243302917243001523
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,26 +86,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 893792171822871646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1094f398bee6be148ba64da43c3b328f, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ebc0bfe07264854b801d43eed79a56d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnFpsLessThan10:
-    m_PersistentCalls:
-      m_Calls: []
-  OnFpsLessThan30:
-    m_PersistentCalls:
-      m_Calls: []
-  OnFpsLessThan60:
-    m_PersistentCalls:
-      m_Calls: []
-  OnFpsLessThan120:
-    m_PersistentCalls:
-      m_Calls: []
-  OnFpsMoreThanMax:
-    m_PersistentCalls:
-      m_Calls: []
-  ncm: 1
-  maxFR: 120
+  txt: {fileID: 893792172973655587}
   refresht: 0.5
 --- !u!1 &893792172973655589
 GameObject:
