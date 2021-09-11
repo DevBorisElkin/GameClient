@@ -319,6 +319,8 @@ public class PlayerMovementController : MonoBehaviour
 	public void RevivePlayer(Vector3 spawnPosition, int newJumpsAmount)
     {
 		if (EventManager.instance == null) return;
+		EventManager.isAvailableForRaycaster = false;
+
 		EventManager.instance.camSimpleFollow.SetFalling(false);
 		SetLocalAmountOfJumps(newJumpsAmount);
 		collidedWithSpikeTrap = false;

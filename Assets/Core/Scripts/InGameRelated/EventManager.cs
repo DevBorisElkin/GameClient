@@ -82,7 +82,6 @@ public class EventManager : MonoBehaviour
 
         yield return new WaitForSeconds(initialDelay);
         EventManager.isAlive = false;
-        isAvailableForRaycaster = false;
         MC.KillPlayer();
 
         ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killerDbId}|{deathDetails}");
