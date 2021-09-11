@@ -8,11 +8,13 @@ public class CamXrayRaycaster : MonoBehaviour
 {
     Camera _camera;
     int xRayObjLayer;
+    int coremapLayer;
     float dontWorkForDeadOpponents = 4.5f;
     private void Awake()
     {
         _camera = Camera.main;
         xRayObjLayer = LayerMask.GetMask("XrayObject", "Player");
+        coremapLayer = LayerMask.GetMask("XrayObject", "Player", "CoreMapLayer");
     }
 
     private void Update()
@@ -32,7 +34,11 @@ public class CamXrayRaycaster : MonoBehaviour
                         XrayPiece piece = hit1.collider.GetComponent<XrayPiece>();
                         if (piece != null)
                         {
-                            piece.assignedChunk.SetBlocksVisible(false);
+                            if(Physics.Raycast(a.controlledGameObject.transform.position, _camera.transform.position - a.controlledGameObject.transform.position, out RaycastHit hit3, 100, coremapLayer))
+                            {
+                                if(hit3.collider.gameObject.layer != LayerMask.NameToLayer("CoreMapLayer"))
+                                    piece.assignedChunk.SetBlocksVisible(false);
+                            }
                         }
                     }
                 }
