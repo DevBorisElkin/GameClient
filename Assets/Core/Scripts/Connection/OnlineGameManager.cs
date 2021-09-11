@@ -41,7 +41,7 @@ public class OnlineGameManager : MonoBehaviour
 
     public static int maxJumpsAmount = 0;
 
-    GameObject player;
+    [HideInInspector] public GameObject player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
 
     UI_PlayersInLobby_Manager _ui_PlayersInLobby_Manager;

@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: 6704527064422643020}
   - component: {fileID: 6704527064422643023}
   - component: {fileID: 4347224485767177435}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Opponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -256,6 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nicknameCanvas: {fileID: 8755688438791357368}
   projectileSpawnPoint: {fileID: 1388222267369738470}
+  collidedWithSpikeTrap: 0
 --- !u!1001 &1043444942249254122
 PrefabInstance:
   m_ObjectHideFlags: 0

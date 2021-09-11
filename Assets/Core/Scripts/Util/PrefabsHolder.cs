@@ -20,6 +20,8 @@ public class PrefabsHolder : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    public Material mapBasicMat;
+    public Material mapTransparentMat;
 
     public GameObject player_prefab;
     public GameObject opponent_prefab;
