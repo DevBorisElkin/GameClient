@@ -32,7 +32,7 @@ public class XrayChunk : MonoBehaviour
 
     IEnumerator ResetToVisibleState()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         _SetBlocksVisible(true);
     }
 }

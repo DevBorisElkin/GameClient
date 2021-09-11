@@ -65,8 +65,11 @@ public class PlayerMovementController : MonoBehaviour
 		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
 
 		EventManager.isAlive = true;
+		Invoke(nameof(InvokableSetAvailableForRaycast), 0.5f);
 		EventManager.sendCoordinatesToServer = true;
 	}
+
+	void InvokableSetAvailableForRaycast() => StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
 
 	IEnumerator SendPlayerMovement()
     {
@@ -328,6 +331,7 @@ public class PlayerMovementController : MonoBehaviour
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
 		EventManager.sendCoordinatesToServer = true;
 		EventManager.isAlive = true;
+		StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
 	}
 
     #endregion

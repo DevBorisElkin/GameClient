@@ -13,6 +13,7 @@ public class EventManager : MonoBehaviour
     public TMP_Text txt_jumpsLeft;
 
     public static bool isAlive;
+    public static bool isAvailableForRaycaster;
     public static bool sendCoordinatesToServer;
     public static Vector3 spawnPositionFromServer;
 
@@ -81,11 +82,18 @@ public class EventManager : MonoBehaviour
 
         yield return new WaitForSeconds(initialDelay);
         EventManager.isAlive = false;
+        isAvailableForRaycaster = false;
         MC.KillPlayer();
 
         ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killerDbId}|{deathDetails}");
         yield return new WaitForSeconds(2f);
 
         sendCoordinatesToServer = false;
+    }
+
+    public IEnumerator SetIsAvailableForRaycaster()
+    {
+        yield return new WaitForSeconds(1f);
+        isAvailableForRaycaster = true;
     }
 }
