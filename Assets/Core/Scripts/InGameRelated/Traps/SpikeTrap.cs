@@ -32,4 +32,15 @@ public class SpikeTrap : MonoBehaviour
             StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        PlayerMovementController movementController = other.gameObject.GetComponent<PlayerMovementController>();
+        if (movementController != null && EventManager.isAlive)
+        {
+            EventManager.isAlive = false;
+            if (mc == null) mc = movementController;
+            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
+        }
+    }
 }
