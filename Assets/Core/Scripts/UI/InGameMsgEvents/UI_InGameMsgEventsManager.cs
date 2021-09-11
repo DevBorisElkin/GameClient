@@ -26,7 +26,8 @@ public class UI_InGameMsgEventsManager : MonoBehaviour
     public Transform parentForEventMessages;
 
     // player_was_killed_message|playerDeadNickname/playerDeadIP|playerKillerNickname/playerKilledIP|deathDetails
-    public void FromServer_DeathEventMessageReceived(string message)
+    // returns db_id of dead player
+    public int FromServer_DeathEventMessageReceived(string message)
     {
         string[] substring1 = message.Split('|');
         string[] playerDeadSubstring = substring1[1].Split('/');
@@ -50,6 +51,7 @@ public class UI_InGameMsgEventsManager : MonoBehaviour
         GameObject msgEventPanel = Instantiate(PrefabsHolder.instance.ui_inGameEventMessage, parentForEventMessages);
         UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
         item.SetUpDeathMessage(messageType, deathDetailsResult, reasonOfDeath, killerSubstring[0], playerDeadSubstring[0]);
+        return Int32.Parse(playerDeadSubstring[1]);
     }
     public void FromServer_PlayerJoinedPlayroomMessageReceived(string newUserNickname)
     {

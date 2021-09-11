@@ -154,7 +154,8 @@ public class OnlineGameManager : MonoBehaviour
                 UnityThread.executeInUpdate(() => {
                     if (UI_InGameMsgEventsManager.instance != null)
                     {
-                        UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
+                        int deadPlayerId = UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
+                        DisableXrayForOpponent(deadPlayerId);
                     }
                 });
             }
@@ -387,6 +388,18 @@ public class OnlineGameManager : MonoBehaviour
         catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
     }
 
+    public void DisableXrayForOpponent(int opponentId)
+    {
+        foreach(var a in opponents)
+        {
+            if(a.db_id == opponentId)
+            {
+                a.lastTimeDead = DateTime.Now;
+                break;
+            }
+        }
+    }
+
     public List<PlayerData> opponents;
 
     public class PlayerData
@@ -406,6 +419,8 @@ public class OnlineGameManager : MonoBehaviour
         public Quaternion rotation;
 
         public GameObject controlledGameObject;
+
+        public DateTime lastTimeDead;
     }
 
     public PlayerData FindPlayerByDbId(int dbId)
