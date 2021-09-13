@@ -19,8 +19,12 @@ public class UI_Settings : MonoBehaviour
     }
     public void OnGraphicsChanged(int newGraphicsValue)
     {
+        //Debug.Log($"currentGraphicsValue: {currentGraphicsValue} | newGraphicsValue: {newGraphicsValue}");
         if(currentGraphicsValue != newGraphicsValue)
         {
+            //Debug.Log("OnGraphicsChanged "+ newGraphicsValue + " ConvertChosenGraphicsToCorrectInt(newGraphicsValue) "+ ConvertChosenGraphicsToCorrectInt(newGraphicsValue));
+            Application.targetFrameRate = 60;
+            currentGraphicsValue = newGraphicsValue;
             PlayerPrefs.SetInt(CODE_GRAPHICS_SETTINGS, newGraphicsValue);
             QualitySettings.SetQualityLevel(ConvertChosenGraphicsToCorrectInt(newGraphicsValue));
         }

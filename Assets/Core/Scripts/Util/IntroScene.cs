@@ -8,6 +8,7 @@ public class IntroScene : MonoBehaviour
 {
     void Start()
     {
+        Application.targetFrameRate = 60;
         QualitySettings.SetQualityLevel(UI_Settings.ConvertChosenGraphicsToCorrectInt(PlayerPrefs.GetInt(CODE_GRAPHICS_SETTINGS, 0)));
         SceneManager.LoadSceneAsync("MainScene");
     }
