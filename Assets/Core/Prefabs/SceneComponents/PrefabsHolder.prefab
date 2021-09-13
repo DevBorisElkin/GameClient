@@ -71,3 +71,5 @@ MonoBehaviour:
     type: 3}
   ui_inGameEventMessage: {fileID: 5501849137847562106, guid: c6fce01b7599e8e4d801d36f395a3fde,
     type: 3}
+  ui_opponentPointer_prefab: {fileID: 4737873384970202523, guid: b109e1807b4f88540a86b44771fb20b0,
+    type: 3}

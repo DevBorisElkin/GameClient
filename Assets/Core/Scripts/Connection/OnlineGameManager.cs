@@ -10,6 +10,7 @@ using static EventManager;
 using static NetworkingMessageAttributes;
 using static DataTypes;
 using static EnumsAndData;
+using static OpponentPointer;
 
 public class OnlineGameManager : MonoBehaviour
 {
@@ -241,6 +242,7 @@ public class OnlineGameManager : MonoBehaviour
         {
             UnityThread.executeInUpdate(() => 
             {
+                if (CameraRenderingManager.instance != null) CameraRenderingManager.instance.opponentPointerHandler.DestroyPointer(leftPlayer.opponentPointer);
                 UI_InGameMsgEventsManager.instance.FromServer_PlayerExitedPlayroomMessageReceived(leftPlayer.nickname);
                 leftPlayer.playerLeft = true;
                 CheckRemoveAndDeleteLeftPlayers();
@@ -421,6 +423,8 @@ public class OnlineGameManager : MonoBehaviour
         public GameObject controlledGameObject;
 
         public DateTime lastTimeDead;
+
+        public Pointer opponentPointer;
     }
 
     public PlayerData FindPlayerByDbId(int dbId)
