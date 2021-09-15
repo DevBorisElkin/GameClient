@@ -98,7 +98,7 @@ public class OpponentPointer : MonoBehaviour
         private void RotatePointerTowardsTargetPosition()
         {
             Vector3 toPosition = imageTargetPos;
-            Vector3 fromPosition = uiCamera.transform.position;
+            Vector3 fromPosition = pointerRectTransform.position;
             fromPosition.z = 0f;
             Vector3 dir = (toPosition - fromPosition).normalized;
             float angle = UtilsClass.GetAngleFromVectorFloat(dir);
