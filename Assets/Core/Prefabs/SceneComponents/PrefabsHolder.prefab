@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 099828884c032d7429624ea5c44b94a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapBasicMat: {fileID: 2100000, guid: 569ca57e8584cdb439813e043b19ca36, type: 2}
+  mapBasicMat: {fileID: 2100000, guid: a056bd1cfaaf0104983d77499d1b941c, type: 2}
   mapTransparentMat: {fileID: 2100000, guid: 542937e1d041f8947a002da2594c08e4, type: 2}
   player_prefab: {fileID: 6704527064422643022, guid: b8fc31131edb0124f9d382c02cfafa8b,
     type: 3}
