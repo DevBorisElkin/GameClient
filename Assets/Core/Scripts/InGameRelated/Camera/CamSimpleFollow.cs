@@ -114,10 +114,23 @@ public class CamSimpleFollow : MonoBehaviour
         cin_composer.m_VerticalDamping = 0.5f;
         cin_composer.m_DeadZoneWidth = 0.2f;
         cin_composer.m_DeadZoneHeight = 0.2f;
+        cin_composer.m_TrackedObjectOffset = new Vector3(0, -5.00f, 0);
+
         cin_cam.Follow = transformToFollow;
         cin_cam.LookAt = transformToFollow;
         cin_transposer.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
     }
+
+    void Falling_One_SetUp()
+    {
+        
+    }
+
+    void Falling_Two_SetUp()
+    {
+        cin_transposer.m_BindingMode = CinemachineTransposer.BindingMode.LockToTarget;
+    }
+
     public enum CamFollowOnDeath { SimpleFall = 0, RotateWithPlayer = 1}
 
     /* way 2
