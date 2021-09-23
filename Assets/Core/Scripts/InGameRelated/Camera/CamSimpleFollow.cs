@@ -11,6 +11,12 @@ public class CamSimpleFollow : MonoBehaviour
     public CinemachineVirtualCamera cin_cam_falling_playerRot;
     public CinemachineVirtualCamera cin_cam_aboveTheMap;
 
+    [Space(5f)]
+    public CinemachineBlendDefinition.Style defaultBlendStyle = CinemachineBlendDefinition.Style.EaseIn;
+    public CinemachineBlendDefinition.Style defaultBlendFallStyle = CinemachineBlendDefinition.Style.EaseIn;
+    public float defaultBlendTime = 1f;
+    public float delayBeforeZoomInFromAbove = 0.5f;
+    [Space(5f)]
     CinemachineTransposer cin_transposer;
     CinemachineComposer cin_composer;
 
@@ -90,7 +96,7 @@ public class CamSimpleFollow : MonoBehaviour
     {
         InstantTransmissionSetUp();
         SetPrioritiveCamera(cin_cam_aboveTheMap);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(delayBeforeZoomInFromAbove);
         BasicSetUp();
     }
 
@@ -98,13 +104,13 @@ public class CamSimpleFollow : MonoBehaviour
     {
         if (fast)
         {
-            cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
+            cin_brain.m_DefaultBlend.m_Style = defaultBlendFallStyle;
             cin_brain.m_DefaultBlend.m_Time = 1f;
         }
         else
         {
-            cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
-            cin_brain.m_DefaultBlend.m_Time = 1f;
+            cin_brain.m_DefaultBlend.m_Style = defaultBlendFallStyle;
+            cin_brain.m_DefaultBlend.m_Time = 0f;
         }
         
         cin_transposer.m_XDamping = 0;
@@ -116,8 +122,8 @@ public class CamSimpleFollow : MonoBehaviour
 
     void BasicSetUp()
     {
-        cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseIn;
-        cin_brain.m_DefaultBlend.m_Time = 1f;
+        cin_brain.m_DefaultBlend.m_Style = defaultBlendStyle;
+        cin_brain.m_DefaultBlend.m_Time = defaultBlendTime;
         SetPrioritiveCamera(cin_cam_main);
         cin_transposer.m_XDamping = 1.3f;
         cin_transposer.m_YDamping = 1.3f;
@@ -125,13 +131,15 @@ public class CamSimpleFollow : MonoBehaviour
         cin_transposer.m_FollowOffset = offset;
         cin_composer.m_HorizontalDamping = 0.5f;
         cin_composer.m_VerticalDamping = 0.5f;
-        cin_composer.m_DeadZoneWidth = 0.2f;
-        cin_composer.m_DeadZoneHeight = 0.2f;
+        cin_composer.m_DeadZoneWidth = 0.0f;
+        cin_composer.m_DeadZoneHeight = 0.0f;
         cin_composer.m_TrackedObjectOffset = new Vector3(0, -4.00f, 0);
 
         cin_cam_main.Follow = transformToFollow;
         cin_cam_main.LookAt = transformToFollow;
         cin_transposer.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+
+        StartCoroutine(CameraHardBordersFix());
     }
 
     void Falling_Simple_SetUp()
@@ -155,6 +163,14 @@ public class CamSimpleFollow : MonoBehaviour
 
 
     public enum CamFollowOnDeath { SimpleFall = 0, RotateWithPlayer = 1}
+
+
+    public IEnumerator CameraHardBordersFix()
+    {
+        yield return new WaitForSeconds(defaultBlendTime + 0.1f);
+        cin_composer.m_DeadZoneWidth = 0.2f;
+        cin_composer.m_DeadZoneHeight = 0.2f;
+    }
 
     /* way 2
      * 
