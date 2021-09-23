@@ -5,16 +5,24 @@ using Cinemachine;
 
 public class CamSimpleFollow : MonoBehaviour
 {
-    CinemachineVirtualCamera cin_cam;
+    public CinemachineBrain cin_brain;
+    public CinemachineVirtualCamera cin_cam_main;
+    public CinemachineVirtualCamera cin_cam_falling_simple;
+    public CinemachineVirtualCamera cin_cam_falling_playerRot;
+    public CinemachineVirtualCamera cin_cam_aboveTheMap;
+
     CinemachineTransposer cin_transposer;
     CinemachineComposer cin_composer;
 
+    List<CinemachineVirtualCamera> allCameras;
+
     public Vector3 offset;
-    public Vector3 fallingOffset;
+    public Vector3 fallingOffset_Simple;
+    public Vector3 fallingOffset_PlayerDirection;
 
     public float lerpSpeed = 3f;
 
-    public Transform transformToFollow;
+    Transform transformToFollow;
 
     Quaternion baseRotation;
 
@@ -33,70 +41,72 @@ public class CamSimpleFollow : MonoBehaviour
 
     private void Start()
     {
-        baseRotation = transform.rotation;
-        if(FindObjectOfType<PlayerMovementController>() != null)
-            if (transformToFollow == null) transformToFollow = FindObjectOfType<PlayerMovementController>().transform;
+        allCameras = new List<CinemachineVirtualCamera>();
+        allCameras.Add(cin_cam_main);
+        allCameras.Add(cin_cam_falling_simple);
+        allCameras.Add(cin_cam_falling_playerRot);
+        allCameras.Add(cin_cam_aboveTheMap);
 
-        cin_cam = FindObjectOfType<CinemachineVirtualCamera>();
+        transformToFollow = FindObjectOfType<PlayerMovementController>().transform;
 
-        if(transformToFollow != null && cin_cam != null)
+        if (transformToFollow != null)
         {
-            cin_transposer = cin_cam.GetCinemachineComponent<CinemachineTransposer>();
-            cin_composer = cin_cam.GetCinemachineComponent<CinemachineComposer>();
+            cin_transposer = cin_cam_main.GetCinemachineComponent<CinemachineTransposer>();
+            cin_composer = cin_cam_main.GetCinemachineComponent<CinemachineComposer>();
+
+            cin_cam_falling_simple.Follow = transformToFollow;
+            cin_cam_falling_simple.LookAt = transformToFollow;
+            cin_cam_falling_playerRot.Follow = transformToFollow;
+            cin_cam_falling_playerRot.LookAt = transformToFollow;
 
             BasicSetUp();
         }
     }
 
-    //void FixedUpdate()
-    //{
-    //    if (transformToFollow != null)
-    //    {
-    //        if(!isFalling)
-    //            transform.position = Vector3.Lerp(transform.position, transformToFollow.position + offset, lerpSpeed * Time.deltaTime);
-    //        else if (isFalling)
-    //        {
-    //            if (camFollowOnDeath.Equals(CamFollowOnDeath.SimpleFall))
-    //            {
-    //                transform.position = Vector3.Lerp(transform.position, transformToFollow.position + fallingOffset, fallingPositionLerpSpeed * Time.deltaTime);
-    //                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation((transformToFollow.position - transform.position).normalized), fallingRotationLerpSpeed);
-    //            }
-    //            else if (camFollowOnDeath.Equals(CamFollowOnDeath.RotateWithPlayer))
-    //            {
-    //                transform.position = Vector3.Lerp(transform.position, transformToFollow.position + (-transformToFollow.forward * camBehingPlayerOnFall) + Vector3.up * camAbovePlayerOnFall, fallingPositionLerpSpeed * Time.deltaTime);
-    //                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation((transformToFollow.position - transform.position).normalized), fallingRotationLerpSpeed);
-    //            }
-    //        }
-    //    }
-    //}
     public void SetFalling(bool newState)
     {
         if (newState && useRandomCamAnimOnFall) camFollowOnDeath = (CamFollowOnDeath)UnityEngine.Random.Range(0, 2);
-        if (!newState) transform.rotation = baseRotation;
         if (nicknamePlayerCanvas != null) nicknamePlayerCanvas.isMainPlayerFalling = newState;
         isFalling = newState;
 
         if (isFalling)
         {
-            
+            if (camFollowOnDeath.Equals(CamFollowOnDeath.SimpleFall))
+            {
+                Falling_Simple_SetUp();
+            }
+            else if (camFollowOnDeath.Equals(CamFollowOnDeath.RotateWithPlayer))
+            {
+                Falling_PlayerDir_SetUp();
+            }
         }
         else if (!isFalling)
         {
-            
             StartCoroutine(InvocableDelayedSetUp());
         }
-
     }
 
     IEnumerator InvocableDelayedSetUp()
     {
         InstantTransmissionSetUp();
+        SetPrioritiveCamera(cin_cam_aboveTheMap);
         yield return new WaitForSeconds(0.5f);
         BasicSetUp();
     }
 
-    void InstantTransmissionSetUp()
+    void InstantTransmissionSetUp(bool fast = false)
     {
+        if (fast)
+        {
+            cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
+            cin_brain.m_DefaultBlend.m_Time = 1f;
+        }
+        else
+        {
+            cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+            cin_brain.m_DefaultBlend.m_Time = 1f;
+        }
+        
         cin_transposer.m_XDamping = 0;
         cin_transposer.m_YDamping = 0;
         cin_transposer.m_ZDamping = 0;
@@ -106,6 +116,9 @@ public class CamSimpleFollow : MonoBehaviour
 
     void BasicSetUp()
     {
+        cin_brain.m_DefaultBlend.m_Style = CinemachineBlendDefinition.Style.EaseIn;
+        cin_brain.m_DefaultBlend.m_Time = 1f;
+        SetPrioritiveCamera(cin_cam_main);
         cin_transposer.m_XDamping = 1.3f;
         cin_transposer.m_YDamping = 1.3f;
         cin_transposer.m_ZDamping = 1.3f;
@@ -114,22 +127,32 @@ public class CamSimpleFollow : MonoBehaviour
         cin_composer.m_VerticalDamping = 0.5f;
         cin_composer.m_DeadZoneWidth = 0.2f;
         cin_composer.m_DeadZoneHeight = 0.2f;
-        cin_composer.m_TrackedObjectOffset = new Vector3(0, -5.00f, 0);
+        cin_composer.m_TrackedObjectOffset = new Vector3(0, -4.00f, 0);
 
-        cin_cam.Follow = transformToFollow;
-        cin_cam.LookAt = transformToFollow;
+        cin_cam_main.Follow = transformToFollow;
+        cin_cam_main.LookAt = transformToFollow;
         cin_transposer.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
     }
 
-    void Falling_One_SetUp()
+    void Falling_Simple_SetUp()
     {
-        
+        InstantTransmissionSetUp(true);
+        SetPrioritiveCamera(cin_cam_falling_simple);
     }
 
-    void Falling_Two_SetUp()
+    void Falling_PlayerDir_SetUp()
     {
-        cin_transposer.m_BindingMode = CinemachineTransposer.BindingMode.LockToTarget;
+        InstantTransmissionSetUp(true);
+        SetPrioritiveCamera(cin_cam_falling_playerRot);
     }
+
+    void SetPrioritiveCamera(CinemachineVirtualCamera newCoreCamera)
+    {
+        foreach(var a in allCameras)
+            if (a != newCoreCamera) a.Priority = 10;
+        newCoreCamera.Priority = 12;
+    }
+
 
     public enum CamFollowOnDeath { SimpleFall = 0, RotateWithPlayer = 1}
 
