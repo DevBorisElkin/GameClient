@@ -112,12 +112,6 @@ public class CamSimpleFollow : MonoBehaviour
             cin_brain.m_DefaultBlend.m_Style = defaultBlendFallStyle;
             cin_brain.m_DefaultBlend.m_Time = 0f;
         }
-        
-        cin_transposer.m_XDamping = 0;
-        cin_transposer.m_YDamping = 0;
-        cin_transposer.m_ZDamping = 0;
-        cin_composer.m_HorizontalDamping = 0f;
-        cin_composer.m_VerticalDamping = 0f;
     }
 
     void BasicSetUp()
@@ -125,12 +119,12 @@ public class CamSimpleFollow : MonoBehaviour
         cin_brain.m_DefaultBlend.m_Style = defaultBlendStyle;
         cin_brain.m_DefaultBlend.m_Time = defaultBlendTime;
         SetPrioritiveCamera(cin_cam_main);
-        cin_transposer.m_XDamping = 1.3f;
-        cin_transposer.m_YDamping = 1.3f;
-        cin_transposer.m_ZDamping = 1.3f;
+        cin_transposer.m_XDamping = 0f;
+        cin_transposer.m_YDamping = 0f;
+        cin_transposer.m_ZDamping = 0f;
         cin_transposer.m_FollowOffset = offset;
-        cin_composer.m_HorizontalDamping = 0.5f;
-        cin_composer.m_VerticalDamping = 0.5f;
+        cin_composer.m_HorizontalDamping = 0f;
+        cin_composer.m_VerticalDamping = 0f;
         cin_composer.m_DeadZoneWidth = 0.0f;
         cin_composer.m_DeadZoneHeight = 0.0f;
         cin_composer.m_TrackedObjectOffset = new Vector3(0, -4.00f, 0);
@@ -168,52 +162,29 @@ public class CamSimpleFollow : MonoBehaviour
     public IEnumerator CameraHardBordersFix()
     {
         yield return new WaitForSeconds(defaultBlendTime + 0.1f);
+        expandDeadZoneSpeed = expandDeadZoneTime / 60;
+        expandingDeadZone = true;
+
+
         cin_composer.m_DeadZoneWidth = 0.2f;
         cin_composer.m_DeadZoneHeight = 0.2f;
+        cin_transposer.m_XDamping = 1.3f;
+        cin_transposer.m_YDamping = 1.3f;
+        cin_transposer.m_ZDamping = 1.3f;
+        cin_composer.m_HorizontalDamping = 0.5f;
+        cin_composer.m_VerticalDamping = 0.5f;
     }
 
-    /* way 2
-     * 
-     public Vector3 offset;
-    public float lerpSpeed = 3f;
+    bool expandingDeadZone;
+    float expandDeadZoneTime = 1f;
+    float expandDeadZoneSpeed = 2f;
 
-    public Transform transformToFollow;
 
-    Quaternion baseRotation;
-
-    [Header("Falling out confition")]
-    bool isFalling;
-    public Vector3 fallingOffset;
-    public float fallingPositionLerpSpeed = 3f;
-    public float fallingRotationLerpSpeed = 1f;
-    
-
-    private void Start()
+    private void FixedUpdate()
     {
-        baseRotation = transform.rotation;
-        if(FindObjectOfType<PlayerMovementController>() != null)
-            if (transformToFollow == null) transformToFollow = FindObjectOfType<PlayerMovementController>().transform;
-    }
+        if (!expandingDeadZone) return;
 
-    void FixedUpdate()
-    {
-        if (transformToFollow != null)
-        {
-            if(!isFalling)
-                transform.position = Vector3.Lerp(transform.position, transformToFollow.position + offset, lerpSpeed * Time.deltaTime);
-            else if (isFalling)
-            {
-                Quaternion lookRot = Quaternion.LookRotation((transformToFollow.position - transform.position).normalized);
-                transform.position = Vector3.Lerp(transform.position, transformToFollow.position + (-transformToFollow.forward * camBehingPlayerOnFall) + Vector3.up * camAbovePlayerOnFall, fallingPositionLerpSpeed * Time.deltaTime);
-                transform.rotation = Quaternion.Lerp(transform.rotation, lookRot, fallingRotationLerpSpeed);
-                    
-            }
-        }
+
+
     }
-    public void SetFalling(bool newState)
-    {
-        isFalling = newState;
-        if (!newState) transform.rotation = baseRotation;
-    }
-     */
 }
