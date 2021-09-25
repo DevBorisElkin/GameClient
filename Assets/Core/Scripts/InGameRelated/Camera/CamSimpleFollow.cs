@@ -162,10 +162,6 @@ public class CamSimpleFollow : MonoBehaviour
     public IEnumerator CameraHardBordersFix()
     {
         yield return new WaitForSeconds(defaultBlendTime + 0.1f);
-        expandDeadZoneSpeed = expandDeadZoneTime / 60;
-        expandingDeadZone = true;
-
-
         cin_composer.m_DeadZoneWidth = 0.2f;
         cin_composer.m_DeadZoneHeight = 0.2f;
         cin_transposer.m_XDamping = 1.3f;
@@ -173,18 +169,5 @@ public class CamSimpleFollow : MonoBehaviour
         cin_transposer.m_ZDamping = 1.3f;
         cin_composer.m_HorizontalDamping = 0.5f;
         cin_composer.m_VerticalDamping = 0.5f;
-    }
-
-    bool expandingDeadZone;
-    float expandDeadZoneTime = 1f;
-    float expandDeadZoneSpeed = 2f;
-
-
-    private void FixedUpdate()
-    {
-        if (!expandingDeadZone) return;
-
-
-
     }
 }
