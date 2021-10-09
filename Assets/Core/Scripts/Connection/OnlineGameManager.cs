@@ -42,7 +42,8 @@ public class OnlineGameManager : MonoBehaviour
 
     public static int maxJumpsAmount = 0;
 
-    [HideInInspector] public GameObject player;
+    [HideInInspector] public GameObject playerGameObj;
+    [HideInInspector] public Player player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
 
     UI_PlayersInLobby_Manager _ui_PlayersInLobby_Manager;
@@ -69,11 +70,12 @@ public class OnlineGameManager : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name.Equals("NetworkingGameScene"))
         {
-            player = Instantiate(PrefabsHolder.instance.player_prefab, 
+            playerGameObj = Instantiate(PrefabsHolder.instance.player_prefab, 
                      spawnPosition, 
                      Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
-            playerMovementConetroller = player.GetComponent<PlayerMovementController>();
-            player.GetComponentInChildren<Player>().SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
+            playerMovementConetroller = playerGameObj.GetComponent<PlayerMovementController>();
+            player = playerGameObj.GetComponentInChildren<Player>();
+            player.SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
             shootingManager = FindObjectOfType<EventManager>();
         }
     }
@@ -157,6 +159,17 @@ public class OnlineGameManager : MonoBehaviour
                     {
                         int deadPlayerId = UI_InGameMsgEventsManager.instance.FromServer_DeathEventMessageReceived(message);
                         DisableXrayForOpponent(deadPlayerId);
+
+                        if (deadPlayerId == ConnectionManager.instance.currentUserData.db_id)
+                            player.ResetAllRuneEffects();
+                        else
+                        {
+                            var opponent = FindPlayerByDbId(deadPlayerId);
+                            if (opponent != null)
+                            {
+                                opponent.player.ResetAllRuneEffects();
+                            }
+                        }
                     }
                 });
             }
@@ -209,28 +222,72 @@ public class OnlineGameManager : MonoBehaviour
                     UI_InGame.instance.OnMatchResult(_res);
                 });
             }
+            else if (message.Contains(RUNE_SPAWNED))
+            {
+                MessageParser.ParseOnRuneSpawnedMessage(message, out Vector3 spawnPosition, out Rune runeType, out int runeId);
+                UnityThread.executeInUpdate(() =>
+                {
+                    GameObject spawnedRune = Instantiate(PrefabsHolder.instance.rune_prefab, spawnPosition, Quaternion.identity);
+                    RuneInstance rune = spawnedRune.GetComponent<RuneInstance>();
+                    rune.SetUpRune(runeId, runeType);
+                });
+            }
+            else if (message.Contains(RUNE_PICKED_UP))
+            {
+                MessageParser.ParseOnRunePickedUpMessage(message, out int runeId, out int playerWhoPicked_db_id, out Rune rune, out string nickOfPicker, out float effectDuration);
+                UnityThread.executeInUpdate(() =>
+                {
+                    // 1) Add rune effect on player
+                    if(playerWhoPicked_db_id == ConnectionManager.instance.currentUserData.db_id)
+                    {
+                        player.AddRuneEffect(rune);
+                    }
+                    else
+                    {
+                        var opponent =  FindPlayerByDbId(playerWhoPicked_db_id);
+                        if(opponent != null)
+                        {
+                            opponent.player.AddRuneEffect(rune);
+                        }
+                    }
+
+                    // 2) Destroy rune instance
+                    List<GameObject> runesToDestroy = new List<GameObject>();
+
+                    RuneInstance[] runes = FindObjectsOfType<RuneInstance>();
+                    foreach (var a in runes)
+                        if (a.runeId == runeId) runesToDestroy.Add(a.gameObject);
+
+                    foreach (var a in runesToDestroy)
+                        Destroy(a);
+
+                });
+            }
+            else if (message.Contains(RUNE_EFFECT_EXPIRED))
+            {
+                MessageParser.ParseOnRuneEffectExpiredMessage(message, out int affectedPlayerDbId, out Rune runeType);
+                UnityThread.executeInUpdate(() =>
+                {
+                    if (affectedPlayerDbId == ConnectionManager.instance.currentUserData.db_id)
+                    {
+                        player.RemoveRuneEffect(runeType);
+                    }
+                    else
+                    {
+                        var opponent = FindPlayerByDbId(affectedPlayerDbId);
+                        if (opponent != null)
+                        {
+                            opponent.player.RemoveRuneEffect(runeType);
+                        }
+                    }
+                });
+            }
         }
         catch(Exception e)
         {
             Debug.Log(e);
         }
-        
-        /*
-         * 
-         // match_started_force_override|Vector3-position(/)|newJumpsAmount
-         public const string MATCH_STARTED_FORCE_OVERRIDE_POSITION_AND_JUMPS = "match_started_force_override";
-         
-         // message to all players notifying how much seconds left till the end of match
-         // "match_time_remaining|327 // 327 = time in seconds left
-         public const string MATCH_TIME_REMAINING = "match_time_remaining";
-         
-         // message to all players notifying that the match has finished
-         // "match_finished|winnerIP|winnerNickname|matchResult
-         public const string MATCH_FINISHED = "match_finished";
-         * 
-         */
     }
-    // "client_disconnected_from_playroom|playroomId|nickname|clientDbId" 
     public void OnPlayerDisconnectedFromPlayroom(string message)
     {
         if (!inPlayRoom) return;
@@ -292,7 +349,7 @@ public class OnlineGameManager : MonoBehaviour
         // we know that it's our player shoots
         if (db_id.Equals(ConnectionManager.instance.currentUserData.db_id))
         {
-            objToIgnore = player;
+            objToIgnore = playerGameObj;
             Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
             UnityThread.executeInUpdate(actForbidToShoot);
         }
@@ -345,6 +402,15 @@ public class OnlineGameManager : MonoBehaviour
             $"{rotX}/{rotY}/{rotZ}", MessageProtocol.TCP);
     }
     #endregion
+
+    #region Outcoming messages
+    public void SendMessage_PlayerTriesToPickUpRune(int runeId, Rune runeType)
+    {
+        string message = $"{RUNE_TRY_TO_PICK_UP}|{ConnectionManager.instance.currentUserData.db_id}|{runeType}|{runeId}";
+        ConnectionManager.instance.SendMessageToServer(message, MessageProtocol.TCP);
+    }
+
+    #endregion
     #region System
     // basically checks if player that joined room has not been yet added as an GameObject
     Vector3 spawnDefaultPos = new Vector3(0, 100, 0);
@@ -359,7 +425,8 @@ public class OnlineGameManager : MonoBehaviour
                     a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, spawnDefaultPos, a.rotation);
                     a.controlledGameObject.transform.position = spawnDefaultPos;
                     Debug.Log($"Spawned opponent at position {a.controlledGameObject.transform.position}");
-                    a.controlledGameObject.GetComponentInChildren<Player>().SetUpPlayer(a);
+                    if (a.player == null) a.player = a.controlledGameObject.GetComponentInChildren<Player>();
+                    a.player.SetUpPlayer(a);
                 }
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
             }
@@ -424,6 +491,7 @@ public class OnlineGameManager : MonoBehaviour
 
         public DateTime lastTimeDead;
 
+        public Player player;
         public Pointer opponentPointer;
     }
 

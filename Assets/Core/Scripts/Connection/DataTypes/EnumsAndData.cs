@@ -45,4 +45,17 @@ public static class EnumsAndData
     public enum MatchState { WaitingForPlayers, InGame, Finished }
     public enum MatchResult { PlayerWon, Draw, Discarded }
     public enum MatchFinishReason { FinishedByKills, FinishedByTime, Discarded }
+
+    public enum Rune
+    {
+        None = 0,
+        Black = 1, // projectile modifier
+        SpringGreen = 2, // movement modifier
+        DarkGreen = 3, // movement modifier
+        LightBlue = 4, // projectile modifier
+        Red = 5, // projectile modifier
+        Golden = 6, // attack modifier
+        RedViolet = 7, // attack modifier
+        Salmon = 8 // movement modifier
+    }
 }

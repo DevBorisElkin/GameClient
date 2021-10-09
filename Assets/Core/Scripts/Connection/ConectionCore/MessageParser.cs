@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using static OnlineGameManager;
+using static EnumsAndData;
 
 public static class MessageParser
 {
@@ -100,6 +101,72 @@ public static class MessageParser
             Debug.Log(e);
             spawnPosition = new Vector3();
             spawnRotation = new Quaternion();
+        }
+    }
+
+    public static void ParseOnRuneSpawnedMessage(string message, out Vector3 spawnPosition, out Rune rune, out int runeId)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            string[] position = msg[1].Split('/');
+            spawnPosition = new Vector3(
+                    float.Parse(position[0], CultureInfo.InvariantCulture),
+                    float.Parse(position[1], CultureInfo.InvariantCulture),
+                    float.Parse(position[2], CultureInfo.InvariantCulture)
+                    );
+            Enum.TryParse(msg[2], out Rune runeType);
+            rune = runeType;
+            runeId = Int32.Parse(msg[3]);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            spawnPosition = new Vector3();
+            rune = Rune.None;
+            runeId = -1;
+        }
+    }
+
+    public static void ParseOnRunePickedUpMessage(string message, out int runeId, out int playerPicked_db_id, out Rune runeType, out string nickOfGatherPlayer, out float effectDuration)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            runeId = Int32.Parse(msg[1]);
+            playerPicked_db_id = Int32.Parse(msg[2]);
+            Enum.TryParse(msg[3], out Rune rune);
+            runeType = rune;
+            nickOfGatherPlayer = msg[4];
+            effectDuration = float.Parse(msg[5], CultureInfo.InvariantCulture);
+            
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            runeId = -1;
+            playerPicked_db_id = -1;
+            runeType = Rune.None;
+            nickOfGatherPlayer = "none";
+            effectDuration = 0;
+        }
+    }
+
+    public static void ParseOnRuneEffectExpiredMessage(string message, out int affectedPlayerDbId, out Rune runeType)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            affectedPlayerDbId = Int32.Parse(msg[1]);
+            Enum.TryParse(msg[2], out Rune rune);
+            runeType = rune;
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            affectedPlayerDbId = -1;
+            runeType = Rune.None;
         }
     }
 }

@@ -38,7 +38,7 @@ public class CameraRenderingManager : MonoBehaviour
         }
 
         //Debug.DrawRay(_camera.transform.position, _camera.ScreenPointToRay(_camera.WorldToScreenPoint(OnlineGameManager.instance.player.transform.position)).direction * 30f);
-        if (EventManager.isAvailableForRaycaster && Physics.Raycast(_camera.ScreenPointToRay(_camera.WorldToScreenPoint(OnlineGameManager.instance.player.transform.position)), out RaycastHit hit2, 100, xRayObjLayer))
+        if (EventManager.isAvailableForRaycaster && Physics.Raycast(_camera.ScreenPointToRay(_camera.WorldToScreenPoint(OnlineGameManager.instance.playerGameObj.transform.position)), out RaycastHit hit2, 100, xRayObjLayer))
         {
             //Debug.Log("f"+hit2.collider.gameObject.name);
             if (hit2.collider.gameObject.layer != LayerMask.NameToLayer("Player"))
