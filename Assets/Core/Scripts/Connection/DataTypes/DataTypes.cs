@@ -90,4 +90,11 @@ public static class DataTypes
         }
     }
 
+    [System.Serializable]
+    public class RuneColor
+    {
+        public Rune rune;
+        public Material material;
+    }
+
 }

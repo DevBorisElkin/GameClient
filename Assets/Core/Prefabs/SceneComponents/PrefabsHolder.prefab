@@ -73,3 +73,5 @@ MonoBehaviour:
     type: 3}
   ui_opponentPointer_prefab: {fileID: 4737873384970202523, guid: b109e1807b4f88540a86b44771fb20b0,
     type: 3}
+  rune_prefab: {fileID: 3332331144010735384, guid: d2c4693a44d6dba47a7d73a8f1076fe1,
+    type: 3}
