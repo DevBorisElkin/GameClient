@@ -5,9 +5,26 @@ using System.Globalization;
 using UnityEngine;
 using static OnlineGameManager;
 using static EnumsAndData;
+using static DataTypes;
 
 public static class MessageParser
 {
+    public static char GetSplitStringByParseType(MessageParseType messageParseType = MessageParseType.VersionOne)
+    {
+        if (messageParseType == MessageParseType.VersionOne) return '/';
+        else if (messageParseType == MessageParseType.VersionTwo) return ',';
+        return '/';
+    }
+
+    public static Vector3 StrToVector3(string msg, MessageParseType messageParseType = MessageParseType.VersionOne)
+    {
+        string[] positions = msg.Split(GetSplitStringByParseType(messageParseType));
+        return new Vector3(
+            float.Parse(positions[0], CultureInfo.InvariantCulture.NumberFormat),
+            float.Parse(positions[1], CultureInfo.InvariantCulture.NumberFormat),
+            float.Parse(positions[2], CultureInfo.InvariantCulture.NumberFormat));
+    }
+
     // message to players - shows shot data
     // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer
     // "shot_result|123/45/87|543/34/1|13";
@@ -168,5 +185,55 @@ public static class MessageParser
             affectedPlayerDbId = -1;
             runeType = Rune.None;
         }
+    }
+    public static List<SpawnedRuneInstance> ParseOnRunesInfoMessage(string message)
+    {
+        List<SpawnedRuneInstance> runes = new List<SpawnedRuneInstance>();
+        try
+        {
+            string[] msg = message.Split('|');
+            string[] runesRaw = msg[1].Split('@');
+            foreach(string a in runesRaw)
+            {
+                string[] runeData = a.Split(',');
+                Vector3 runePosition = StrToVector3(runeData[0]);
+                Enum.TryParse(runeData[1], out Rune rune);
+                int runeId = Int32.Parse(runeData[2]);
+                runes.Add(new SpawnedRuneInstance(runePosition, rune, runeId));
+            }
+        }
+        catch (Exception e) { runes = new List<SpawnedRuneInstance>(); Debug.Log(e); }
+        return runes;
+    }
+
+    //  code|rune_effect_data@rune_effect_data
+    // "rune_effects_info|player_db_id,runeType, runeType,runeType@player_db_id,runeType
+    public const string RUNE_EFFECTS_INFO = "rune_effects_info";
+
+    public static List<RuneEffectInfo> ParseOnRuneEffectsMessage(string message)
+    {
+        List<RuneEffectInfo> runeEffects = new List<RuneEffectInfo>();
+        try
+        {
+            string[] msg = message.Split('|');
+            string[] runesEffectsRaw = msg[1].Split('@');
+            foreach (string a in runesEffectsRaw)
+            {
+                string[] runeEffectsData = a.Split(',');
+                if (runeEffectsData[1].Equals("none")) continue;
+
+                List<Rune> runeEffectsOnPlayer = new List<Rune>();
+
+                int playerDbId = Int32.Parse(runeEffectsData[0]);
+                for (int i = 1; i < runeEffectsData.Length; i++)
+                {
+                    Enum.TryParse(runeEffectsData[i], out Rune rune);
+                    runeEffectsOnPlayer.Add(rune);
+                }
+                runeEffects.Add(new RuneEffectInfo(playerDbId, runeEffectsOnPlayer));
+            }
+        }
+        catch (Exception e) { runeEffects = new List<RuneEffectInfo>(); Debug.Log(e); }
+        return runeEffects;
     }
 }

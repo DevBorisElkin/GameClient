@@ -136,7 +136,7 @@ class NetworkingMessageAttributes
     }
 
     // Messages that client receives from server, related to playroom action
-    public static string[] MessagesToClient_RelatedToPlayroom = new string[17]
+    public static string[] MessagesToClient_RelatedToPlayroom = new string[19]
     {
             MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM,
             CLIENT_DISCONNECTED_FROM_THE_PLAYROOM,
@@ -154,7 +154,9 @@ class NetworkingMessageAttributes
             MATCH_FINISHED,
             RUNE_SPAWNED,
             RUNE_PICKED_UP,
-            RUNE_EFFECT_EXPIRED
+            RUNE_EFFECT_EXPIRED,
+            RUNES_INFO,
+            RUNE_EFFECTS_INFO
     };
     public static bool DoesMessageRelatedToOnlineGameManager(string message)
     {
@@ -269,6 +271,14 @@ class NetworkingMessageAttributes
     //  code|player_db_id|runeType
     // "rune_effect_expired|12|Black"
     public const string RUNE_EFFECT_EXPIRED = "rune_effect_expired";
+
+    //  code|rune_data@rune_data
+    // "runes_info|spawnPos,runeType,uniqueRuneId@spawnPos,runeType,uniqueRuneId
+    public const string RUNES_INFO = "runes_info";
+
+    //  code|rune_effect_data@rune_effect_data
+    // "rune_effects_info|player_db_id,runeType, runeType,runeType@player_db_id,runeType
+    public const string RUNE_EFFECTS_INFO = "rune_effects_info";
 
     // ________________ Messages TO server _____________________
 

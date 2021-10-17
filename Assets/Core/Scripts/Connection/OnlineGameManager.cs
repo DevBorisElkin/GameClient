@@ -281,6 +281,46 @@ public class OnlineGameManager : MonoBehaviour
                         }
                     }
                 });
+            }else if (message.Contains(RUNES_INFO))
+            {
+                List<SpawnedRuneInstance> spawnedRuneInstances = MessageParser.ParseOnRunesInfoMessage(message);
+                if (spawnedRuneInstances.Count == 0) return;
+                UnityThread.executeInUpdate(() =>
+                {
+                    foreach(var a in spawnedRuneInstances)
+                    {
+                        GameObject spawnedRune = Instantiate(PrefabsHolder.instance.rune_prefab, a.position, Quaternion.identity);
+                        RuneInstance rune = spawnedRune.GetComponent<RuneInstance>();
+                        rune.SetUpRune(a.uniqueId, a.runeType);
+                    }
+                });
+            }
+            else if (message.Contains(RUNE_EFFECTS_INFO))
+            {
+                List<RuneEffectInfo> runeEffectsInfo = MessageParser.ParseOnRuneEffectsMessage(message);
+                if (runeEffectsInfo.Count == 0) return;
+                UnityThread.executeInUpdate(() =>
+                {
+                    foreach (var a in runeEffectsInfo)
+                    {
+                        if (a.runeEffects.Count == 0) continue;
+
+                        if (a.playerDbId == ConnectionManager.instance.currentUserData.db_id)
+                        {
+                            foreach(var b in a.runeEffects)
+                                player.AddRuneEffect(b);
+                        }
+                        else
+                        {
+                            var opponent = FindPlayerByDbId(a.playerDbId);
+                            if (opponent != null)
+                            {
+                                foreach (var b in a.runeEffects)
+                                    opponent.player.AddRuneEffect(b);
+                            }
+                        }
+                    }
+                });
             }
         }
         catch(Exception e)

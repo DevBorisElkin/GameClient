@@ -58,4 +58,6 @@ public static class EnumsAndData
         RedViolet = 7, // attack modifier
         Salmon = 8 // movement modifier
     }
+
+    public enum MessageParseType { VersionOne, VersionTwo }
 }

@@ -97,4 +97,30 @@ public static class DataTypes
         public Material material;
     }
 
+    public class SpawnedRuneInstance
+    {
+        public Vector3 position;
+        public Rune runeType;
+        public int uniqueId;
+
+        public SpawnedRuneInstance(Vector3 position, Rune runeType, int uniqueId)
+        {
+            this.position = position;
+            this.runeType = runeType;
+            this.uniqueId = uniqueId;
+        }
+    }
+
+    public class RuneEffectInfo
+    {
+        public int playerDbId;
+        public List<Rune> runeEffects;
+
+        public RuneEffectInfo(int playerDbId, List<Rune> runeEffects)
+        {
+            this.playerDbId = playerDbId;
+            this.runeEffects = runeEffects;
+        }
+    }
+
 }
