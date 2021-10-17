@@ -285,29 +285,35 @@ public class OnlineGameManager : MonoBehaviour
             {
                 List<SpawnedRuneInstance> spawnedRuneInstances = MessageParser.ParseOnRunesInfoMessage(message);
                 if (spawnedRuneInstances.Count == 0) return;
-                UnityThread.executeInUpdate(() =>
+                UnityThread.executeCoroutine(DelayedRunesInfoCoroutine());
+                
+                IEnumerator DelayedRunesInfoCoroutine()
                 {
-                    foreach(var a in spawnedRuneInstances)
+                    yield return new WaitForSeconds(1f);
+                    foreach (var a in spawnedRuneInstances)
                     {
                         GameObject spawnedRune = Instantiate(PrefabsHolder.instance.rune_prefab, a.position, Quaternion.identity);
                         RuneInstance rune = spawnedRune.GetComponent<RuneInstance>();
                         rune.SetUpRune(a.uniqueId, a.runeType);
                     }
-                });
+                }
             }
             else if (message.Contains(RUNE_EFFECTS_INFO))
             {
                 List<RuneEffectInfo> runeEffectsInfo = MessageParser.ParseOnRuneEffectsMessage(message);
                 if (runeEffectsInfo.Count == 0) return;
-                UnityThread.executeInUpdate(() =>
+                UnityThread.executeCoroutine(DelayedRuneEffectsCoroutine());
+
+                IEnumerator DelayedRuneEffectsCoroutine()
                 {
+                    yield return new WaitForSeconds(1f);
                     foreach (var a in runeEffectsInfo)
                     {
                         if (a.runeEffects.Count == 0) continue;
 
                         if (a.playerDbId == ConnectionManager.instance.currentUserData.db_id)
                         {
-                            foreach(var b in a.runeEffects)
+                            foreach (var b in a.runeEffects)
                                 player.AddRuneEffect(b);
                         }
                         else
@@ -320,7 +326,7 @@ public class OnlineGameManager : MonoBehaviour
                             }
                         }
                     }
-                });
+                }
             }
         }
         catch(Exception e)
