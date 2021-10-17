@@ -468,8 +468,9 @@ public class OnlineGameManager : MonoBehaviour
             {
                 try
                 {
-                    a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, spawnDefaultPos, a.rotation);
-                    a.controlledGameObject.transform.position = spawnDefaultPos;
+                    
+                    a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
+                    a.controlledGameObject.transform.position = a.position;
                     Debug.Log($"Spawned opponent at position {a.controlledGameObject.transform.position}");
                     if (a.player == null) a.player = a.controlledGameObject.GetComponentInChildren<Player>();
                     a.player.SetUpPlayer(a);
