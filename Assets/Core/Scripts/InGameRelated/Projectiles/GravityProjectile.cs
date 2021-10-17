@@ -22,6 +22,12 @@ public class GravityProjectile : MonoBehaviour
         dbIdOfPleyerWhoMadeLaunch = _dbIdOfPlayerWhoMadeLaunch;
         active = true;
     }
+
+    void SetProjectileStyles()
+    {
+
+    }
+
     private void FixedUpdate()
     {
         if (!active) return;

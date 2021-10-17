@@ -26,8 +26,9 @@ public static class MessageParser
     }
 
     // message to players - shows shot data
-    // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer
-    // "shot_result|123/45/87|543/34/1|13";
+    // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer|activeRuneModifiers
+    // activeRuneModifiers: rune@rune@rune  or "none"
+    // "shot_result|123/45/87|543/34/1|13|Black/LightBlue/Red";
     public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out int dbIdOfPlayerWhoMadeShot)
     {
         try
