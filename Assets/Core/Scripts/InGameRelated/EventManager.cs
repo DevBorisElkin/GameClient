@@ -63,7 +63,7 @@ public class EventManager : MonoBehaviour
         {
             // TODO move left and right first and third shots
 
-            Vector3 forward = Quaternion.Euler(0, rotation.y, 0) * Vector3.forward;
+            Vector3 forward = Quaternion.Euler(0, rotation.eulerAngles.y, 0) * Vector3.forward;
             Vector3 left = Quaternion.Euler(0, -90, 0) * forward;
             Vector3 right = Quaternion.Euler(0, 90, 0) * forward;
 

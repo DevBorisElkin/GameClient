@@ -136,7 +136,7 @@ public class PlayerMovementController : MonoBehaviour
 			{
 				if (canShootLocally && canShootOnline)
 				{
-					StartCoroutine(ReloadLocallyCoroutine());
+					//StartCoroutine(ReloadLocallyCoroutine());
 					OnlineGameManager.instance.TryToShootOnline(assignedPlayer.projectileSpawnPoint.position, transform.eulerAngles);
 				}
 			}
@@ -179,7 +179,7 @@ public class PlayerMovementController : MonoBehaviour
 	IEnumerator ReloadLocallyCoroutine()
     {
 		canShootLocally = false;
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.3f);
 		canShootLocally = true;
     }
 	public void ForbidToShootFromServer()
@@ -189,7 +189,7 @@ public class PlayerMovementController : MonoBehaviour
 	}
 	IEnumerator ReloadFromServerCoroutine()
 	{
-		yield return new WaitForSeconds(1.4f);
+		yield return new WaitForSeconds(0.25f);
 		canShootOnline = true;
 	}
 	#endregion
