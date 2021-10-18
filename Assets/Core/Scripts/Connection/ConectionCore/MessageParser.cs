@@ -29,7 +29,7 @@ public static class MessageParser
     // code|posOfShootingPoint|rotationAtRequestTime|dbIdOfShootingPlayer|activeRuneModifiers
     // activeRuneModifiers: rune@rune@rune  or "none"
     // "shot_result|123/45/87|543/34/1|13|Black/LightBlue/Red";
-    public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out int dbIdOfPlayerWhoMadeShot)
+    public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out int dbIdOfPlayerWhoMadeShot, out List<Rune> activeRuneModifiers)
     {
         try
         {
@@ -47,12 +47,24 @@ public static class MessageParser
                 float.Parse(rotations[2], CultureInfo.InvariantCulture.NumberFormat)
                 );
             dbIdOfPlayerWhoMadeShot = Int32.Parse(substrings[3]);
+
+            activeRuneModifiers = new List<Rune>();
+            if (!substrings[4].Equals("none"))
+            {
+                string[] runeModifiers = substrings[4].Split('@');
+                foreach(var a in runeModifiers)
+                {
+                    Enum.TryParse(a, out Rune rune);
+                    activeRuneModifiers.Add(rune);
+                }
+            }
         }catch(Exception e)
         {
             Debug.Log(e);
             posOfShot = new Vector3();
             rotOfShot = new Quaternion();
             dbIdOfPlayerWhoMadeShot = -1;
+            activeRuneModifiers = new List<Rune>();
         }
     }
     // "players_positions_in_playroom|nickname,db_id,position,rotation@nickname,db_id,position,rotation@enc..."

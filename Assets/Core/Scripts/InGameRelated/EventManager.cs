@@ -48,16 +48,36 @@ public class EventManager : MonoBehaviour
         }
         set { if (mc == null) mc = value; }
     }
-    public void MakeActualShot(Vector3 projectileSpawnPoint, Quaternion rotation, GameObject gameObjectToIgnore, int dbIdOfPlayerWhoMadeShot)
+    float x_offset_for_additional_shot = 2.5f;
+    public void MakeActualShot(Vector3 projectileSpawnPoint, Quaternion rotation, GameObject gameObjectToIgnore, int dbIdOfPlayerWhoMadeShot, List<Rune> activeRuneModifiers)
     {
         // for muzzle flash
         Player player = gameObjectToIgnore.GetComponent<Player>();
         GameObject particles = Instantiate(PrefabsHolder.instance.electricMuzzleFlash_prefab, player.projectileSpawnPoint.position, player.projectileSpawnPoint.rotation);
         particles.transform.SetParent(player.projectileSpawnPoint);
 
-        GameObject projectile = Instantiate(PrefabsHolder.instance.gravityProjectile_prefab, projectileSpawnPoint, rotation);
+        // check for triple shot
+        if (!activeRuneModifiers.Contains(Rune.RedViolet))
+            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+        else
+        {
+            // TODO move left and right first and third shots
+
+            Vector3 forward = Quaternion.Euler(0, rotation.y, 0) * Vector3.forward;
+            Vector3 left = Quaternion.Euler(0, -90, 0) * forward;
+            Vector3 right = Quaternion.Euler(0, 90, 0) * forward;
+
+            MakeSingleShot(projectileSpawnPoint + (left * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+            MakeSingleShot(projectileSpawnPoint + (right * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+        }
+    }
+
+    void MakeSingleShot(Vector3 spawnPos, Quaternion rotation, GameObject objToIgnore, int dbIdOfShooter)
+    {
+        GameObject projectile = Instantiate(PrefabsHolder.instance.gravityProjectile_prefab, spawnPos, rotation);
         GravityProjectile gravP = projectile.GetComponent<GravityProjectile>();
-        gravP.LaunchProjectile(gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+        gravP.LaunchProjectile(objToIgnore, dbIdOfShooter);
     }
 
     public void OnTriggerEnter(Collider other) // level death zone collider

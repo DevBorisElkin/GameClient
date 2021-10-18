@@ -389,7 +389,7 @@ public class OnlineGameManager : MonoBehaviour
     public void OnShotMessageReceived(string message)
     {
         if (!inPlayRoom) return;
-        MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out int db_id);
+        MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out int db_id, out List<Rune> activeRuneModifiers);
 
         GameObject objToIgnore;
         // we know that it's our player shoots
@@ -408,7 +408,7 @@ public class OnlineGameManager : MonoBehaviour
         }
         Action act = Action;
         UnityThread.executeInUpdate(act);
-        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, db_id);
+        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, db_id, activeRuneModifiers);
     }
 
     public void OnJumpMessageReceived(int currentJumps)
