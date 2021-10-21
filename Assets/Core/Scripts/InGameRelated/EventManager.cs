@@ -55,6 +55,8 @@ public class EventManager : MonoBehaviour
         Player player = gameObjectToIgnore.GetComponent<Player>();
         GameObject particles = Instantiate(PrefabsHolder.instance.electricMuzzleFlash_prefab, player.projectileSpawnPoint.position, player.projectileSpawnPoint.rotation);
         particles.transform.SetParent(player.projectileSpawnPoint);
+        var muzzleFlash = particles.GetComponent<GravityProjectileMuzzleFlash>();
+        muzzleFlash.SetUp(activeRuneModifiers);
 
         // check for triple shot
         if (!activeRuneModifiers.Contains(Rune.RedViolet))

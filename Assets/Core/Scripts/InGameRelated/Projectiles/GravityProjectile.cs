@@ -48,29 +48,29 @@ public class GravityProjectile : MonoBehaviour
                 spawnedObject.transform.SetParent(collision.transform);
             }
             //Debug.Log($"Projectile hit: {collision.collider.name}");
-            Instantiate(PrefabsHolder.instance.gravityProjectile_explosion, collision.GetContact(0).point - transform.forward * 0.1f, Quaternion.identity);
+            GameObject explosion = Instantiate(PrefabsHolder.instance.gravityProjectile_explosion, collision.GetContact(0).point - transform.forward * 0.1f, Quaternion.identity);
+            var expl = explosion.GetComponent<GravityProjectileExplosion>();
+            expl.SetUp(activeRuneEffects);
             Destroy(gameObject);
         }
     }
 
     void AdjustVisuals()
     {
-        foreach (var a in activeRuneEffects) Debug.Log(a);
-
         if(activeRuneEffects.Count == 0)
         {
             foreach(var a in runeVisuals)
-                if (a.runeType != Rune.None) a.gameObject.SetActive(false);
+                if (a.runeType == Rune.None) a.gameObject.SetActive(true);
         }
         else
         {
             foreach(var a in runeVisuals)
             {
                 if (activeRuneEffects.Contains(Rune.Black))
-                { if (a.runeType != Rune.Black) a.gameObject.SetActive(false); }
+                { if (a.runeType == Rune.Black) a.gameObject.SetActive(true); }
                 else if (activeRuneEffects.Contains(Rune.Red))
-                { if (a.runeType != Rune.Red) a.gameObject.SetActive(false); }
-                else { if (a.runeType != Rune.None) a.gameObject.SetActive(false); }
+                { if (a.runeType == Rune.Red) a.gameObject.SetActive(true); }
+                else { if (a.runeType == Rune.None) a.gameObject.SetActive(true); }
             }
         }
     }
