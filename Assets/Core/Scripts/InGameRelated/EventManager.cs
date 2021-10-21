@@ -58,7 +58,7 @@ public class EventManager : MonoBehaviour
 
         // check for triple shot
         if (!activeRuneModifiers.Contains(Rune.RedViolet))
-            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot, activeRuneModifiers);
         else
         {
             // TODO move left and right first and third shots
@@ -67,17 +67,17 @@ public class EventManager : MonoBehaviour
             Vector3 left = Quaternion.Euler(0, -90, 0) * forward;
             Vector3 right = Quaternion.Euler(0, 90, 0) * forward;
 
-            MakeSingleShot(projectileSpawnPoint + (left * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
-            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
-            MakeSingleShot(projectileSpawnPoint + (right * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot);
+            MakeSingleShot(projectileSpawnPoint + (left * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot, activeRuneModifiers);
+            MakeSingleShot(projectileSpawnPoint, rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot, activeRuneModifiers);
+            MakeSingleShot(projectileSpawnPoint + (right * x_offset_for_additional_shot), rotation, gameObjectToIgnore, dbIdOfPlayerWhoMadeShot, activeRuneModifiers);
         }
     }
 
-    void MakeSingleShot(Vector3 spawnPos, Quaternion rotation, GameObject objToIgnore, int dbIdOfShooter)
+    void MakeSingleShot(Vector3 spawnPos, Quaternion rotation, GameObject objToIgnore, int dbIdOfShooter, List<Rune> activeRuneModifiers)
     {
         GameObject projectile = Instantiate(PrefabsHolder.instance.gravityProjectile_prefab, spawnPos, rotation);
         GravityProjectile gravP = projectile.GetComponent<GravityProjectile>();
-        gravP.LaunchProjectile(objToIgnore, dbIdOfShooter);
+        gravP.LaunchProjectile(objToIgnore, dbIdOfShooter, activeRuneModifiers);
     }
 
     public void OnTriggerEnter(Collider other) // level death zone collider

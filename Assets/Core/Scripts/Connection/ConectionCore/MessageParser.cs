@@ -31,6 +31,7 @@ public static class MessageParser
     // "shot_result|123/45/87|543/34/1|13|Black/LightBlue/Red";
     public static void ParseOnShotMessage(string message, out Vector3 posOfShot, out Quaternion rotOfShot, out int dbIdOfPlayerWhoMadeShot, out List<Rune> activeRuneModifiers)
     {
+        Debug.Log("OnShotMessage:" + message);
         try
         {
             string[] substrings = message.Split('|');
@@ -51,7 +52,7 @@ public static class MessageParser
             activeRuneModifiers = new List<Rune>();
             if (!substrings[4].Equals("none"))
             {
-                string[] runeModifiers = substrings[4].Split('@');
+                string[] runeModifiers = substrings[4].Split('/');
                 foreach(var a in runeModifiers)
                 {
                     Enum.TryParse(a, out Rune rune);
