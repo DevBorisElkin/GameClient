@@ -96,8 +96,11 @@ public class EventManager : MonoBehaviour
     // "player_died|killer_ip|reasonOfDeath
     public IEnumerator KillPlayer(DeathDetails deathDetails, float initialDelay = 0)
     {
+        // tmp
+        if (deathDetails == DeathDetails.BlackRuneKilled) deathDetails = DeathDetails.FellOutOfMap;
+
+        EventManager.isAlive = false;
         int killerDbId = MC.dbIdOflastHitPlayer;
-        //if (killerDbId.Equals("")) killerDbId = "none";
 
         if (MC.hitAssignedToPlayer != null) StopCoroutine(MC.hitAssignedToPlayer);
         MC.dbIdOflastHitPlayer = -1;

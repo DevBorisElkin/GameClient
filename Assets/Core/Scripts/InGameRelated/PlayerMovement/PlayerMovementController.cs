@@ -3,6 +3,8 @@ using System.Collections;
 using static JoystickTouchController;
 using static NetworkingMessageAttributes;
 using System;
+using System.Collections.Generic;
+using static EnumsAndData;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -11,9 +13,7 @@ public class PlayerMovementController : MonoBehaviour
 	#region Init
 	public JoystickTouchController leftController;
 	public JoystickTouchController rightController;
-	public float speedMovements = 5f;
-	public float speedRotation = 5f;
-
+	
 	public bool collidedWithSpikeTrap;
 
 	Rigidbody rb;
@@ -96,20 +96,21 @@ public class PlayerMovementController : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (!EventManager.isAlive) return;
-		MakeMovement();
-		UpdateAim();
+		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
+		MakeMovement(_movementSpeed);
+		UpdateAim(_rotationSpeed);
 		MakePushing();
 	}
 	[HideInInspector] Vector3 lastMovement;
-	void MakeMovement()
+	void MakeMovement(float _movementSpeed)
     {
 		if (!moving || pushingByProjectile) { lastMovement = Vector3.zero; return; }
 		//Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
-		Vector3 translation = new Vector3(leftController.GetTouchPosition.x, 0, leftController.GetTouchPosition.y).normalized * speedMovements * Time.deltaTime;
+		Vector3 translation = new Vector3(leftController.GetTouchPosition.x, 0, leftController.GetTouchPosition.y).normalized * _movementSpeed * Time.deltaTime;
 		lastMovement = translation;
 		transform.Translate(translation, Space.World);
     }
-	void UpdateAim()
+	void UpdateAim(float _rotationSpeed)
 	{
 		Vector2 value;
 
@@ -121,7 +122,7 @@ public class PlayerMovementController : MonoBehaviour
 
 			float yAxis = Mathf.Atan2(value.x, value.y) * Mathf.Rad2Deg;
 			Quaternion targetRot = Quaternion.Euler(transform.rotation.x, yAxis, transform.rotation.z);
-			transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speedRotation * Time.deltaTime);
+			transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, _rotationSpeed * Time.deltaTime);
 
 			TryToShoot(value, targetRot);
 		}
@@ -163,7 +164,7 @@ public class PlayerMovementController : MonoBehaviour
         }
         else
         {
-			Vector3 force = pushingVector * forceToApplyOnGravityShot * Time.deltaTime;
+			Vector3 force = pushingVector * GetCorrectPushbackForce() * Time.deltaTime;
 			transform.Translate(force, Space.World);
 		}
 	}
@@ -215,14 +216,12 @@ public class PlayerMovementController : MonoBehaviour
 	}
 	public void MakeJumpOnline()
 	{
-		rb.AddForce(Vector3.up * forceToApplyOnJump, forceModeOnJump);
+		rb.AddForce(Vector3.up * GetCorrectJumpForce(), forceModeOnJump);
 	}
 	public int localJumpsAmount;
 	public bool canJumpLocally; // local reload 2 seconds
 	float localJumpReload = 2f;
 
-	public ForceMode forceModeOnJump;
-	public float forceToApplyOnJump = 5f;
 	IEnumerator CooldownJumpLocallyCoroutine()
 	{
 		canJumpLocally = false;
@@ -233,17 +232,33 @@ public class PlayerMovementController : MonoBehaviour
 	#region Got Hit By Projectile
     public void OnCollisionEnter(Collision collision)
     {
+		if (!EventManager.isAlive) return;
+
 		GravityProjectile gp = collision.gameObject.GetComponent<GravityProjectile>();
 
 		if (gp != null)
         {
 			if(gp.playerToIgnore != gameObject)
             {
-				StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
+				if (pushingByProjectile) return;
 
+				SetLastShotRuneEffects(gp.activeRuneEffects);
+
+				// set possible killer
 				if (hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
 				hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(gp.dbIdOfPleyerWhoMadeLaunch);
 				StartCoroutine(hitAssignedToPlayer);
+
+				if (!gp.activeRuneEffects.Contains(Rune.Black))
+                {
+					StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
+				}
+                else
+                {
+					// tmp black rune death equals to spike death
+					EventManager.isAlive = false;
+					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.BlackRuneKilled, 0));
+				}
             }
         }
         if (collision.gameObject.tag.Equals("Game_Wall"))
@@ -252,8 +267,6 @@ public class PlayerMovementController : MonoBehaviour
 			pushingByProjectile = false;
 		}
     }
-	public float forceToApplyOnGravityShot = 1f;
-	public float pushbackDuration = 0.75f;
 
 	float hitIsReferencedToPlayer = 5f;
 	public int dbIdOflastHitPlayer = -1;
@@ -336,5 +349,76 @@ public class PlayerMovementController : MonoBehaviour
 		StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
 	}
 
-    #endregion
+	#endregion
+
+	#region Adaptive projectile hit settings
+	public float speedMovements = 5.6f;
+	public float speedRotation = 8f;
+
+	public ForceMode forceModeOnJump = ForceMode.VelocityChange;
+	public float forceToApplyOnJump = 10.5f;
+
+	public float forceToApplyOnGravityShot = 22f;
+	public float pushbackDuration = 0.95f;
+
+	List<Rune> lastShotRuneEffects;
+
+	// LightBlue Rune
+	float lightBlueRuneEffectDuration = 3f;
+	float lightBlueRunePushbackDecrease = -0.3f;
+	float lightBlueRuneMovementSpeedDecrease = -0.3f;
+	float lightBlueRuneRotationSpeedDecrease = -0.3f;
+	float lightBlueRuneJumpForceDecrease = -0.15f;
+
+	// SpringGreen Rune
+	float springGreenRuneSpeedIncrease = 0.4f;
+	float springGreenRuneRotationSpeedIncrease = 0.3f;
+	// DarkGreen Rune
+	float darkGreenRuneJumpForceIncrease = 0.2f;
+
+	public void SetLastShotRuneEffects(List<Rune> runeEffects) => lastShotRuneEffects = runeEffects;
+
+	public float GetCorrectPushbackForce()
+    {
+		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0) return forceToApplyOnGravityShot;
+
+		float defaultMultiplier = 1f;
+		if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRunePushbackDecrease;
+
+		return forceToApplyOnGravityShot * defaultMultiplier;
+    }
+
+	void GetMovementAndRotationSpeed(out float movementSpeed, out float rotationSpeed)
+    {
+		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0)
+        {
+			movementSpeed = speedMovements;
+			rotationSpeed = speedRotation;
+        }
+        else
+        {
+			float defaultMovementMultiplier = 1f;
+			float defaultRotationMultiplier = 1f;
+			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMovementMultiplier += lightBlueRuneMovementSpeedDecrease;
+			if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultMovementMultiplier += springGreenRuneSpeedIncrease;
+
+			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultRotationMultiplier += lightBlueRuneRotationSpeedDecrease;
+			if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultRotationMultiplier += springGreenRuneRotationSpeedIncrease;
+			
+			movementSpeed = speedMovements * defaultMovementMultiplier;
+			rotationSpeed = speedMovements * defaultRotationMultiplier;
+		}
+	}
+
+	float GetCorrectJumpForce()
+	{
+		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0) return forceToApplyOnJump;
+
+		float defaultMultiplier = 1f;
+		if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRuneJumpForceDecrease;
+
+		return forceToApplyOnJump * defaultMultiplier;
+	}
+
+	#endregion
 }
