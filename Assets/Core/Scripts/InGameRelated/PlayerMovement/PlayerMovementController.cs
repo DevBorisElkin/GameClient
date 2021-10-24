@@ -97,7 +97,7 @@ public class PlayerMovementController : MonoBehaviour
 	{
 		if (!EventManager.isAlive) return;
 		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
-		Debug.Log($"Movement and rotation speed: {_movementSpeed}, {_rotationSpeed}");
+		//Debug.Log($"Movement and rotation speed: {_movementSpeed}, {_rotationSpeed}");
 		MakeMovement(_movementSpeed);
 		UpdateAim(_rotationSpeed);
 		MakePushing();
@@ -383,7 +383,7 @@ public class PlayerMovementController : MonoBehaviour
 	float darkGreenRuneJumpForceIncrease = 0.25f;
 
 	// RedRune
-	float redRuneEffectDuration = 3f;
+	float redRuneEffectDuration = 10f;
 
 	float checkNegativeEffectsExpirationEach = 0.2f;
 

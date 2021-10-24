@@ -5,6 +5,7 @@ using UnityEngine;
 using static OnlineGameManager;
 using DG.Tweening;
 using UnityEngine.UI;
+using NaughtyAttributes;
 
 public class CameraRenderingManager : MonoBehaviour
 {
@@ -124,7 +125,8 @@ public class CameraRenderingManager : MonoBehaviour
 
         redRuneDebuffActive = state;
     }
-
+    [EditorButton]
+    public void SetRedRuneDebuffActive() => SetRedRuneDebuffState(true);
     public void SetRedRuneDebuffState(bool state)
     {
         if (state == redRuneDebuffActive) return;
