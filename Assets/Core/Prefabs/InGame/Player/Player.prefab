@@ -179,19 +179,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftController: {fileID: 0}
   rightController: {fileID: 0}
-  speedMovements: 5.6
-  speedRotation: 8
   collidedWithSpikeTrap: 0
   minRotationAngleToShoot: 5
   _EventManager: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
   localJumpsAmount: 0
   canJumpLocally: 0
+  dbIdOflastHitPlayer: -1
+  speedMovements: 5.6
+  speedRotation: 8
   forceModeOnJump: 2
   forceToApplyOnJump: 10.5
   forceToApplyOnGravityShot: 22
   pushbackDuration: 0.95
-  dbIdOflastHitPlayer: -1
 --- !u!114 &3082409969823103961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,6 +215,7 @@ MonoBehaviour:
   - {fileID: 7267333603998413912}
   - {fileID: 5160409952303123384}
   - {fileID: 3145201582935354802}
+  runeEffects: 
   collidedWithSpikeTrap: 0
 --- !u!54 &6752891382701042608
 Rigidbody:
@@ -439,6 +440,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6703321808056644354}
     m_Modifications:
+    - target: {fileID: 1798666387701850522, guid: 53c0c600e9588384aaad2b1c4493433b,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2797027429432985135, guid: 53c0c600e9588384aaad2b1c4493433b,
         type: 3}
       propertyPath: m_RootOrder
@@ -493,6 +499,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3012772887746990452, guid: 53c0c600e9588384aaad2b1c4493433b,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5473195097031178180, guid: 53c0c600e9588384aaad2b1c4493433b,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5558359516987859893, guid: 53c0c600e9588384aaad2b1c4493433b,
         type: 3}

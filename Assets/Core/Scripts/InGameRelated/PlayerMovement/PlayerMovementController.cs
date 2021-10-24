@@ -61,6 +61,7 @@ public class PlayerMovementController : MonoBehaviour
 		canJumpLocally = true;
 		pushingByProjectile = false;
 		pushingByProjectile_cantJump = false;
+		isPushingBackBySalmonRune = false;
 
 		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
 
@@ -105,7 +106,7 @@ public class PlayerMovementController : MonoBehaviour
 	[HideInInspector] Vector3 lastMovement;
 	void MakeMovement(float _movementSpeed)
     {
-		if (!moving || pushingByProjectile) { lastMovement = Vector3.zero; return; }
+		if (!moving || pushingByProjectile || isPushingBackBySalmonRune) { lastMovement = Vector3.zero; return; }
 		//Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
 		Vector3 translation = new Vector3(leftController.GetTouchPosition.x, 0, leftController.GetTouchPosition.y).normalized * _movementSpeed * Time.deltaTime;
 		lastMovement = translation;
@@ -200,7 +201,7 @@ public class PlayerMovementController : MonoBehaviour
 	public void TryToJump_Request()
 	{
 		if (!EventManager.isAlive) return;
-		if (!pushingByProjectile_cantJump && canJumpLocally && localJumpsAmount > 0)
+		if (!pushingByProjectile_cantJump && !isPushingBackBySalmonRune && canJumpLocally && localJumpsAmount > 0)
 		{
 			StartCoroutine(CooldownJumpLocallyCoroutine());
 			ConnectionManager.instance.SendMessageToServer($"{JUMP_REQUEST}");
@@ -268,7 +269,40 @@ public class PlayerMovementController : MonoBehaviour
 		}
     }
 
-	float hitIsReferencedToPlayer = 5f;
+	bool isPushingBackBySalmonRune;
+    public void OnTriggerEnter(Collider other)
+    {
+		if (!EventManager.isAlive) return;
+		
+		if(other.gameObject.layer == LayerMask.NameToLayer("SalmonRuneBarrier"))
+        {
+			isPushingBackBySalmonRune = true;
+			StartCoroutine(SalmonRunePushbackCoroutine());
+
+			int dbIdOfHitter = -1;
+			Player hitter = other.gameObject.GetComponentInParent<Player>();
+			if (hitter != null)
+				dbIdOfHitter = hitter.playerData.db_id;
+
+			if(hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
+			hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(dbIdOfHitter);
+			StartCoroutine(hitAssignedToPlayer);
+
+			Vector3 direction = (transform.position - other.transform.position).normalized;
+
+			direction = new Vector3(direction.x * salmonRunePushbackForce.x, 1f * salmonRunePushbackForce.y, direction.z * salmonRunePushbackForce.z);
+			rb.velocity = Vector3.zero;
+			pushingByProjectile = false;
+			rb.AddForce(direction, salmonRuneForceMode);
+		}
+	}
+	IEnumerator SalmonRunePushbackCoroutine()
+    {
+		yield return new WaitForSeconds(salmonRunePushbackCooldown);
+		isPushingBackBySalmonRune = false;
+    }
+
+    float hitIsReferencedToPlayer = 5f;
 	public int dbIdOflastHitPlayer = -1;
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
@@ -286,9 +320,13 @@ public class PlayerMovementController : MonoBehaviour
 	public IEnumerator hitAssignedToPlayer;
 	IEnumerator HitReferencedToPlayerTimeoutCoroutine(int dbIdOfHitter)
 	{
-		dbIdOflastHitPlayer = dbIdOfHitter;
-		yield return new WaitForSeconds(hitIsReferencedToPlayer);
-		dbIdOflastHitPlayer = -1;
+		if(dbIdOfHitter != -1)
+        {
+			dbIdOflastHitPlayer = dbIdOfHitter;
+			yield return new WaitForSeconds(hitIsReferencedToPlayer);
+			dbIdOflastHitPlayer = -1;
+		}
+		yield break;
 	}
 
 	#endregion
@@ -384,6 +422,13 @@ public class PlayerMovementController : MonoBehaviour
 
 	// RedRune
 	float redRuneEffectDuration = 10f;
+
+	// SalmonRune
+	float salmonRuneMovementSpeedDecrease = -0.8f;
+	float salmonRuneJumpForceDecrease = -0.8f;
+	public Vector3 salmonRunePushbackForce = new Vector3(13f, 5f, 13f);
+	public ForceMode salmonRuneForceMode = ForceMode.VelocityChange;
+	public float salmonRunePushbackCooldown = 2f;
 
 	float checkNegativeEffectsExpirationEach = 0.2f;
 
