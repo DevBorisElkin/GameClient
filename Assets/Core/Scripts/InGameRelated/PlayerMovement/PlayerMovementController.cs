@@ -97,6 +97,7 @@ public class PlayerMovementController : MonoBehaviour
 	{
 		if (!EventManager.isAlive) return;
 		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
+		Debug.Log($"Movement and rotation speed: {_movementSpeed}, {_rotationSpeed}");
 		MakeMovement(_movementSpeed);
 		UpdateAim(_rotationSpeed);
 		MakePushing();
@@ -242,8 +243,6 @@ public class PlayerMovementController : MonoBehaviour
             {
 				if (pushingByProjectile) return;
 
-				SetLastShotRuneEffects(gp.activeRuneEffects);
-
 				// set possible killer
 				if (hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
 				hitAssignedToPlayer = HitReferencedToPlayerTimeoutCoroutine(gp.dbIdOfPleyerWhoMadeLaunch);
@@ -251,6 +250,7 @@ public class PlayerMovementController : MonoBehaviour
 
 				if (!gp.activeRuneEffects.Contains(Rune.Black))
                 {
+					SetLastShotRuneEffects(gp.activeRuneEffects);
 					StartCoroutine(PushbackCoroutine(collision.gameObject.transform.forward));
 				}
                 else
@@ -346,6 +346,9 @@ public class PlayerMovementController : MonoBehaviour
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
 		EventManager.sendCoordinatesToServer = true;
 		EventManager.isAlive = true;
+
+		SetLastShotRuneEffects(null);
+
 		StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
 	}
 
@@ -363,59 +366,98 @@ public class PlayerMovementController : MonoBehaviour
 
 	List<Rune> lastShotRuneEffects;
 
+	DateTime lightBlueRuneEffectStartTime;
+	DateTime redRuneEffectStartTime;
+
 	// LightBlue Rune
-	float lightBlueRuneEffectDuration = 3f;
-	float lightBlueRunePushbackDecrease = -0.3f;
-	float lightBlueRuneMovementSpeedDecrease = -0.3f;
-	float lightBlueRuneRotationSpeedDecrease = -0.3f;
-	float lightBlueRuneJumpForceDecrease = -0.15f;
+	float lightBlueRuneEffectDuration = 7f;
+	float lightBlueRunePushbackDecrease = -0.45f;
+	float lightBlueRuneMovementSpeedDecrease = -0.37f;
+	float lightBlueRuneRotationSpeedDecrease = -0.5f;
+	float lightBlueRuneJumpForceDecrease = -0.20f;
 
 	// SpringGreen Rune
 	float springGreenRuneSpeedIncrease = 0.4f;
-	float springGreenRuneRotationSpeedIncrease = 0.3f;
+	float springGreenRuneRotationSpeedIncrease = 0.5f;
 	// DarkGreen Rune
-	float darkGreenRuneJumpForceIncrease = 0.2f;
+	float darkGreenRuneJumpForceIncrease = 0.25f;
 
-	public void SetLastShotRuneEffects(List<Rune> runeEffects) => lastShotRuneEffects = runeEffects;
+	// RedRune
+	float redRuneEffectDuration = 3f;
+
+	float checkNegativeEffectsExpirationEach = 0.2f;
+
+	public IEnumerator negativeEffectsController;
+	IEnumerator NegativeEffectsController()
+    {
+		while(EventManager.isAlive && lastShotRuneEffects!= null && lastShotRuneEffects.Count > 0)
+        {
+			yield return new WaitForSeconds(checkNegativeEffectsExpirationEach);
+
+            if (lastShotRuneEffects.Contains(Rune.LightBlue))
+            {
+				if ((DateTime.Now - lightBlueRuneEffectStartTime).TotalMilliseconds > TimeSpan.FromSeconds(lightBlueRuneEffectDuration).TotalMilliseconds)
+					lastShotRuneEffects.Remove(Rune.LightBlue);
+            }
+			if (lastShotRuneEffects.Contains(Rune.Red))
+			{
+				if ((DateTime.Now - redRuneEffectStartTime).TotalMilliseconds > TimeSpan.FromSeconds(redRuneEffectDuration).TotalMilliseconds)
+					lastShotRuneEffects.Remove(Rune.Red);
+			}
+		}
+    }
+
+
+	public void SetLastShotRuneEffects(List<Rune> runeEffects)
+    {
+		lastShotRuneEffects = runeEffects;
+		if(runeEffects != null && runeEffects.Count > 0)
+        {
+			if (runeEffects.Contains(Rune.LightBlue)) lightBlueRuneEffectStartTime = DateTime.Now;
+			if (runeEffects.Contains(Rune.Red)) redRuneEffectStartTime = DateTime.Now;
+
+			if (negativeEffectsController != null) StopCoroutine(negativeEffectsController);
+			negativeEffectsController = NegativeEffectsController();
+			StartCoroutine(negativeEffectsController);
+		}
+	}
 
 	public float GetCorrectPushbackForce()
     {
-		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0) return forceToApplyOnGravityShot;
-
 		float defaultMultiplier = 1f;
-		if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRunePushbackDecrease;
-
+		if (lastShotRuneEffects != null && lastShotRuneEffects.Count > 0)
+        {
+			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRunePushbackDecrease;
+		}
 		return forceToApplyOnGravityShot * defaultMultiplier;
     }
 
 	void GetMovementAndRotationSpeed(out float movementSpeed, out float rotationSpeed)
     {
-		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0)
-        {
-			movementSpeed = speedMovements;
-			rotationSpeed = speedRotation;
-        }
-        else
-        {
-			float defaultMovementMultiplier = 1f;
-			float defaultRotationMultiplier = 1f;
-			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMovementMultiplier += lightBlueRuneMovementSpeedDecrease;
-			if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultMovementMultiplier += springGreenRuneSpeedIncrease;
+		float defaultMovementMultiplier = 1f;
+		float defaultRotationMultiplier = 1f;
 
+		if (lastShotRuneEffects != null && lastShotRuneEffects.Count > 0)
+        {
+			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMovementMultiplier += lightBlueRuneMovementSpeedDecrease;
 			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultRotationMultiplier += lightBlueRuneRotationSpeedDecrease;
-			if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultRotationMultiplier += springGreenRuneRotationSpeedIncrease;
-			
-			movementSpeed = speedMovements * defaultMovementMultiplier;
-			rotationSpeed = speedMovements * defaultRotationMultiplier;
 		}
+
+		if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultMovementMultiplier += springGreenRuneSpeedIncrease;
+		if (assignedPlayer.runeEffects.Contains(Rune.SpringGreen)) defaultRotationMultiplier += springGreenRuneRotationSpeedIncrease;
+
+		movementSpeed = speedMovements * defaultMovementMultiplier;
+		rotationSpeed = speedMovements * defaultRotationMultiplier;
 	}
 
 	float GetCorrectJumpForce()
 	{
-		if (lastShotRuneEffects == null || lastShotRuneEffects.Count == 0) return forceToApplyOnJump;
-
 		float defaultMultiplier = 1f;
-		if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRuneJumpForceDecrease;
+		if (lastShotRuneEffects != null && lastShotRuneEffects.Count > 0)
+        {
+			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRuneJumpForceDecrease;
+		}
+		if (assignedPlayer.runeEffects.Contains(Rune.DarkGreen)) defaultMultiplier += darkGreenRuneJumpForceIncrease;
 
 		return forceToApplyOnJump * defaultMultiplier;
 	}
