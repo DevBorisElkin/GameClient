@@ -402,7 +402,10 @@ public class PlayerMovementController : MonoBehaviour
 			if (lastShotRuneEffects.Contains(Rune.Red))
 			{
 				if ((DateTime.Now - redRuneEffectStartTime).TotalMilliseconds > TimeSpan.FromSeconds(redRuneEffectDuration).TotalMilliseconds)
+                {
 					lastShotRuneEffects.Remove(Rune.Red);
+					CameraRenderingManager.instance.SetRedRuneDebuffState(false);
+                }
 			}
 		}
     }
@@ -414,7 +417,11 @@ public class PlayerMovementController : MonoBehaviour
 		if(runeEffects != null && runeEffects.Count > 0)
         {
 			if (runeEffects.Contains(Rune.LightBlue)) lightBlueRuneEffectStartTime = DateTime.Now;
-			if (runeEffects.Contains(Rune.Red)) redRuneEffectStartTime = DateTime.Now;
+			if (runeEffects.Contains(Rune.Red)) 
+			{ 
+				redRuneEffectStartTime = DateTime.Now;
+				CameraRenderingManager.instance.SetRedRuneDebuffState(true);
+			}
 
 			if (negativeEffectsController != null) StopCoroutine(negativeEffectsController);
 			negativeEffectsController = NegativeEffectsController();

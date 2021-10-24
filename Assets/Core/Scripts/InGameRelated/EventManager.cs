@@ -99,6 +99,8 @@ public class EventManager : MonoBehaviour
         // tmp
         if (deathDetails == DeathDetails.BlackRuneKilled) deathDetails = DeathDetails.FellOutOfMap;
 
+        CameraRenderingManager.instance.SetRedRuneDebuffState(false);
+
         EventManager.isAlive = false;
         int killerDbId = MC.dbIdOflastHitPlayer;
 
