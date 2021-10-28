@@ -266,7 +266,10 @@ MonoBehaviour:
   - {fileID: 7745022010673270916}
   - {fileID: 5205154642702217060}
   - {fileID: 2596071470866958702}
+  runeEffects: 
   collidedWithSpikeTrap: 0
+  lightBlueAdditionalParticles: {fileID: 1978448119887080933}
+  parentForLightBlueAdditionalParticles: {fileID: 1978448119414845612}
 --- !u!1001 &1043444942249254122
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -527,6 +530,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ebdd088d24cd0f498271fc745eb8541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1978448119414845612 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7846347963461154883, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8617373951543527663}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1978448119887080933 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7846347962989700362, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8617373951543527663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7135625618471121813 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1482205729943272314, guid: 53c0c600e9588384aaad2b1c4493433b,

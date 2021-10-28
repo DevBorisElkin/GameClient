@@ -192,6 +192,9 @@ MonoBehaviour:
   forceToApplyOnJump: 10.5
   forceToApplyOnGravityShot: 22
   pushbackDuration: 0.95
+  salmonRunePushbackForce: {x: 13, y: 5, z: 13}
+  salmonRuneForceMode: 2
+  salmonRunePushbackCooldown: 2
 --- !u!114 &3082409969823103961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,6 +220,8 @@ MonoBehaviour:
   - {fileID: 3145201582935354802}
   runeEffects: 
   collidedWithSpikeTrap: 0
+  lightBlueAdditionalParticles: {fileID: 1501322681452988729}
+  parentForLightBlueAdditionalParticles: {fileID: 1501322682054235248}
 --- !u!54 &6752891382701042608
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -571,6 +576,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ebdd088d24cd0f498271fc745eb8541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1501322682054235248 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7846347963461154883, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8662136088097352755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1501322681452988729 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7846347962989700362, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8662136088097352755}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7829451477364201289 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1482205729943272314, guid: 53c0c600e9588384aaad2b1c4493433b,
