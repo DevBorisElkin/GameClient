@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
         if (!runeEffects.Contains(rune)) runeEffects.Add(rune);
 
         if (rune == Rune.LightBlue) CheckLightBlueParticles(true);
+        if (rune == Rune.Golden) CheckGoldenParticles(true);
     }
     public void RemoveRuneEffect(Rune rune)
     {
@@ -43,6 +44,7 @@ public class Player : MonoBehaviour
         if (runeEffects.Contains(rune)) runeEffects.Remove(rune);
 
         if (rune == Rune.LightBlue) CheckLightBlueParticles(false);
+        if (rune == Rune.Golden) CheckGoldenParticles(false);
     }
     public void ResetAllRuneEffects()
     {
@@ -52,10 +54,13 @@ public class Player : MonoBehaviour
         runeEffects = new List<Rune>();
 
         CheckLightBlueParticles(false);
+        CheckGoldenParticles(false);
     }
 
     public Transform lightBlueAdditionalParticles;
     public Transform parentForLightBlueAdditionalParticles;
+    public Transform goldenAdditionalParticles;
+    public Transform parentFoGoldenAdditionalParticles;
     public void CheckLightBlueParticles(bool turnedOn)
     {
         if (turnedOn)
@@ -67,7 +72,19 @@ public class Player : MonoBehaviour
         {
             lightBlueAdditionalParticles.transform.SetParent(parentForLightBlueAdditionalParticles);
             lightBlueAdditionalParticles.gameObject.SetActive(false);
-            
+        }
+    }
+    public void CheckGoldenParticles(bool turnedOn)
+    {
+        if (turnedOn)
+        {
+            goldenAdditionalParticles.transform.SetParent(null);
+            goldenAdditionalParticles.gameObject.SetActive(true);
+        }
+        else
+        {
+            goldenAdditionalParticles.transform.SetParent(parentFoGoldenAdditionalParticles);
+            goldenAdditionalParticles.gameObject.SetActive(false);
         }
     }
 

@@ -222,6 +222,8 @@ MonoBehaviour:
   collidedWithSpikeTrap: 0
   lightBlueAdditionalParticles: {fileID: 1501322681452988729}
   parentForLightBlueAdditionalParticles: {fileID: 1501322682054235248}
+  goldenAdditionalParticles: {fileID: 8569796280309818306}
+  parentFoGoldenAdditionalParticles: {fileID: 8569796278758605208}
 --- !u!54 &6752891382701042608
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -612,6 +614,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ebdd088d24cd0f498271fc745eb8541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &8569796278758605208 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1069638650079047083, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8662136088097352755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8569796280309818306 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1069638649046814705, guid: 53c0c600e9588384aaad2b1c4493433b,
+    type: 3}
+  m_PrefabInstance: {fileID: 8662136088097352755}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5160409952303123384 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4587869919999780747, guid: 53c0c600e9588384aaad2b1c4493433b,
