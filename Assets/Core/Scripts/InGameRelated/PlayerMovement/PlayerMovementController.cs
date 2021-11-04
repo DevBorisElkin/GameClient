@@ -85,7 +85,9 @@ public class PlayerMovementController : MonoBehaviour
     {
 		StopAllCoroutines();
 		StartCoroutine(SendPlayerMovement());
-    }
+
+		InitLightBlueRuneDebuff();
+	}
     #endregion
     void LeftController_TouchDetection(bool isTouching) { moving = isTouching; }
 	void RightController_TouchDetection(bool isTouching) { aiming = isTouching; }
@@ -533,4 +535,110 @@ public class PlayerMovementController : MonoBehaviour
 	}
 
 	#endregion
+
+	#region LightBlueRune debuff
+
+	int groundLayer;
+	int xRayObjLayer;
+
+	bool DoesLayerBelongsToGround(int layer)
+    {
+		//Debug.Log($"{layer} || {groundLayer} || {xRayObjLayer}");
+		if (layer == groundLayer || layer == xRayObjLayer) return true;
+		return false;
+    }
+
+	float checkGroundLeaveEach = 0.05f;
+	float considerLeftGroundAfter = 0.11f;
+
+	DateTime lastSeenOnGround;
+	DateTime leftTheGround;
+
+	public bool onGround;
+
+	public delegate void TouchedTheGround();
+	public event TouchedTheGround TouchedTheGroundEvent;
+
+	public delegate void LeftTheGround();
+	public event LeftTheGround LeftTheGroundEvent;
+	void InitLightBlueRuneDebuff()
+    {
+		groundLayer = 10;
+		xRayObjLayer = 8;
+
+		StartCoroutine(GroundLeaveCheck());
+	}
+
+    private void OnCollisionStay(Collision collision)
+    {
+		if (DoesLayerBelongsToGround(collision.collider.gameObject.layer))
+		{
+            if (!onGround)
+            {
+				Debug.Log("Got On Ground");
+
+			}
+			//Debug.Log("Touched Ground");
+			lastSeenOnGround = DateTime.Now;
+			onGround = true;
+
+			
+		}
+	}
+
+    private void OnCollisionExit(Collision collision)
+    {
+		if (DoesLayerBelongsToGround(collision.collider.gameObject.layer))
+		{
+			//Debug.Log("Left the Ground");
+			leftTheGround = DateTime.Now;
+
+			//Debug.Log("Left the ground");
+		}
+	}
+
+    IEnumerator GroundLeaveCheck()
+    {
+        while (true)
+        {
+			yield return new WaitForSeconds(checkGroundLeaveEach);
+
+			//Debug.Log("GroundLeaveCheck");
+
+			leftTheGround += (DateTime.Now - leftTheGround);
+
+			if (onGround && leftTheGround > lastSeenOnGround)
+            {
+				//Debug.Log("Moved out of ground");
+
+				if((leftTheGround - lastSeenOnGround).TotalMilliseconds > TimeSpan.FromSeconds(considerLeftGroundAfter).TotalMilliseconds)
+                {
+					Debug.Log("Left the ground");
+					onGround = false;
+                }
+            }
+
+        }
+    }
+
+    void OnCollisionEnter_Ground(Collision collision)
+    {
+		Debug.Log("OnCollisionEnter");
+		Debug.Log(LayerMask.LayerToName(collision.collider.gameObject.layer));
+		if(DoesLayerBelongsToGround(collision.collider.gameObject.layer))
+        {
+			Debug.Log("Touched Ground");
+        }
+    }
+
+	void OnCollisionExit_Ground(Collision collision)
+    {
+		Debug.Log("OnCollisionExit");
+		if (DoesLayerBelongsToGround(collision.collider.gameObject.layer))
+		{
+			Debug.Log("Left Ground");
+		}
+	}
+
+    #endregion
 }
