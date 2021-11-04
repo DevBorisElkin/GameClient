@@ -460,12 +460,12 @@ public class PlayerMovementController : MonoBehaviour
     }
 	void SendMessageDebuffStarted(Rune debuff)
 	{
-		string message = $"{PLAYER_RECEIVED_DEBUFFS}|{OnlineGameManager.instance.player.playerData.db_id}|{debuff}";
+		string message = $"{PLAYER_RECEIVED_DEBUFF}|{ConnectionManager.instance.currentUserData.db_id}|{debuff}";
 		ConnectionManager.instance.SendMessageToServer(message, BorisUnityDev.Networking.MessageProtocol.TCP);
 	}
 	void SendMessageDebuffEnded(Rune debuff)
     {
-		string message = $"{PLAYER_DEBUFF_ENDED}|{OnlineGameManager.instance.player.playerData.db_id}|{debuff}";
+		string message = $"{PLAYER_DEBUFF_ENDED}|{ConnectionManager.instance.currentUserData.db_id}|{debuff}";
 		ConnectionManager.instance.SendMessageToServer(message, BorisUnityDev.Networking.MessageProtocol.TCP);
 	}
 	public void SetLastShotRuneEffects(List<Rune> runeEffects)

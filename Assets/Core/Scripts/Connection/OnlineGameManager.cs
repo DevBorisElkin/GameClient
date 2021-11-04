@@ -332,25 +332,21 @@ public class OnlineGameManager : MonoBehaviour
                     }
                 }
             }
-            else if (message.Contains(PLAYER_RECEIVED_DEBUFFS))
+            else if (message.Contains(PLAYER_RECEIVED_DEBUFF))
             {
-                MessageParser.ParseOnDebuffsMessage(message, out int playerDbId, out List<Rune> debuffs);
+                MessageParser.ParseOnDebuffsMessage(message, out int playerDbId, out Rune debuff);
 
                 UnityThread.executeInUpdate(() =>
                 {
                     // 1) Add rune effect on player
                     if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
-                    {
-                        foreach(var a in debuffs)
-                            player.AddDebuffEffect(a);
-                    }
+                        player.AddDebuffEffect(debuff);
                     else
                     {
                         var opponent = FindPlayerByDbId(playerDbId);
                         if (opponent != null)
                         {
-                            foreach (var a in debuffs)
-                                opponent.player.AddRuneEffect(a);
+                            opponent.player.AddDebuffEffect(debuff);
                         }
                     }
                 });
