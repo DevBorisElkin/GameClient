@@ -483,11 +483,12 @@ public class PlayerMovementController : MonoBehaviour
 			if (negativeEffectsController != null) StopCoroutine(negativeEffectsController);
 			negativeEffectsController = NegativeEffectsController();
 			StartCoroutine(negativeEffectsController);
-		}
-		foreach(var a in runeEffects)
-        {
-			if(a == Rune.Red || a == Rune.LightBlue)
-				SendMessageDebuffStarted(a);
+
+			foreach (var a in runeEffects)
+			{
+				if (a == Rune.Red || a == Rune.LightBlue)
+					SendMessageDebuffStarted(a);
+			}
 		}
 	}
 
