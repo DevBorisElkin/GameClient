@@ -85,8 +85,6 @@ public class PlayerMovementController : MonoBehaviour
     {
 		StopAllCoroutines();
 		StartCoroutine(SendPlayerMovement());
-
-		InitLightBlueRuneDebuff();
 	}
     #endregion
     void LeftController_TouchDetection(bool isTouching) { moving = isTouching; }
@@ -537,7 +535,8 @@ public class PlayerMovementController : MonoBehaviour
 	#endregion
 
 	#region LightBlueRune debuff
-
+	// COOL BUT CANT ACCOMPLISH IN CURRENT ENVIROMNENT
+	/*
 	int groundLayer;
 	int xRayObjLayer;
 
@@ -571,6 +570,7 @@ public class PlayerMovementController : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
+		Debug.Log("OnCollisionStay - player movement controller");
 		if (DoesLayerBelongsToGround(collision.collider.gameObject.layer))
 		{
             if (!onGround)
@@ -639,6 +639,6 @@ public class PlayerMovementController : MonoBehaviour
 			Debug.Log("Left Ground");
 		}
 	}
-
+	*/
     #endregion
 }
