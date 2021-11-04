@@ -250,4 +250,37 @@ public static class MessageParser
         catch (Exception e) { runeEffects = new List<RuneEffectInfo>(); Debug.Log(e); }
         return runeEffects;
     }
+
+    // code|playerWhoGotDebuffsDbId|LightBlue@Red
+    // "player_received_debuffs|12|LightBlue@Red
+    public static void ParseOnDebuffsMessage(string message, out int playerDbId, out List<Rune> debuffs)
+    {
+        debuffs = new List<Rune>();
+        try
+        {
+            string[] msg = message.Split('|');
+            playerDbId = Int32.Parse(msg[1]);
+            string[] runesRaw = msg[2].Split('@');
+            foreach (string a in runesRaw)
+            {
+                Enum.TryParse(a, out Rune rune);
+                debuffs.Add(rune);
+            }
+        }
+        catch (Exception e) { playerDbId = -1; Debug.Log(e); }
+    }
+
+    // code|playerWhoGotDebuffsDbId|LightBlue
+    // "player_debuff_ended|12|LightBlue
+    public static void ParseOnDebuffsMessage(string message, out int playerDbId, out Rune debuff)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            playerDbId = Int32.Parse(msg[1]);
+            Enum.TryParse(msg[2], out Rune rune);
+            debuff = rune;
+        }
+        catch (Exception e) { playerDbId = -1; debuff = Rune.None; Debug.Log(e); }
+    }
 }

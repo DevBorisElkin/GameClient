@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public Transform projectileSpawnPoint;
 
     public List<RuneVisual> runeVisuals;
+    public List<RuneVisual> debuffVisuals;
     [HideInInspector] public List<Rune> runeEffects;
 
     public bool collidedWithSpikeTrap;
@@ -25,7 +26,7 @@ public class Player : MonoBehaviour
         runeEffects = new List<Rune>();
     }
 
-
+    #region RuneEffects
     public void AddRuneEffect(Rune rune)
     {
         foreach(var a in runeVisuals)
@@ -56,6 +57,27 @@ public class Player : MonoBehaviour
         CheckLightBlueParticles(false);
         CheckGoldenParticles(false);
     }
+    #endregion
+
+    #region debuffs
+
+    public void AddDebuffEffect(Rune rune)
+    {
+        foreach (var a in debuffVisuals)
+            if (a.runeType == rune) a.gameObject.SetActive(true);
+    }
+    public void RemoveDebuffEffect(Rune rune)
+    {
+        foreach (var a in debuffVisuals)
+            if (a.runeType == rune) a.gameObject.SetActive(false);
+    }
+    public void ResetAllDebuffEffects()
+    {
+        foreach (var a in debuffVisuals)
+            a.gameObject.SetActive(false);
+    }
+
+    #endregion
 
     public Transform lightBlueAdditionalParticles;
     public Transform parentForLightBlueAdditionalParticles;

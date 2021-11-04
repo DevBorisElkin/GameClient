@@ -161,13 +161,17 @@ public class OnlineGameManager : MonoBehaviour
                         DisableXrayForOpponent(deadPlayerId);
 
                         if (deadPlayerId == ConnectionManager.instance.currentUserData.db_id)
+                        {
                             player.ResetAllRuneEffects();
+                            player.ResetAllDebuffEffects();
+                        }
                         else
                         {
                             var opponent = FindPlayerByDbId(deadPlayerId);
                             if (opponent != null)
                             {
                                 opponent.player.ResetAllRuneEffects();
+                                opponent.player.ResetAllDebuffEffects();
                             }
                         }
                     }
@@ -327,6 +331,49 @@ public class OnlineGameManager : MonoBehaviour
                         }
                     }
                 }
+            }
+            else if (message.Contains(PLAYER_RECEIVED_DEBUFFS))
+            {
+                MessageParser.ParseOnDebuffsMessage(message, out int playerDbId, out List<Rune> debuffs);
+
+                UnityThread.executeInUpdate(() =>
+                {
+                    // 1) Add rune effect on player
+                    if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
+                    {
+                        foreach(var a in debuffs)
+                            player.AddDebuffEffect(a);
+                    }
+                    else
+                    {
+                        var opponent = FindPlayerByDbId(playerDbId);
+                        if (opponent != null)
+                        {
+                            foreach (var a in debuffs)
+                                opponent.player.AddRuneEffect(a);
+                        }
+                    }
+                });
+            }
+            else if (message.Contains(PLAYER_DEBUFF_ENDED))
+            {
+                MessageParser.ParseOnDebuffsMessage(message, out int playerDbId, out Rune debuff);
+                UnityThread.executeInUpdate(() =>
+                {
+                    // 1) Add rune effect on player
+                    if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
+                    {
+                        player.RemoveDebuffEffect(debuff);
+                    }
+                    else
+                    {
+                        var opponent = FindPlayerByDbId(playerDbId);
+                        if (opponent != null)
+                        {
+                            opponent.player.RemoveDebuffEffect(debuff);
+                        }
+                    }
+                });
             }
         }
         catch(Exception e)

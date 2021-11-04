@@ -408,7 +408,7 @@ public class PlayerMovementController : MonoBehaviour
 	DateTime redRuneEffectStartTime;
 
 	// LightBlue Rune
-	float lightBlueRuneEffectDuration = 7f;
+	float lightBlueRuneEffectDuration = 13f;
 	float lightBlueRunePushbackDecrease = -0.45f;
 	float lightBlueRuneMovementSpeedDecrease = -0.37f;
 	float lightBlueRuneRotationSpeedDecrease = -0.5f;
@@ -421,7 +421,7 @@ public class PlayerMovementController : MonoBehaviour
 	float darkGreenRuneJumpForceIncrease = 0.25f;
 
 	// RedRune
-	float redRuneEffectDuration = 10f;
+	float redRuneEffectDuration = 13f;
 
 	// SalmonRune
 	float salmonRuneMovementSpeedDecrease = -0.8f;
@@ -442,7 +442,10 @@ public class PlayerMovementController : MonoBehaviour
             if (lastShotRuneEffects.Contains(Rune.LightBlue))
             {
 				if ((DateTime.Now - lightBlueRuneEffectStartTime).TotalMilliseconds > TimeSpan.FromSeconds(lightBlueRuneEffectDuration).TotalMilliseconds)
+                {
 					lastShotRuneEffects.Remove(Rune.LightBlue);
+					SendMessageDebuffEnded(Rune.LightBlue);
+                }
             }
 			if (lastShotRuneEffects.Contains(Rune.Red))
 			{
@@ -450,12 +453,21 @@ public class PlayerMovementController : MonoBehaviour
                 {
 					lastShotRuneEffects.Remove(Rune.Red);
 					CameraRenderingManager.instance.SetRedRuneDebuffState(false);
+					SendMessageDebuffEnded(Rune.Red);
                 }
 			}
 		}
     }
-
-
+	void SendMessageDebuffStarted(Rune debuff)
+	{
+		string message = $"{PLAYER_RECEIVED_DEBUFFS}|{OnlineGameManager.instance.player.playerData.db_id}|{debuff}";
+		ConnectionManager.instance.SendMessageToServer(message, BorisUnityDev.Networking.MessageProtocol.TCP);
+	}
+	void SendMessageDebuffEnded(Rune debuff)
+    {
+		string message = $"{PLAYER_DEBUFF_ENDED}|{OnlineGameManager.instance.player.playerData.db_id}|{debuff}";
+		ConnectionManager.instance.SendMessageToServer(message, BorisUnityDev.Networking.MessageProtocol.TCP);
+	}
 	public void SetLastShotRuneEffects(List<Rune> runeEffects)
     {
 		lastShotRuneEffects = runeEffects;
@@ -471,6 +483,11 @@ public class PlayerMovementController : MonoBehaviour
 			if (negativeEffectsController != null) StopCoroutine(negativeEffectsController);
 			negativeEffectsController = NegativeEffectsController();
 			StartCoroutine(negativeEffectsController);
+		}
+		foreach(var a in runeEffects)
+        {
+			if(a == Rune.Red || a == Rune.LightBlue)
+				SendMessageDebuffStarted(a);
 		}
 	}
 
