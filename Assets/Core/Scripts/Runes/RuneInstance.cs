@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static DataTypes;
 using static EnumsAndData;
+using DG.Tweening;
 
 public class RuneInstance : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class RuneInstance : MonoBehaviour
 
     [Space(5f)]
     public MeshRenderer meshRenderer;
+    public Transform meshTransform;
+    public float rotation360time = 2.2f;
 
     public List<RuneVisual> runeVisuals;
     [SerializeField] public List<RuneColor> runeColors;
@@ -21,6 +24,7 @@ public class RuneInstance : MonoBehaviour
         this.runeType = runeType;
 
         ManageVisuals();
+        SetUpRuneRotation();
     }
 
     void ManageVisuals()
@@ -32,6 +36,11 @@ public class RuneInstance : MonoBehaviour
         }
         Material mat = GetProperMaterial();
         if (mat != null) meshRenderer.material = mat;
+    }
+
+    void SetUpRuneRotation()
+    {
+        meshTransform.DORotate(new Vector3(0, 360, 0), rotation360time, RotateMode.LocalAxisAdd).SetLoops(-1).SetEase(Ease.Linear);
     }
 
     Material GetProperMaterial()

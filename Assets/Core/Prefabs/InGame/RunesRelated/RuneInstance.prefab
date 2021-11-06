@@ -371,7 +371,7 @@ MeshCollider:
   m_GameObject: {fileID: 3332331143931787684}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
@@ -438,6 +438,8 @@ MonoBehaviour:
   runeId: 0
   runeType: 0
   meshRenderer: {fileID: 3332331143931787680}
+  meshTransform: {fileID: 3332331143931787709}
+  rotation360time: 10
   runeVisuals:
   - {fileID: 8668964532474366599}
   - {fileID: 6156073654057454153}
