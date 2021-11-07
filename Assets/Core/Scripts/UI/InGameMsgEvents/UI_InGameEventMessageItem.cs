@@ -105,7 +105,7 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         DefaultPanel();
 
         panelPickUpRune.SetActive(true);
-        runePickerTxt.text = nicknameOfPicker;
+        runePickerTxt.text = $"{nicknameOfPicker} picked up rune";
         Sprite foundSprite = PrefabsHolder.instance.GetSpriteByRuneType(runeType);
         if (foundSprite != null) runeImage.sprite = foundSprite;
 
