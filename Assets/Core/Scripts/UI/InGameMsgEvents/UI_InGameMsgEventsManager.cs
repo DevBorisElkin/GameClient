@@ -65,4 +65,11 @@ public class UI_InGameMsgEventsManager : MonoBehaviour
         UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
         item.OnEnterExitMessage(MessageType.Exit, userNickname);
     }
+
+    public void FromServer_PlayerPickedUpRune(Rune runeType, string nicknameOfPicker)
+    {
+        //GameObject msgEventPanel = Instantiate(PrefabsHolder.instance.ui_inGameEventMessage, parentForEventMessages);
+        //UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
+        //item.OnRunePickupMessage(runeType, nicknameOfPicker);
+    }
 }

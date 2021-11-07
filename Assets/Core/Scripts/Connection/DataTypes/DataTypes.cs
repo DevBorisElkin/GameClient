@@ -97,6 +97,13 @@ public static class DataTypes
         public Material material;
     }
 
+    [System.Serializable]
+    public class RuneIcon
+    {
+        public Rune rune;
+        public Sprite sprite;
+    }
+
     public class SpawnedRuneInstance
     {
         public Vector3 position;

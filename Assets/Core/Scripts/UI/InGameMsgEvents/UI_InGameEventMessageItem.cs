@@ -37,6 +37,12 @@ public class UI_InGameEventMessageItem : MonoBehaviour
 
     public Image enterImg;
     public Image exitImg;
+
+    [Header("Pick Up Rune")]
+    public GameObject panelPickUpRune;
+
+    public TMP_Text runePickerTxt;
+    public Image runeImage;
     public void SetUpDeathMessage(MessageType messageType, DeathDetails deathDetails, ReasonOfDeath reasonOfDeath, string killerNick, string victimNick)
     {
         DefaultPanel();
@@ -94,6 +100,18 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         StartCoroutine(DestroyCoroutine());
     }
 
+    public void OnRunePickupMessage(Rune runeType, string nicknameOfPicker)
+    {
+        DefaultPanel();
+
+        panelPickUpRune.SetActive(true);
+        runePickerTxt.text = nicknameOfPicker;
+        Sprite foundSprite = PrefabsHolder.instance.GetSpriteByRuneType(runeType);
+        if (foundSprite != null) runeImage.sprite = foundSprite;
+
+        StartCoroutine(DestroyCoroutine());
+    }
+
     void DefaultPanel()
     {
         panelKillEvent.SetActive(false);
@@ -105,6 +123,7 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         spikesSuicideImage.gameObject.SetActive(false);
         enterImg.gameObject.SetActive(false);
         exitImg.gameObject.SetActive(false);
+        panelPickUpRune.SetActive(false);
     }
 
     IEnumerator DestroyCoroutine()

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static EnumsAndData;
+using static DataTypes;
 
 public class PrefabsHolder : MonoBehaviour
 {
@@ -44,4 +46,13 @@ public class PrefabsHolder : MonoBehaviour
     public GameObject ui_opponentPointer_prefab;
 
     public GameObject rune_prefab;
+
+    public List<RuneIcon> runeIcons;
+
+    public Sprite GetSpriteByRuneType(Rune rune)
+    {
+        foreach(var a in runeIcons)
+            if (a.rune == rune) return a.sprite;
+        return null;
+    }
 }

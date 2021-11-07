@@ -40,8 +40,8 @@ public static class EnumsAndData
     //public enum Map { DefaultMap = 0, IcyMap = 1, DesertMap = 2 }
 
     public enum ReasonOfDeath { ByOtherPlayer, Suicide }
-    public enum DeathDetails { FellOutOfMap, TouchedSpikes, BlackRuneKilled }
-    public enum MessageType { Kill, Suicide, Enter, Exit} // TODO add more events
+    public enum DeathDetails { FellOutOfMap, SalmonRuneFellOutOfMap, TouchedSpikes, SalmonRuneTouchedSpikes, BlackRuneKilled }
+    public enum MessageType { Kill, Suicide, Enter, Exit, PickUpRune } // TODO add more events
     public enum MatchState { WaitingForPlayers, InGame, Finished }
     public enum MatchResult { PlayerWon, Draw, Discarded }
     public enum MatchFinishReason { FinishedByKills, FinishedByTime, Discarded }

@@ -19,7 +19,8 @@ public class ConnectionManager : MonoBehaviour
     // TODO MAKE CHANGES
     public static ConnectionManager instance;
 
-    public static string ip = "18.192.64.12";
+    //public static string ip = "18.192.64.12";
+    public static string ip = "3.66.24.145";
 
     public static int portTcp = 8384;
     public static int portUdp = 8385;

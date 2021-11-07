@@ -265,6 +265,9 @@ public class OnlineGameManager : MonoBehaviour
                     foreach (var a in runesToDestroy)
                         Destroy(a);
 
+                    // 3) create UI notifiying of picking up the rune
+                    UI_InGameMsgEventsManager.instance.FromServer_PlayerPickedUpRune(rune, nickOfPicker);
+
                 });
             }
             else if (message.Contains(RUNE_EFFECT_EXPIRED))
