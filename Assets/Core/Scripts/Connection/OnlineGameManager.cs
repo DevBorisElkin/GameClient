@@ -102,7 +102,7 @@ public class OnlineGameManager : MonoBehaviour
         string rotZ = rotation.z.ToString("0.###", CultureInfo.InvariantCulture);
 
         ConnectionManager.instance.SendMessageToServer($"{CLIENT_SHARES_PLAYROOM_POSITION}|" +
-            $"{posX}/{posY}/{posZ}|{rotX}/{rotY}/{rotZ}", MessageProtocol.UDP);
+            $"{posX}/{posY}/{posZ}|{rotX}/{rotY}/{rotZ}|{Connection.localClientId}", MessageProtocol.UDP);
     }
     #endregion
     #region IncomingMessages

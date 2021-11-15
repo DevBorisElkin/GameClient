@@ -38,6 +38,9 @@ namespace BorisUnityDev.Networking
         static DateTime lastConnectedConfirmed;
 
         public const int connectionTimeoutMs = 10000;
+
+        public static int localClientId;
+
         #endregion
 
         public static void SetConnectionValues(string _ip, int _portTcp, int _portUdp)
@@ -123,7 +126,7 @@ namespace BorisUnityDev.Networking
                         Debug.Log(message);
                         string msg = message.Replace(END_OF_FILE, "");
                         string[] substrings = msg.Split('|');
-                        int localClientId = Int32.Parse(substrings[1]);
+                        localClientId = Int32.Parse(substrings[1]);
                         UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}");
                     }
                     else
