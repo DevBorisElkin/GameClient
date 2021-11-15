@@ -34,7 +34,7 @@ namespace BorisUnityDev.Networking
         static int portUdp;
 
         static double ms_totalConnectedCheck = 6000;
-        static int ms_checkDisconnectedClient = 2000;
+        static int ms_checkDisconnectedClient = 1000;
         static DateTime lastConnectedConfirmed;
 
         public const int connectionTimeoutMs = 10000;
@@ -72,6 +72,10 @@ namespace BorisUnityDev.Networking
 
                 if (success)
                 {
+                    ConnectionUtil.InitReactivePingProperties();
+                    TCP_pingCheckId = 0;
+                    UDP_pingCheckId = 0;
+
                     socket_client = (Socket)asyncResult.AsyncState;
                     socket_client.EndConnect(asyncResult);
                     lastConnectedConfirmed = DateTime.Now;
@@ -110,6 +114,7 @@ namespace BorisUnityDev.Networking
                 try
                 {
                     string message = ConnectionUtil.ReadLine(socket_connect);
+
                     if (message.Equals(string.Empty))
                     {
                         Debug.Log("[TCP]: Received empty message from server");
@@ -132,7 +137,8 @@ namespace BorisUnityDev.Networking
                     else
                     {
                         lastConnectedConfirmed = DateTime.Now;
-                        OnMessageReceived(message);
+                        if (ConnectionUtil.OnCheckConnectedEchoTCP(message))
+                            OnMessageReceived(message);
                     }
                 }
                 catch (Exception e)
@@ -144,6 +150,13 @@ namespace BorisUnityDev.Networking
             }
         }
         static Task connectionChecker;
+
+        public static int TCP_pingCheckId;
+        public static DateTime TCP_pingCheckRecordedTime;
+
+        public static int UDP_pingCheckId;
+        public static DateTime UDP_pingCheckRecordedTime;
+
         static void CheckClientConnected()
         {
             while (connected)
@@ -159,10 +172,18 @@ namespace BorisUnityDev.Networking
                 }
                 else
                 {
-                    SendMessage(CHECK_CONNECTED+"<EOF>", MessageProtocol.TCP);
+                    TCP_pingCheckId++;
+                    TCP_pingCheckRecordedTime = DateTime.Now;
+                    SendMessage($"{CHECK_CONNECTED}|{TCP_pingCheckId}", MessageProtocol.TCP);
+
+                    UDP_pingCheckId++;
+                    UDP_pingCheckRecordedTime = DateTime.Now;
+                    SendMessage($"{CHECK_CONNECTED}|{TCP_pingCheckId}", MessageProtocol.UDP);
                 }
             }
         }
+        
+
         // [DISCONNECT FROM THE SERVER]
         public static void Disconnect(bool notifyDisconnect = true, bool forceConnectionClose = false, int delayToReconnect = 0)
         {

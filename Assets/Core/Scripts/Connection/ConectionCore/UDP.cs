@@ -77,7 +77,11 @@ namespace BorisUnityDev.Networking
                         {
                             Debug.Log("[UDP]: Received empty message from server");
                         }
-                        Connection.OnMessageReceived(message, MessageProtocol.UDP);
+                        else
+                        {
+                            if (ConnectionUtil.OnCheckConnectedEchoUDP(message))
+                                Connection.OnMessageReceived(message, MessageProtocol.UDP);
+                        }
                     }
                     catch(Exception e)
                     {
