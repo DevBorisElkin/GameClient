@@ -19,6 +19,7 @@ public class OnlineGameManager : MonoBehaviour
     private void Awake()
     {
         InitSingleton();
+        //MessageCounter.StartCounting("POSITIONS MESSAGE");
     }
     void InitSingleton()
     {
@@ -403,6 +404,8 @@ public class OnlineGameManager : MonoBehaviour
     public void OnPositionMessageReceived(string message)
     {
         if (!inPlayRoom) return;
+
+        //MessageCounter.UpdateCounter();
 
         List<PlayerData> retrievedPlayerData = MessageParser.ParseOnPositionsMessage(message);
         if (retrievedPlayerData == null || retrievedPlayerData.Count <= 0) return;
