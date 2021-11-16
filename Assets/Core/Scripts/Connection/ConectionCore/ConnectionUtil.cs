@@ -74,7 +74,7 @@ namespace BorisUnityDev.Networking
                 {
                     int delayMs = (int)(DateTime.Now - TCP_pingCheckRecordedTime).TotalMilliseconds;
                     UnityThread.executeInUpdate(() => { LastTcpPing.Value = delayMs; });
-                    Debug.Log($"Ping TCP: {delayMs}");
+                    //Debug.Log($"Ping TCP: {delayMs}");
                 }
             }
             catch (Exception e) { Debug.Log(e); }
@@ -93,7 +93,7 @@ namespace BorisUnityDev.Networking
                 {
                     int delayMs = (int)(DateTime.Now - UDP_pingCheckRecordedTime).TotalMilliseconds;
                     UnityThread.executeInUpdate(() => { LastUdpPing.Value = delayMs; });
-                    Debug.Log($"Ping UDP: {delayMs}");
+                    //Debug.Log($"Ping UDP: {delayMs}");
                 }
             }
             catch (Exception e) { Debug.Log(e); }
