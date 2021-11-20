@@ -27,6 +27,7 @@ public class PrefabsHolder : MonoBehaviour
 
     public GameObject player_prefab;
     public GameObject opponent_prefab;
+    public GameObject localPlayerGhost_prefab;
     public GameObject playerDeathParticles_prefab;
 
     public GameObject electricMuzzleFlash_prefab;

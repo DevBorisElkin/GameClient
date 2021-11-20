@@ -49,6 +49,8 @@ MonoBehaviour:
     type: 3}
   opponent_prefab: {fileID: 6704527064422643022, guid: 8c69effea4eb0f540bb2daee63680c8e,
     type: 3}
+  localPlayerGhost_prefab: {fileID: 6704527064422643022, guid: 49ed6b3f9ad5519478612649829fa40e,
+    type: 3}
   playerDeathParticles_prefab: {fileID: 168545750976119017, guid: 08246acf5cba494498018a86aa903462,
     type: 3}
   electricMuzzleFlash_prefab: {fileID: 7581561781419986715, guid: dcf1699332943624eb056a412716e7f6,

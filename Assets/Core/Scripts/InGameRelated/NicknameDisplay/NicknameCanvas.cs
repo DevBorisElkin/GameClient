@@ -40,19 +40,23 @@ public class NicknameCanvas : MonoBehaviour
 
     public void SetUp(Player _player, PlayerData _playerData)
     {
-        transform.SetParent(null);
+        if (!_playerData.copyOfLocalPlayer)
+        {
+            transform.SetParent(null);
 
-        if (lookAtTarget == null)
-            lookAtTarget = Camera.main.gameObject;
+            if (lookAtTarget == null)
+                lookAtTarget = Camera.main.gameObject;
 
-        player = _player;
-        playerData = _playerData;
-        nicknameTxt.text = playerData.nickname;
+            player = _player;
+            playerData = _playerData;
+            nicknameTxt.text = playerData.nickname;
 
-        activated = true;
+            activated = true;
 
-        // we know it's attached to the core player
-        if (_playerData.nickname == ConnectionManager.instance.currentUserData.nickname) EventManager.instance.camSimpleFollow.nicknamePlayerCanvas = this;
+            // we know it's attached to the core player
+            if (_playerData.db_id == ConnectionManager.instance.currentUserData.db_id) EventManager.instance.camSimpleFollow.nicknamePlayerCanvas = this;
+        }
+        else Destroy(gameObject);
     }
     public TMP_Text nicknameTxt;
 }

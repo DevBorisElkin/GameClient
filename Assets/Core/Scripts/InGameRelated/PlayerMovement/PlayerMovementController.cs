@@ -72,19 +72,20 @@ public class PlayerMovementController : MonoBehaviour
 
 	void InvokableSetAvailableForRaycast() => StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
 
-	IEnumerator SendPlayerMovement()
-    {
-        while (true)
-        {
-			yield return new WaitForSeconds(0.02f); // 50 times a sec
-			//Debug.Log("OnPlayerMoved|"+transform.position+"|"+transform.rotation);
-			OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
-		}
-	}
+	// temporarily deprecated
+	//IEnumerator SendPlayerMovement()
+    //{
+    //    while (true)
+    //    {
+	//		yield return new WaitForSeconds(0.02f); // 50 times a sec
+	//		//Debug.Log("OnPlayerMoved|"+transform.position+"|"+transform.rotation);
+	//		OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
+	//	}
+	//}
 	void InitOnline()
     {
 		StopAllCoroutines();
-		StartCoroutine(SendPlayerMovement());
+		//StartCoroutine(SendPlayerMovement());
 	}
     #endregion
     void LeftController_TouchDetection(bool isTouching) { moving = isTouching; }
@@ -98,9 +99,11 @@ public class PlayerMovementController : MonoBehaviour
 	{
 		if (!EventManager.isAlive) return;
 		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
-		//Debug.Log($"Movement and rotation speed: {_movementSpeed}, {_rotationSpeed}");
 		MakeMovement(_movementSpeed);
 		UpdateAim(_rotationSpeed);
+
+		OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
+
 		MakePushing();
 	}
 	[HideInInspector] Vector3 lastMovement;

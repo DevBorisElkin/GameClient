@@ -5,26 +5,47 @@ using UnityEngine;
 
 public static class MessageCounter
 {
-    static DateTime countInceptionDate;
-    static string key;
+    static List<MessageCounterInstance> counterInstances = new List<MessageCounterInstance>();
     public static void StartCounting(string key)
     {
-        MessageCounter.key = key;
-        countInceptionDate = DateTime.Now;
-        counter = 0;
+        MessageCounterInstance counterInstance = new MessageCounterInstance(key);
+        counterInstances.Add(counterInstance);
     }
 
-    static int counter;
-    public static void UpdateCounter()
+    public static void UpdateCounter(string key)
     {
-        counter++;
-
-        if((DateTime.Now - countInceptionDate).TotalMilliseconds > 1000)
+        MessageCounterInstance correctInstance = GetInstanceByKey(key);
+        if (correctInstance != null)
         {
-            Debug.Log($"[{key}] Messages count: {counter}");
+            correctInstance.counter++;
+            if ((DateTime.Now - correctInstance.countInceptionDate).TotalMilliseconds > 1000)
+            {
+                Debug.Log($"[{key}] Messages count: {correctInstance.counter}");
+                correctInstance.countInceptionDate = DateTime.Now;
+                correctInstance.counter = 0;
+            }
+        }
+        else Debug.Log($"Error, counter instance for key {key} is null");
+    }
+
+    static MessageCounterInstance GetInstanceByKey(string key)
+    {
+        foreach (var a in counterInstances)
+            if (a.key == key) return a;
+        return null;
+    }
+
+    class MessageCounterInstance
+    {
+        public string key;
+        public DateTime countInceptionDate;
+        public int counter;
+
+        public MessageCounterInstance(string key)
+        {
+            this.key = key;
             countInceptionDate = DateTime.Now;
             counter = 0;
         }
     }
-    
 }

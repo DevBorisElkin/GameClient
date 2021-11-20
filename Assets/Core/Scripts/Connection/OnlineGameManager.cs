@@ -11,6 +11,8 @@ using static NetworkingMessageAttributes;
 using static DataTypes;
 using static EnumsAndData;
 using static OpponentPointer;
+using UniRx;
+using System.Linq;
 
 public class OnlineGameManager : MonoBehaviour
 {
@@ -19,7 +21,6 @@ public class OnlineGameManager : MonoBehaviour
     private void Awake()
     {
         InitSingleton();
-        //MessageCounter.StartCounting("POSITIONS MESSAGE");
     }
     void InitSingleton()
     {
@@ -34,6 +35,7 @@ public class OnlineGameManager : MonoBehaviour
 
     public float pos_interpolationSpeed = 5f;
     public float rot_interpolationSpeed = 7f;
+    public bool showGhostSelf;
     bool inPlayRoom;
 
     EventManager shootingManager;
@@ -44,7 +46,7 @@ public class OnlineGameManager : MonoBehaviour
     public static int maxJumpsAmount = 0;
 
     [HideInInspector] public GameObject playerGameObj;
-    [HideInInspector] public Player player;
+    [HideInInspector] public Player current_player;
     [HideInInspector] public PlayerMovementController playerMovementConetroller;
 
     UI_PlayersInLobby_Manager _ui_PlayersInLobby_Manager;
@@ -75,8 +77,8 @@ public class OnlineGameManager : MonoBehaviour
                      spawnPosition, 
                      Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
             playerMovementConetroller = playerGameObj.GetComponent<PlayerMovementController>();
-            player = playerGameObj.GetComponentInChildren<Player>();
-            player.SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
+            current_player = playerGameObj.GetComponentInChildren<Player>();
+            current_player.SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
             shootingManager = FindObjectOfType<EventManager>();
         }
     }
@@ -163,8 +165,8 @@ public class OnlineGameManager : MonoBehaviour
 
                         if (deadPlayerId == ConnectionManager.instance.currentUserData.db_id)
                         {
-                            player.ResetAllRuneEffects();
-                            player.ResetAllDebuffEffects();
+                            current_player.ResetAllRuneEffects();
+                            current_player.ResetAllDebuffEffects();
                         }
                         else
                         {
@@ -245,7 +247,7 @@ public class OnlineGameManager : MonoBehaviour
                     // 1) Add rune effect on player
                     if(playerWhoPicked_db_id == ConnectionManager.instance.currentUserData.db_id)
                     {
-                        player.AddRuneEffect(rune);
+                        current_player.AddRuneEffect(rune);
                     }
                     else
                     {
@@ -278,7 +280,7 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     if (affectedPlayerDbId == ConnectionManager.instance.currentUserData.db_id)
                     {
-                        player.RemoveRuneEffect(runeType);
+                        current_player.RemoveRuneEffect(runeType);
                     }
                     else
                     {
@@ -322,7 +324,7 @@ public class OnlineGameManager : MonoBehaviour
                         if (a.playerDbId == ConnectionManager.instance.currentUserData.db_id)
                         {
                             foreach (var b in a.runeEffects)
-                                player.AddRuneEffect(b);
+                                current_player.AddRuneEffect(b);
                         }
                         else
                         {
@@ -344,7 +346,7 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     // 1) Add rune effect on player
                     if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
-                        player.AddDebuffEffect(debuff);
+                        current_player.AddDebuffEffect(debuff);
                     else
                     {
                         var opponent = FindPlayerByDbId(playerDbId);
@@ -363,7 +365,7 @@ public class OnlineGameManager : MonoBehaviour
                     // 1) Add rune effect on player
                     if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
                     {
-                        player.RemoveDebuffEffect(debuff);
+                        current_player.RemoveDebuffEffect(debuff);
                     }
                     else
                     {
@@ -405,14 +407,14 @@ public class OnlineGameManager : MonoBehaviour
     {
         if (!inPlayRoom) return;
 
-        //MessageCounter.UpdateCounter();
-
         List<PlayerData> retrievedPlayerData = MessageParser.ParseOnPositionsMessage(message);
         if (retrievedPlayerData == null || retrievedPlayerData.Count <= 0) return;
 
         bool noticedUnspanedPlayers = false;
         foreach (PlayerData a in retrievedPlayerData)
         {
+            if (!showGhostSelf && a.db_id == current_player.playerData.db_id) continue;
+
             PlayerData correctPlayer = FindPlayerByDbId(a.db_id);
             if(correctPlayer != null)
             {
@@ -426,8 +428,10 @@ public class OnlineGameManager : MonoBehaviour
                 newlyCreatedPlayer.db_id = a.db_id;
                 newlyCreatedPlayer.position = a.position; // TODO No initial connection of position with server
                 newlyCreatedPlayer.rotation = a.rotation;
-                opponents.Add(newlyCreatedPlayer);
 
+                if (newlyCreatedPlayer.db_id == current_player.playerData.db_id) newlyCreatedPlayer.copyOfLocalPlayer = true;
+
+                opponents.Add(newlyCreatedPlayer);
                 noticedUnspanedPlayers = true;
             }
         }
@@ -517,8 +521,11 @@ public class OnlineGameManager : MonoBehaviour
             {
                 try
                 {
-                    
-                    a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
+                    if (!a.copyOfLocalPlayer)
+                        a.controlledGameObject = Instantiate(PrefabsHolder.instance.opponent_prefab, a.position, a.rotation);
+                    else
+                        a.controlledGameObject = Instantiate(PrefabsHolder.instance.localPlayerGhost_prefab, a.position, a.rotation);
+
                     a.controlledGameObject.transform.position = a.position;
                     Debug.Log($"Spawned opponent at position {a.controlledGameObject.transform.position}");
                     if (a.player == null) a.player = a.controlledGameObject.GetComponentInChildren<Player>();
@@ -527,7 +534,7 @@ public class OnlineGameManager : MonoBehaviour
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
             }
         }
-        UI_InGame.instance.UpdateWaitingForPlayersText(opponents.Count);
+        UI_InGame.instance.UpdateWaitingForPlayersText(GetClearOpponentsCount());
     }
 
     void CheckRemoveAndDeleteLeftPlayers()
@@ -567,12 +574,15 @@ public class OnlineGameManager : MonoBehaviour
 
     public List<PlayerData> opponents;
 
+    int GetClearOpponentsCount() => opponents.Where(a => !a.copyOfLocalPlayer).ToList().Count;
+
     public class PlayerData
     {
         public PlayerData() {}
         public PlayerData(UserData userData) 
         {
             nickname = userData.nickname;
+            db_id = userData.db_id;
         }
 
         public string nickname;
@@ -589,6 +599,8 @@ public class OnlineGameManager : MonoBehaviour
 
         public Player player;
         public Pointer opponentPointer;
+
+        public bool copyOfLocalPlayer;
     }
 
     public PlayerData FindPlayerByDbId(int dbId)
