@@ -52,6 +52,7 @@ namespace BorisUnityDev.Networking
             }
         }
 
+        #region PingRelated
         public static ReactiveProperty<int> LastTcpPing;
         public static ReactiveProperty<int> LastUdpPing;
 
@@ -96,8 +97,17 @@ namespace BorisUnityDev.Networking
                     //Debug.Log($"Ping UDP: {delayMs}");
                 }
             }
-            catch (Exception e) { Debug.Log(e); }
+            catch (Exception e) { Debug.Log($"message: {message}, | exceptions: {e}"); }
             return false;
+        }
+        #endregion
+        public static string[] ParceMessageIntoArrays(string msg)
+        {
+            StringBuilder builder = new StringBuilder(msg);
+            builder.Replace($"{END_OF_FILE}", "*");
+            string res = builder.ToString();
+            char[] spearator = { '*' };
+            return res.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

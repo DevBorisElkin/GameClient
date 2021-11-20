@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey.Utils;
 using static OpponentPointer;
+using static EnumsAndData;
 
 public class OpponentPointerHandler : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class OpponentPointerHandler : MonoBehaviour
 
     float normalOffset = 80f;
     float normalHintOffset = 155f;  // 155
-
+    
     #region arrow pointer
     public Pointer CreatePointer(Vector3 position)
     {

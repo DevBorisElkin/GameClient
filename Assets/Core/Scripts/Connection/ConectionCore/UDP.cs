@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using static BorisUnityDev.Networking.ConnectionUtil;
 
 namespace BorisUnityDev.Networking
 {
@@ -79,8 +80,12 @@ namespace BorisUnityDev.Networking
                         }
                         else
                         {
-                            if (ConnectionUtil.OnCheckConnectedEchoUDP(message))
-                                Connection.OnMessageReceived(message, MessageProtocol.UDP);
+                            string[] messages = ConnectionUtil.ParceMessageIntoArrays(message);
+                            foreach(var msg in messages)
+                            {
+                                if (ConnectionUtil.OnCheckConnectedEchoUDP(msg))
+                                    Connection.OnMessageReceived(msg, MessageProtocol.UDP);
+                            }
                         }
                     }
                     catch(Exception e)

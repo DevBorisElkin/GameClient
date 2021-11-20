@@ -13,6 +13,7 @@ using static NetworkingMessageAttributes;
 using static UI_GlobalManager;
 using static DataTypes;
 using static EnumsAndData;
+using static BorisUnityDev.Networking.ConnectionUtil;
 
 public class ConnectionManager : MonoBehaviour
 {
@@ -98,134 +99,131 @@ public class ConnectionManager : MonoBehaviour
         ParseMessage(message, mp);
     }
 
-    void ParseMessage(string msg, MessageProtocol mp)
+    void ParseMessage(string message, MessageProtocol mp)
     {
         try
         {
-            foreach (string message in ParceMessageIntoArrays(msg))
+            if (message.Contains(CHECK_CONNECTED)) return;
+            if (!message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(MATCH_TIME_REMAINING)
+                && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT) && !message.Contains(PLAYER_REVIVED))
             {
-                if (message.Contains(CHECK_CONNECTED)) continue;
-                if (!message.Contains(MESSAGE_TO_ALL_CLIENTS_ABOUT_PLAYERS_DATA_IN_PLAYROOM) && !message.Equals("") && !message.Contains(MATCH_TIME_REMAINING)
-                    && !message.Contains(SHOT_RESULT) && !message.Contains(JUMP_RESULT) && !message.Contains(JUMP_AMOUNT) && !message.Contains(PLAYER_REVIVED))
-                {
-                    Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message} | {DateTime.Now}");
-                }
+                Debug.Log($"[{mp}][MESSAGE FROM SERVER]: {message} | {DateTime.Now}");
+            }
 
-                if (message.Equals(CLIENT_DISCONNECTED))
+            if (message.Equals(CLIENT_DISCONNECTED))
+            {
+                // TODO add reason
+                Debug.Log("For some reason server disconnected you");
+                Disconnect();
+            }
+            if (clientAccessLevel == ClientAccessLevel.LowestLevel)
+            {
+                if (message.Contains(LOG_IN_RESULT))
                 {
-                    // TODO add reason
-                    Debug.Log("For some reason server disconnected you");
-                    Disconnect();
-                }
-                if(clientAccessLevel == ClientAccessLevel.LowestLevel)
-                {
-                    if (message.Contains(LOG_IN_RESULT))
+                    string[] substrings = message.Split('|');
+                    if (substrings[1].Equals("Success") && substrings.Length >= 3)
                     {
-                        string[] substrings = message.Split('|');
-                        if (substrings[1].Equals("Success") && substrings.Length >= 3)
+                        Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
+
+                        string[] userData = substrings[2].Split(',');
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
+
+                        Action act = StoreUserData;
+                        UnityThread.executeInUpdate(act);
+                        void StoreUserData()
                         {
-                            Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
-
-                            string[] userData = substrings[2].Split(',');
-                            currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
-
-                            Action act = StoreUserData;
-                            UnityThread.executeInUpdate(act);
-                            void StoreUserData()
-                            {
-                                PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
-                                PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
-                            }
-
-                            Debug.Log($"Current user data: {currentUserData}");
-                            UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
-                            clientAccessLevel = ClientAccessLevel.Authenticated;
-
+                            PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
+                            PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
                         }
-                        else
-                        {
-                            Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
-                            Enum.TryParse(substrings[1], out RequestResult myStatus);
-                            Action act = SetResult;
-                            UnityThread.executeInUpdate(act);
-                            void SetResult() { UI_GlobalManager.instance.SetAuthInResult(myStatus); }
-                        }
+
+                        Debug.Log($"Current user data: {currentUserData}");
+                        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+                        clientAccessLevel = ClientAccessLevel.Authenticated;
+
                     }
-                    else if (message.Contains(REGISTER_RESULT))
+                    else
                     {
-                        string[] substrings = message.Split('|');
-                        if (substrings[1].Equals("Success") && substrings.Length >= 3)
-                        {
-                            Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
-
-                            string[] userData = substrings[2].Split(',');
-                            currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
-
-                            Action act = StoreUserData;
-                            UnityThread.executeInUpdate(act);
-                            void StoreUserData()
-                            {
-                                PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
-                                PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
-                            }
-
-                            Debug.Log($"Current user data: {currentUserData}");
-                            UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
-                            clientAccessLevel = ClientAccessLevel.Authenticated;
-
-                        }
-                        else
-                        {
-                            Debug.Log($"Failed to register, fail reason: {substrings[1]}");
-                            Enum.TryParse(substrings[1], out RequestResult myStatus);
-                            Action act = SetResult;
-                            UnityThread.executeInUpdate(act);
-                            void SetResult() { UI_GlobalManager.instance.SetRegistrationResult(myStatus); }
-                        }
+                        Debug.Log($"Failed to authenticate, fail reason: {substrings[1]}");
+                        Enum.TryParse(substrings[1], out RequestResult myStatus);
+                        Action act = SetResult;
+                        UnityThread.executeInUpdate(act);
+                        void SetResult() { UI_GlobalManager.instance.SetAuthInResult(myStatus); }
                     }
                 }
-                else if(clientAccessLevel == ClientAccessLevel.Authenticated)
+                else if (message.Contains(REGISTER_RESULT))
                 {
-                    if (message.Contains(PLAYROOMS_DATA_RESPONSE))
+                    string[] substrings = message.Split('|');
+                    if (substrings[1].Equals("Success") && substrings.Length >= 3)
                     {
-                        UI_GlobalManager.instance.UpdatePlyroomsList(message);
+                        Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
+
+                        string[] userData = substrings[2].Split(',');
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
+
+                        Action act = StoreUserData;
+                        UnityThread.executeInUpdate(act);
+                        void StoreUserData()
+                        {
+                            PlayerPrefs.SetString(CODE_SAVED_LOGIN, currentUserData.login);
+                            PlayerPrefs.SetString(CODE_SAVED_PASSWORD, currentUserData.password);
+                        }
+
+                        Debug.Log($"Current user data: {currentUserData}");
+                        UI_GlobalManager.instance.ManageScene(ClientStatus.Authenticated);
+                        clientAccessLevel = ClientAccessLevel.Authenticated;
+
                     }
-                    // "reject_enter_playroom|reason_of_rejection_message|";
-                    else if (message.StartsWith(REJECT_ENTER_PLAY_ROOM))
+                    else
                     {
-                        string[] substrings = message.Split('|');
-
-                        Debug.Log($"Was not accepted to playroom [{substrings[1]}]");
-
-                        UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
-                        
+                        Debug.Log($"Failed to register, fail reason: {substrings[1]}");
+                        Enum.TryParse(substrings[1], out RequestResult myStatus);
+                        Action act = SetResult;
+                        UnityThread.executeInUpdate(act);
+                        void SetResult() { UI_GlobalManager.instance.SetRegistrationResult(myStatus); }
                     }
-                    // "confirm_enter_playroom|idOfRoom/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
-                    // |{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|"
-                    else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
-                    {
-                        string[] substrings = message.Split('|');
-                        activePlayroom = new Playroom(substrings[1]);
-                        Debug.Log($"Accepted to play room [{activePlayroom.id}]");
+                }
+            }
+            else if (clientAccessLevel == ClientAccessLevel.Authenticated)
+            {
+                if (message.Contains(PLAYROOMS_DATA_RESPONSE))
+                {
+                    UI_GlobalManager.instance.UpdatePlyroomsList(message);
+                }
+                // "reject_enter_playroom|reason_of_rejection_message|";
+                else if (message.StartsWith(REJECT_ENTER_PLAY_ROOM))
+                {
+                    string[] substrings = message.Split('|');
 
-                        OnlineGameManager.currentLobbyName_OnEnter = activePlayroom.name;
-                        OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
-                        OnlineGameManager.maxJumpsAmount = Int32.Parse(substrings[3]);
+                    Debug.Log($"Was not accepted to playroom [{substrings[1]}]");
 
-                        string[] coordinates = substrings[4].Split('/');
-                        EventManager.spawnPositionFromServer = new Vector3(
-                                float.Parse(coordinates[0], CultureInfo.InvariantCulture),
-                                float.Parse(coordinates[1], CultureInfo.InvariantCulture),
-                                float.Parse(coordinates[2], CultureInfo.InvariantCulture)
-                        );
-                        
-                        UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
-                    }
-                    else if (DoesMessageRelatedToOnlineGameManager(message))
-                    {
-                        if (OnlineGameManager.instance != null)
-                            OnlineGameManager.instance.OnMessageFromServerRelatedToPlayroom(message);
-                    }
+                    UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
+
+                }
+                // "confirm_enter_playroom|idOfRoom/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
+                // |{fullFataOfPlayersInThatRoom}|maxJumpsAmount|initialSpawnPosition|"
+                else if (message.StartsWith(CONFIRM_ENTER_PLAY_ROOM))
+                {
+                    string[] substrings = message.Split('|');
+                    activePlayroom = new Playroom(substrings[1]);
+                    Debug.Log($"Accepted to play room [{activePlayroom.id}]");
+
+                    OnlineGameManager.currentLobbyName_OnEnter = activePlayroom.name;
+                    OnlineGameManager.currentPlayersScores_OnEnter = substrings[2];
+                    OnlineGameManager.maxJumpsAmount = Int32.Parse(substrings[3]);
+
+                    string[] coordinates = substrings[4].Split('/');
+                    EventManager.spawnPositionFromServer = new Vector3(
+                            float.Parse(coordinates[0], CultureInfo.InvariantCulture),
+                            float.Parse(coordinates[1], CultureInfo.InvariantCulture),
+                            float.Parse(coordinates[2], CultureInfo.InvariantCulture)
+                    );
+
+                    UI_GlobalManager.instance.ManageScene(ClientStatus.InPlayRoom);
+                }
+                else if (DoesMessageRelatedToOnlineGameManager(message))
+                {
+                    if (OnlineGameManager.instance != null)
+                        OnlineGameManager.instance.OnMessageFromServerRelatedToPlayroom(message);
                 }
             }
         }
@@ -233,14 +231,6 @@ public class ConnectionManager : MonoBehaviour
         {
             Console.WriteLine(e.ToString());
         }
-    }
-    string[] ParceMessageIntoArrays(string msg)
-    {
-        StringBuilder builder = new StringBuilder(msg);
-        builder.Replace($"{END_OF_FILE}", "*");
-        string res = builder.ToString();
-        char[] spearator = { '*' };
-        return res.Split(spearator, StringSplitOptions.RemoveEmptyEntries);
     }
     public void LogIn(string login, string password)
     {

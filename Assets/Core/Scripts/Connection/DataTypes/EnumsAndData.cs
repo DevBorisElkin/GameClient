@@ -60,4 +60,6 @@ public static class EnumsAndData
     }
 
     public enum MessageParseType { VersionOne, VersionTwo }
+
+    public enum OpponentPointerSettings { Normal, LerpPositionWithSprite, InstantDebugPosition }
 }

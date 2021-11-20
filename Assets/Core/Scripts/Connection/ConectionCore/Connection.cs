@@ -113,32 +113,35 @@ namespace BorisUnityDev.Networking
             {
                 try
                 {
-                    string message = ConnectionUtil.ReadLine(socket_connect);
+                    string msg = ConnectionUtil.ReadLine(socket_connect);
+                    string[] splitedMessages = ConnectionUtil.ParceMessageIntoArrays(msg);
 
-                    if (message.Equals(string.Empty))
+                    foreach(var message in splitedMessages)
                     {
-                        Debug.Log("[TCP]: Received empty message from server");
-                        errorNumber++;
-                        if(errorNumber > 25)
+                        if (message.Equals(string.Empty))
                         {
-                            Debug.Log($"[TCP]: {errorNumber} empty messages from server, disconnecting");
-                            Disconnect();
-                            break;
+                            Debug.Log("[TCP]: Received empty message from server");
+                            errorNumber++;
+                            if (errorNumber > 25)
+                            {
+                                Debug.Log($"[TCP]: {errorNumber} empty messages from server, disconnecting");
+                                Disconnect();
+                                break;
+                            }
                         }
-                    }
-                    else if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
-                    {
-                        Debug.Log(message);
-                        string msg = message.Replace(END_OF_FILE, "");
-                        string[] substrings = msg.Split('|');
-                        localClientId = Int32.Parse(substrings[1]);
-                        UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}");
-                    }
-                    else
-                    {
-                        lastConnectedConfirmed = DateTime.Now;
-                        if (ConnectionUtil.OnCheckConnectedEchoTCP(message))
-                            OnMessageReceived(message);
+                        else if (message.StartsWith(ON_CONNECTION_ESTABLISHED))
+                        {
+                            Debug.Log(message);
+                            string[] substrings = message.Split('|');
+                            localClientId = Int32.Parse(substrings[1]);
+                            UDP.SendMessageUdp($"{INIT_UDP}|{localClientId}{END_OF_FILE}");
+                        }
+                        else
+                        {
+                            lastConnectedConfirmed = DateTime.Now;
+                            if (ConnectionUtil.OnCheckConnectedEchoTCP(message))
+                                OnMessageReceived(message);
+                        }
                     }
                 }
                 catch (Exception e)
@@ -174,11 +177,11 @@ namespace BorisUnityDev.Networking
                 {
                     TCP_pingCheckId++;
                     TCP_pingCheckRecordedTime = DateTime.Now;
-                    SendMessage($"{CHECK_CONNECTED}|{TCP_pingCheckId}", MessageProtocol.TCP);
+                    SendMessage($"{CHECK_CONNECTED}|{TCP_pingCheckId}{END_OF_FILE}", MessageProtocol.TCP);
 
                     UDP_pingCheckId++;
                     UDP_pingCheckRecordedTime = DateTime.Now;
-                    SendMessage($"{CHECK_CONNECTED}|{TCP_pingCheckId}", MessageProtocol.UDP);
+                    SendMessage($"{CHECK_CONNECTED}|{UDP_pingCheckId}{END_OF_FILE}", MessageProtocol.UDP);
                 }
             }
         }

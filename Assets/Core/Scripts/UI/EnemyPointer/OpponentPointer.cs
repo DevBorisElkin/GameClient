@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CodeMonkey.Utils;
+using static EnumsAndData;
 
 public class OpponentPointer : MonoBehaviour
 {
@@ -12,14 +13,24 @@ public class OpponentPointer : MonoBehaviour
     [SerializeField] private Sprite crossSprite;
     [SerializeField] private Color color_default;
     [SerializeField] private Color color_transparent;
+    [SerializeField] private OpponentPointerSettings pointerSettings;
 
-    private List<Pointer> questPointerList;
+    private List<Pointer> opponentPointerList;
 
     public static float pointerLerpSpeed = 3f;
 
     private void Awake()
     {
-        questPointerList = new List<Pointer>();
+        opponentPointerList = new List<Pointer>();
+    }
+
+    private void OnValidate() => UpdateAllPointers();
+
+    void UpdateAllPointers()
+    {
+        if(opponentPointerList != null)
+            foreach (var a in opponentPointerList)
+                a.UpdateSettings(arrowSprite, crossSprite, color_default, color_transparent, pointerSettings);
     }
 
     public Pointer CreatePointer(Vector3 targetPosition)
@@ -29,14 +40,14 @@ public class OpponentPointer : MonoBehaviour
         pointerGameObject.SetActive(true);
         pointerGameObject.transform.SetParent(transform, false);
 
-        Pointer questPointer = new Pointer(targetPosition, pointerGameObject, Camera, arrowSprite, crossSprite, color_default, color_transparent);
-        questPointerList.Add(questPointer);
+        Pointer questPointer = new Pointer(targetPosition, pointerGameObject, Camera, arrowSprite, crossSprite, color_default, color_transparent, pointerSettings);
+        opponentPointerList.Add(questPointer);
         return questPointer;
     }
 
     public void DestroyPointer(Pointer questPointer)
     {
-        questPointerList.Remove(questPointer);
+        opponentPointerList.Remove(questPointer);
         questPointer.DestroySelf();
     }
 
@@ -52,13 +63,22 @@ public class OpponentPointer : MonoBehaviour
         private Image pointerImage;
         private Color defaultColor;
         private Color transparentColor;
-
-        public Image clockFollowerImage;
+        OpponentPointerSettings pointerSettings;
 
         Vector3 followerOffset = new Vector3(38f,0,0);
         Vector3 followerHintOffset = new Vector3(38f, 0, 0);
 
-        public Pointer(Vector3 targetPosition, GameObject pointerGameObject, Camera uiCamera, Sprite arrowSprite, Sprite crossSprite, Color defCol, Color transpColor)
+        public void UpdateSettings(Sprite arrowSprite, Sprite crossSprite, Color defCol, Color transpColor, OpponentPointerSettings pointerSettings)
+        {
+            this.arrowSprite = arrowSprite;
+            this.crossSprite = crossSprite;
+            this.defaultColor = defCol;
+            this.transparentColor = transpColor;
+            this.pointerSettings = pointerSettings;
+        }
+
+        public Pointer(Vector3 targetPosition, GameObject pointerGameObject, Camera uiCamera, Sprite arrowSprite,
+            Sprite crossSprite, Color defCol, Color transpColor, OpponentPointerSettings pointerSettings)
         {
             this.targetPosition = targetPosition;
             this.pointerGameObject = pointerGameObject;
@@ -67,6 +87,7 @@ public class OpponentPointer : MonoBehaviour
             this.crossSprite = crossSprite;
             this.defaultColor = defCol;
             this.transparentColor = transpColor;
+            this.pointerSettings = pointerSettings;
 
             pointerRectTransform = pointerGameObject.GetComponent<RectTransform>();
             pointerImage = pointerGameObject.GetComponent<Image>();
@@ -97,19 +118,42 @@ public class OpponentPointer : MonoBehaviour
 
                 RotatePointerTowardsTargetPosition();
             }
+            else if(EventManager.isAlive)
+            {
+                if(pointerSettings == OpponentPointerSettings.Normal)
+                {
+                    pointerImage.sprite = crossSprite;
+                    pointerImage.color = transparentColor;
+
+                    Vector3 cappedTargetScreenPosition = imageTargetPos;
+
+                    cappedTargetScreenPosition.x = Mathf.Clamp(cappedTargetScreenPosition.x, borderSize, Screen.width - borderSize);
+                    cappedTargetScreenPosition.y = Mathf.Clamp(cappedTargetScreenPosition.y, borderSize, Screen.height - borderSize);
+
+                    pointerRectTransform.position = Vector3.Lerp(pointerRectTransform.position, cappedTargetScreenPosition, pointerLerpSpeed * Time.deltaTime);
+
+                    RotatePointerTowardsTargetPosition();
+                }
+                else if (pointerSettings == OpponentPointerSettings.LerpPositionWithSprite)
+                {
+                    pointerImage.sprite = crossSprite;
+                    pointerImage.color = defaultColor;
+
+                    pointerRectTransform.position = Vector3.Lerp(pointerRectTransform.position, imageTargetPos, pointerLerpSpeed * Time.deltaTime);
+                    pointerRectTransform.localEulerAngles = new Vector3(0, 0, 0);
+                }
+                else if(pointerSettings == OpponentPointerSettings.InstantDebugPosition)
+                {
+                    pointerImage.sprite = crossSprite;
+                    pointerImage.color = defaultColor;
+
+                    pointerRectTransform.position = imageTargetPos;
+                    pointerRectTransform.localEulerAngles = new Vector3(0, 0, 0);
+                }
+            }
             else
             {
-                pointerImage.sprite = crossSprite;
                 pointerImage.color = transparentColor;
-
-                Vector3 cappedTargetScreenPosition = imageTargetPos;
-
-                cappedTargetScreenPosition.x = Mathf.Clamp(cappedTargetScreenPosition.x, borderSize, Screen.width - borderSize);
-                cappedTargetScreenPosition.y = Mathf.Clamp(cappedTargetScreenPosition.y, borderSize, Screen.height - borderSize);
-
-                pointerRectTransform.position = Vector3.Lerp(pointerRectTransform.position, cappedTargetScreenPosition, pointerLerpSpeed * Time.deltaTime);
-
-                RotatePointerTowardsTargetPosition();
             }
         }
 
