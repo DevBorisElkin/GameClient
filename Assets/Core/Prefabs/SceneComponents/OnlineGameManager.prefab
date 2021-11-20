@@ -43,8 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b8ed093bd89dd4dbcfd98b7d95fa3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos_interpolationSpeed: 15
-  rot_interpolationSpeed: 20
+  pos_interpolationSpeed: 8
+  rot_interpolationSpeed: 30
+  showGhostSelf: 0
   playerGameObj: {fileID: 0}
   current_player: {fileID: 0}
   playerMovementConetroller: {fileID: 0}

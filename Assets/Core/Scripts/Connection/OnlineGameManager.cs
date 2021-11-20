@@ -63,11 +63,6 @@ public class OnlineGameManager : MonoBehaviour
         }
     }
     
-
-    private void Update()
-    {
-        UpdatePlayersPositions();
-    }
     #region callbacks
     public void SpawnPlayer(Vector3 spawnPosition)
     {
@@ -612,6 +607,12 @@ public class OnlineGameManager : MonoBehaviour
         return null;
     }
     public float interpolateIfDiscanceGreater = 7f;
+
+    private void FixedUpdate()
+    {
+        UpdatePlayersPositions();
+    }
+
     void UpdatePlayersPositions()
     {
         if (!inPlayRoom) return;
@@ -635,6 +636,7 @@ public class OnlineGameManager : MonoBehaviour
                         }
                         else
                         {
+                            //a.controlledGameObject.transform.position = Vector3.MoveTowards(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
                             a.controlledGameObject.transform.position = Vector3.Lerp(a.controlledGameObject.transform.position, a.position, Time.deltaTime * pos_interpolationSpeed);
                             a.controlledGameObject.transform.rotation = Quaternion.Lerp(a.controlledGameObject.transform.rotation, a.rotation, Time.deltaTime * rot_interpolationSpeed);
                         }
