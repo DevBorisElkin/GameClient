@@ -42,6 +42,8 @@ public class PlayerMovementController : MonoBehaviour
 		EventManager.isAlive = true;
 		Invoke(nameof(InvokableSetAvailableForRaycast), 0.5f);
 		EventManager.sendCoordinatesToServer = true;
+
+		//StartCheckingMovement();
 	}
 
 	void InvokableSetAvailableForRaycast() => StartCoroutine(EventManager.instance.SetIsAvailableForRaycaster());
@@ -74,6 +76,7 @@ public class PlayerMovementController : MonoBehaviour
 	private void Update()
     {
 		ManageJoystickInput();
+		//CheckMovement();
 	}
 
 	void ManageJoystickInput()
@@ -101,6 +104,29 @@ public class PlayerMovementController : MonoBehaviour
 		posJoystickInput = new Vector2(movementHorizontalInput, movementVerticalInput);
 		rotJoystickInput = new Vector2(rotationHorizontalInput, rotationVerticalInput);
 	}
+
+	DateTime lastTimeRecord;
+	Vector3 recordedPosition;
+	bool checkingMovement;
+
+    #region Simple  Movement Speed Check
+    void StartCheckingMovement()
+    {
+		lastTimeRecord = DateTime.Now;
+		checkingMovement = true;
+		recordedPosition = transform.position;
+    }
+	void CheckMovement()
+    {
+		if (!checkingMovement) return;
+		if ((DateTime.Now - lastTimeRecord).TotalMilliseconds < 1000) return;
+		float distanceTravelled = Vector3.Distance(transform.position, recordedPosition);
+		Debug.Log("Distance Travelled: " + distanceTravelled);
+		lastTimeRecord = DateTime.Now;
+		recordedPosition = transform.position;
+    }
+    #endregion
+
     void FixedUpdate()
 	{
 		if (!EventManager.isAlive) return;
