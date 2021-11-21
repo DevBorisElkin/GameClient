@@ -11,9 +11,6 @@ using static EnumsAndData;
 public class PlayerMovementController : MonoBehaviour
 {
 	#region Init
-	public JoystickTouchController leftController;
-	public JoystickTouchController rightController;
-	
 	public bool collidedWithSpikeTrap;
 
 	Rigidbody rb;
@@ -31,29 +28,6 @@ public class PlayerMovementController : MonoBehaviour
 	}
 	void InitSystems()
     {
-		if (leftController == null || rightController == null)
-		{
-			JoystickTouchController[] controllers = FindObjectsOfType<JoystickTouchController>();
-			foreach (JoystickTouchController a in controllers)
-			{
-				if (a.joystickType.Equals(JoystickType.Left))
-				{
-					if (leftController == null)
-                    {
-						leftController = a;
-						continue;
-					}
-				}
-				if (a.joystickType.Equals(JoystickType.Right))
-				{
-					if (rightController == null)
-						rightController = a;
-				}
-			}
-		}
-		leftController.TouchStateEvent += LeftController_TouchDetection;
-		rightController.TouchStateEvent += RightController_TouchDetection;
-
 		rb = GetComponent<Rigidbody>();
 		_EventManager = FindObjectOfType<EventManager>();
 		canShootLocally = true;
@@ -88,14 +62,46 @@ public class PlayerMovementController : MonoBehaviour
 		//StartCoroutine(SendPlayerMovement());
 	}
     #endregion
-    void LeftController_TouchDetection(bool isTouching) { moving = isTouching; }
-	void RightController_TouchDetection(bool isTouching) { aiming = isTouching; }
 
 	bool pushingByProjectile;
 	bool pushingByProjectile_cantJump;
 	bool moving;
 	bool aiming;
-	void FixedUpdate()
+
+	Vector2 rotJoystickInput;
+	Vector2 posJoystickInput;
+
+	private void Update()
+    {
+		ManageJoystickInput();
+	}
+
+	void ManageJoystickInput()
+    {
+		moving = UltimateJoystick.GetJoystickState("MovementJoystick");
+		aiming = UltimateJoystick.GetJoystickState("RotationJoystick");
+
+		float movementHorizontalInput = 0;
+		float movementVerticalInput = 0;
+		float rotationHorizontalInput = 0;
+		float rotationVerticalInput = 0;
+
+		if (moving)
+		{
+			movementHorizontalInput = UltimateJoystick.GetHorizontalAxis("MovementJoystick");
+			movementVerticalInput = UltimateJoystick.GetVerticalAxis("MovementJoystick");
+		}
+
+		if (aiming)
+		{
+			rotationHorizontalInput = UltimateJoystick.GetHorizontalAxis("RotationJoystick");
+			rotationVerticalInput = UltimateJoystick.GetVerticalAxis("RotationJoystick");
+		}
+
+		posJoystickInput = new Vector2(movementHorizontalInput, movementVerticalInput);
+		rotJoystickInput = new Vector2(rotationHorizontalInput, rotationVerticalInput);
+	}
+    void FixedUpdate()
 	{
 		if (!EventManager.isAlive) return;
 		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
@@ -111,7 +117,7 @@ public class PlayerMovementController : MonoBehaviour
     {
 		if (!moving || pushingByProjectile || isPushingBackBySalmonRune) { lastMovement = Vector3.zero; return; }
 		//Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
-		Vector3 translation = new Vector3(leftController.GetTouchPosition.x, 0, leftController.GetTouchPosition.y).normalized * _movementSpeed * Time.deltaTime;
+		Vector3 translation = new Vector3(posJoystickInput.x, 0, posJoystickInput.y).normalized * _movementSpeed * Time.deltaTime;
 		lastMovement = translation;
 		transform.Translate(translation, Space.World);
     }
@@ -121,8 +127,8 @@ public class PlayerMovementController : MonoBehaviour
 
 		if(aiming || moving)
         {
-			if (aiming) value = rightController.GetTouchPosition;
-			else value = leftController.GetTouchPosition;
+			if (aiming) value = rotJoystickInput;
+			else value = posJoystickInput;
 
 
 			float yAxis = Mathf.Atan2(value.x, value.y) * Mathf.Rad2Deg;
@@ -335,9 +341,6 @@ public class PlayerMovementController : MonoBehaviour
 	#endregion
 	void OnDestroy()
 	{
-		leftController.TouchStateEvent  -= LeftController_TouchDetection;
-		rightController.TouchStateEvent -= RightController_TouchDetection;
-
 		StopAllCoroutines();
 	}
 
