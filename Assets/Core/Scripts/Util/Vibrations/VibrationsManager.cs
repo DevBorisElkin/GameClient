@@ -35,4 +35,9 @@ public static class VibrationsManager
     {
         try { MMVibrationManager.Haptic(HapticTypes.SoftImpact); } catch (Exception e) { Debug.Log(e); }
     }
+
+    public static void OnLocalPlayerDies_Vibrations()
+    {
+        try { MMVibrationManager.Haptic(HapticTypes.Failure); } catch (Exception e) { Debug.Log(e); }
+    }
 }

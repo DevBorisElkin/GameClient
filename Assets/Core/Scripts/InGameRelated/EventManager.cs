@@ -96,6 +96,7 @@ public class EventManager : MonoBehaviour
     // "player_died|killer_ip|reasonOfDeath
     public IEnumerator KillPlayer(DeathDetails deathDetails, float initialDelay = 0)
     {
+        VibrationsManager.OnLocalPlayerDies_Vibrations();
         // tmp
         if (deathDetails == DeathDetails.BlackRuneKilled) deathDetails = DeathDetails.FellOutOfMap;
 
