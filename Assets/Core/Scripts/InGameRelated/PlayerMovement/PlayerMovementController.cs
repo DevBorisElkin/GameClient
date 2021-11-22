@@ -315,6 +315,10 @@ public class PlayerMovementController : MonoBehaviour
 		
 		if(other.gameObject.layer == LayerMask.NameToLayer("SalmonRuneBarrier"))
         {
+			if (isPushingBackBySalmonRune) return;
+
+			VibrationsManager.OnLocalPlayerGotHitByShot_Vibrations();
+
 			isPushingBackBySalmonRune = true;
 			StartCoroutine(SalmonRunePushbackCoroutine());
 
