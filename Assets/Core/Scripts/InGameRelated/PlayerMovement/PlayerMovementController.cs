@@ -372,6 +372,7 @@ public class PlayerMovementController : MonoBehaviour
 	void OnDestroy()
 	{
 		StopAllCoroutines();
+		VibrationsManager.OnLocalPlayerDebuffEnded_Vibrations(this);
 	}
 
     #region DeathRelated

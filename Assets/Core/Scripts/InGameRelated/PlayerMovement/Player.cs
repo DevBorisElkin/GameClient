@@ -15,15 +15,20 @@ public class Player : MonoBehaviour
     public List<RuneVisual> runeVisuals;
     public List<RuneVisual> debuffVisuals;
     [HideInInspector] public List<Rune> runeEffects;
+    [HideInInspector] public List<Rune> debuffEffects;
 
     public bool collidedWithSpikeTrap;
 
-    public void SetUpPlayer(PlayerData _playerData)
+    [HideInInspector] public bool localPlayer;
+
+    public void SetUpPlayer(PlayerData _playerData, bool _localPlayer = false)
     {
+        localPlayer = _localPlayer;
         playerData = _playerData;
         nicknameCanvas.SetUp(this, playerData);
         ResetAllRuneEffects();
         runeEffects = new List<Rune>();
+        debuffEffects = new List<Rune>();
     }
 
     #region RuneEffects
@@ -65,16 +70,33 @@ public class Player : MonoBehaviour
     {
         foreach (var a in debuffVisuals)
             if (a.runeType == rune) a.gameObject.SetActive(true);
+
+        if (!debuffEffects.Contains(rune)) debuffEffects.Add(rune);
+
+        if (localPlayer)
+        {
+            VibrationsManager.OnLocalPlayerReceivedDebuff_Vibrations(OnlineGameManager.instance.playerMovementConetroller);
+        }
     }
     public void RemoveDebuffEffect(Rune rune)
     {
         foreach (var a in debuffVisuals)
             if (a.runeType == rune) a.gameObject.SetActive(false);
+
+        if (debuffEffects.Contains(rune)) debuffEffects.Remove(rune);
+
+        if (localPlayer && debuffEffects.Count == 0)
+            VibrationsManager.OnLocalPlayerDebuffEnded_Vibrations(OnlineGameManager.instance.playerMovementConetroller);
     }
     public void ResetAllDebuffEffects()
     {
         foreach (var a in debuffVisuals)
             a.gameObject.SetActive(false);
+
+        debuffEffects = new List<Rune>();
+
+        if (localPlayer && debuffEffects.Count == 0)
+            VibrationsManager.OnLocalPlayerDebuffEnded_Vibrations(OnlineGameManager.instance.playerMovementConetroller);
     }
 
     #endregion

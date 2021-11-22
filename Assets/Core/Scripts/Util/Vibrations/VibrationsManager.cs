@@ -40,4 +40,31 @@ public static class VibrationsManager
     {
         try { MMVibrationManager.Haptic(HapticTypes.Failure); } catch (Exception e) { Debug.Log(e); }
     }
+
+    static IEnumerator DebuffOnPlayer_Vibrations;
+    
+    public static void OnLocalPlayerReceivedDebuff_Vibrations(MonoBehaviour localPlayerMonoBehaviour)
+    {
+        if (DebuffOnPlayer_Vibrations != null) return;
+
+        DebuffOnPlayer_Vibrations = DebuffOnPlayer();
+        localPlayerMonoBehaviour.StartCoroutine(DebuffOnPlayer_Vibrations);
+    }
+    public static void OnLocalPlayerDebuffEnded_Vibrations(MonoBehaviour localPlayerMonoBehaviour)
+    {
+        if (DebuffOnPlayer_Vibrations == null) return;
+
+        localPlayerMonoBehaviour.StopCoroutine(DebuffOnPlayer_Vibrations);
+        DebuffOnPlayer_Vibrations = null;
+    }
+
+    static IEnumerator DebuffOnPlayer()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.25f);
+
+            MMVibrationManager.ContinuousHaptic(0.08f, 1f, 0.01f);
+        }
+    }
 }

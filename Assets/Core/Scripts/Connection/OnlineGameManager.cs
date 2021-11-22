@@ -74,7 +74,7 @@ public class OnlineGameManager : MonoBehaviour
                      Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0));
             playerMovementConetroller = playerGameObj.GetComponent<PlayerMovementController>();
             current_player = playerGameObj.GetComponentInChildren<Player>();
-            current_player.SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData));
+            current_player.SetUpPlayer(new PlayerData(ConnectionManager.instance.currentUserData), true);
             shootingManager = FindObjectOfType<EventManager>();
         }
     }
@@ -607,6 +607,7 @@ public class OnlineGameManager : MonoBehaviour
         }
         return null;
     }
+    [Space(5f)]
     public float interpolateIfDiscanceGreater = 7f;
 
     private void FixedUpdate()
