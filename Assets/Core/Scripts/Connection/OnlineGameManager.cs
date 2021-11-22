@@ -13,6 +13,7 @@ using static EnumsAndData;
 using static OpponentPointer;
 using UniRx;
 using System.Linq;
+using MoreMountains.NiceVibrations;
 
 public class OnlineGameManager : MonoBehaviour
 {
@@ -242,6 +243,7 @@ public class OnlineGameManager : MonoBehaviour
                     // 1) Add rune effect on player
                     if(playerWhoPicked_db_id == ConnectionManager.instance.currentUserData.db_id)
                     {
+                        VibrationsManager.OnLocalPlayerPickedUpRune_Vibrations();
                         current_player.AddRuneEffect(rune);
                     }
                     else
@@ -265,7 +267,6 @@ public class OnlineGameManager : MonoBehaviour
 
                     // 3) create UI notifiying of picking up the rune
                     UI_InGameMsgEventsManager.instance.FromServer_PlayerPickedUpRune(rune, nickOfPicker);
-
                 });
             }
             else if (message.Contains(RUNE_EFFECT_EXPIRED))
@@ -341,7 +342,9 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     // 1) Add rune effect on player
                     if (playerDbId == ConnectionManager.instance.currentUserData.db_id)
+                    {
                         current_player.AddDebuffEffect(debuff);
+                    }
                     else
                     {
                         var opponent = FindPlayerByDbId(playerDbId);
@@ -437,6 +440,7 @@ public class OnlineGameManager : MonoBehaviour
     public void OnShotMessageReceived(string message)
     {
         if (!inPlayRoom) return;
+        
         MessageParser.ParseOnShotMessage(message, out Vector3 position, out Quaternion rotation, out int db_id, out List<Rune> activeRuneModifiers);
 
         GameObject objToIgnore;
@@ -444,8 +448,10 @@ public class OnlineGameManager : MonoBehaviour
         if (db_id.Equals(ConnectionManager.instance.currentUserData.db_id))
         {
             objToIgnore = playerGameObj;
-            Action actForbidToShoot = playerMovementConetroller.ForbidToShootFromServer;
-            UnityThread.executeInUpdate(actForbidToShoot);
+            UnityThread.executeInUpdate(() => {
+                VibrationsManager.OnLocalPlayerMadeShot_Vibrations(activeRuneModifiers);
+                playerMovementConetroller.ForbidToShootFromServer();
+            });
         }
         else
         {
@@ -454,22 +460,17 @@ public class OnlineGameManager : MonoBehaviour
                 objToIgnore = plData.controlledGameObject;
             else return;
         }
-        Action act = Action;
-        UnityThread.executeInUpdate(act);
-        void Action() => shootingManager.MakeActualShot(position, rotation, objToIgnore, db_id, activeRuneModifiers);
+        UnityThread.executeInUpdate(() => { shootingManager.MakeActualShot(position, rotation, objToIgnore, db_id, activeRuneModifiers); });
     }
 
     public void OnJumpMessageReceived(int currentJumps)
     {
         if (!inPlayRoom) return;
 
-        Action act = Action;
-        UnityThread.executeInUpdate(act);
-        void Action()
-        {
+        UnityThread.executeInUpdate(() => {
             playerMovementConetroller.MakeJumpOnline();
             playerMovementConetroller.SetLocalAmountOfJumps(currentJumps);
-        }
+        });
     }
     public void OnJumpsAmountMessageReceived(int currentJumps, bool resetAfterRevive)
     {

@@ -12,4 +12,6 @@ public class IntroScene : MonoBehaviour
         QualitySettings.SetQualityLevel(UI_Settings.ConvertChosenGraphicsToCorrectInt(PlayerPrefs.GetInt(CODE_GRAPHICS_SETTINGS, 0)));
         SceneManager.LoadSceneAsync("MainScene");
     }
+
+    void ActivateVibrations() => Handheld.Vibrate();
 }

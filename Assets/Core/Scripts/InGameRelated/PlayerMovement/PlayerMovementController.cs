@@ -5,6 +5,7 @@ using static NetworkingMessageAttributes;
 using System;
 using System.Collections.Generic;
 using static EnumsAndData;
+using MoreMountains.NiceVibrations;
 
 [RequireComponent(typeof(Rigidbody))]
 
@@ -253,6 +254,7 @@ public class PlayerMovementController : MonoBehaviour
 	}
 	public void MakeJumpOnline()
 	{
+		VibrationsManager.OnLocalPlayerJump_Vibrations();
 		rb.AddForce(Vector3.up * GetCorrectJumpForce(), forceModeOnJump);
 	}
 	public int localJumpsAmount;
@@ -278,6 +280,8 @@ public class PlayerMovementController : MonoBehaviour
 			if(gp.playerToIgnore != gameObject)
             {
 				if (pushingByProjectile) return;
+
+				VibrationsManager.OnLocalPlayerGotHitByShot_Vibrations();
 
 				// set possible killer
 				if (hitAssignedToPlayer != null) StopCoroutine(hitAssignedToPlayer);
