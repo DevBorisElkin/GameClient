@@ -130,13 +130,12 @@ public class PlayerMovementController : MonoBehaviour
 
     void FixedUpdate()
 	{
+		if(EventManager.sendCoordinatesToServer) OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
+
 		if (!EventManager.isAlive) return;
 		GetMovementAndRotationSpeed(out float _movementSpeed, out float _rotationSpeed);
 		MakeMovement(_movementSpeed);
 		UpdateAim(_rotationSpeed);
-
-		OnlineGameManager.instance.OnPlayerMoved(transform.position, transform.rotation.eulerAngles);
-
 		MakePushing();
 	}
 	[HideInInspector] Vector3 lastMovement;

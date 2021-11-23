@@ -17,6 +17,8 @@ public class EventManager : MonoBehaviour
     public static bool sendCoordinatesToServer;
     public static Vector3 spawnPositionFromServer;
 
+    public float showMovementAfterDeath = 2.3f;
+
     [HideInInspector] public CamSimpleFollow camSimpleFollow;
 
     private void Start()
@@ -89,7 +91,7 @@ public class EventManager : MonoBehaviour
         {
             EventManager.isAlive = false;
             MC = movementController;
-            StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0.2f));
+            StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0f));
             camSimpleFollow.SetFalling(true);
         }
     }
@@ -113,7 +115,7 @@ public class EventManager : MonoBehaviour
         MC.KillPlayer();
 
         ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killerDbId}|{deathDetails}");
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(showMovementAfterDeath);
 
         sendCoordinatesToServer = false;
     }
