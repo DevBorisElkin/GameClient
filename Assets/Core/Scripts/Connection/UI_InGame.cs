@@ -58,6 +58,7 @@ public class UI_InGame : MonoBehaviour
             waitingForPlayersTxt.text = waitingForPlayersString + $"{(ConnectionManager.activePlayroom.playersToStart - OnlineGameManager.instance.opponents.Count - 1)}";
             timeLeftPanel.SetActive(false);
             killsToFinishPanel.SetActive(false);
+            MatchStartCountdown(false);
         }
         else if(newState == MatchState.InGame)
         {
@@ -66,12 +67,18 @@ public class UI_InGame : MonoBehaviour
             killsToFinishPanel.SetActive(true);
             timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(ConnectionManager.activePlayroom.totalTimeToFinishInSeconds);
             killsToFinishTxt.text = ConnectionManager.activePlayroom.killsToFinish.ToString();
+            MatchStartCountdown(false);
         }
         else if(newState == MatchState.Finished)
         {
             waitingForPlayersTxt.gameObject.SetActive(false);
             timeLeftPanel.SetActive(false);
             killsToFinishPanel.SetActive(false);
+            MatchStartCountdown(false);
+        }
+        else if(newState == MatchState.JustStarting)
+        {
+            MatchStartCountdown(true);
         }
     }
 
@@ -81,6 +88,7 @@ public class UI_InGame : MonoBehaviour
     }
     public void UpdateTimeLeftTxt(int newSeconds)
     {
+        ConnectionManager.activePlayroom.totalTimeToFinishInSeconds = newSeconds;
         timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(newSeconds);
     }
 
@@ -152,4 +160,75 @@ public class UI_InGame : MonoBehaviour
     {
         ConnectionManager.instance.LeavePlayroom();
     }
+
+    #region Match Start Countdown
+
+    [Header("Match start countdown")]
+    public GameObject matchStartCountdownPanel;
+    public TMP_Text basicCountdownTmpText;
+    public TMP_Text timeLeftTmpText;
+    public string basicCountdownText = "Match Starts In";
+
+    int startMatchCountdown = 8;
+    public void MatchStartCountdown(bool state)
+    {
+        Debug.Log($"MatchStartCountdown {state}");
+        if (state)
+        {
+            int tmp = ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged - ConnectionManager.activePlayroom.totalTimeToFinishInSeconds;
+            int secondsTillStart = startMatchCountdown - tmp;
+            Debug.Log($"ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged [{ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged}] - " +
+                $"ConnectionManager.activePlayroom.totalTimeToFinishInSeconds[{ConnectionManager.activePlayroom.totalTimeToFinishInSeconds}], " +
+                $"secondsTillStart: [{secondsTillStart}]");
+            if (secondsTillStart > 8) return;
+            StartCoroutine(MatchStartCountdown(secondsTillStart));
+        }
+        else
+        {
+            basicCountdownTmpText.gameObject.SetActive(false);
+            timeLeftTmpText.gameObject.SetActive(false);
+            matchStartCountdownPanel.SetActive(false);
+        }
+    }
+
+    bool oneTimeSetUpTopText;
+    bool oneTimeStartCountdownSequence;
+    IEnumerator MatchStartCountdown(int secondsToWait)
+    {
+        oneTimeSetUpTopText = true;
+        oneTimeStartCountdownSequence = true;
+
+        basicCountdownTmpText.text = basicCountdownText;
+        matchStartCountdownPanel.SetActive(true);
+        do
+        {
+            if(secondsToWait > 5)
+            {
+                if (oneTimeSetUpTopText)
+                {
+                    basicCountdownTmpText.gameObject.SetActive(true);
+                    timeLeftTmpText.gameObject.SetActive(false);
+                    oneTimeSetUpTopText = false;
+                }
+            }
+            else
+            {
+                if (oneTimeStartCountdownSequence)
+                {
+                    basicCountdownTmpText.gameObject.SetActive(false);
+                    timeLeftTmpText.gameObject.SetActive(true);
+                    oneTimeStartCountdownSequence = false;
+                }
+                timeLeftTmpText.text = secondsToWait.ToString();
+            }
+            yield return new WaitForSeconds(1f);
+            secondsToWait--;
+        } while (secondsToWait > -1);
+        matchStartCountdownPanel.SetActive(false);
+        ConnectionManager.activePlayroom.matchState = MatchState.InGame;
+        OnNewMatchState(MatchState.InGame);
+    }
+
+    #endregion
+
 }

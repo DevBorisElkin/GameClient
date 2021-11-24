@@ -186,12 +186,13 @@ public class OnlineGameManager : MonoBehaviour
                     }
                 });
             }
+            // the only possible match state is "WaitingForStart"
             else if (message.Contains(MATCH_STARTED_FORCE_OVERRIDE_POSITION_AND_JUMPS))
             {
                 Debug.Log(message);
 
                 string[] substrings = message.Split('|');
-                Debug.Log(substrings[1]);
+                //Debug.Log(substrings[1]);
                 int newJumpsAmount = Int32.Parse(substrings[1]);
                 string[] position = substrings[2].Split('/');
                 Vector3 spawnPosition = new Vector3(
@@ -200,9 +201,9 @@ public class OnlineGameManager : MonoBehaviour
                     float.Parse(position[2], CultureInfo.InvariantCulture)
                     );
                 UnityThread.executeInUpdate(() => {
-                    UI_InGame.instance.OnNewMatchState(MatchState.InGame);
-                    playerMovementConetroller.RevivePlayer(spawnPosition, newJumpsAmount); 
-                
+                    UI_InGame.instance.OnNewMatchState(MatchState.JustStarting);
+                    playerMovementConetroller.RevivePlayer(spawnPosition, newJumpsAmount);
+                    playerMovementConetroller.ManageMatchStart();
                 });
             }
             else if (message.Contains(MATCH_TIME_REMAINING))
@@ -378,7 +379,7 @@ public class OnlineGameManager : MonoBehaviour
         }
         catch(Exception e)
         {
-            Debug.Log(e);
+            Debug.Log($"Message: {message}, exception: {e}");
         }
     }
     public void OnPlayerDisconnectedFromPlayroom(string message)
@@ -695,7 +696,4 @@ public class OnlineGameManager : MonoBehaviour
     }
 
     #endregion
-
-
-
 }

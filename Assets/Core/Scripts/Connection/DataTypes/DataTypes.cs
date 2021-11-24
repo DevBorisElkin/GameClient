@@ -21,6 +21,7 @@ public static class DataTypes
         public int playersToStart;
         public int killsToFinish;
         public int totalTimeToFinishInSeconds;
+        public int totalTimeToFinishInSecUnchanged;
         public MatchResult matchResult;
 
         public string winnerNickname;
@@ -47,7 +48,8 @@ public static class DataTypes
                 matchState = _matchState;
                 playersToStart = Int32.Parse(substrings[8]);
                 totalTimeToFinishInSeconds = Int32.Parse(substrings[9]);
-                killsToFinish = Int32.Parse(substrings[10]);
+                totalTimeToFinishInSecUnchanged = Int32.Parse(substrings[10]);
+                killsToFinish = Int32.Parse(substrings[11]);
             }
             catch (Exception e)
             {

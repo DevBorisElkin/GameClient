@@ -229,7 +229,7 @@ public class ConnectionManager : MonoBehaviour
         }
         catch(Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine("Message: " + message + ", Error: " +e.ToString());
         }
     }
     public void LogIn(string login, string password)

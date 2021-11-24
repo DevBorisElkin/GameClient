@@ -15,6 +15,7 @@ public class EventManager : MonoBehaviour
     public static bool isAlive;
     public static bool isAvailableForRaycaster;
     public static bool sendCoordinatesToServer;
+    public static bool isWaitingFor5secStart;
     public static Vector3 spawnPositionFromServer;
 
     public float showMovementAfterDeath = 2.3f;
