@@ -107,7 +107,6 @@ public class Player : MonoBehaviour
     public Transform parentFoGoldenAdditionalParticles;
     public void CheckLightBlueParticles(bool turnedOn)
     {
-        if (lightBlueAdditionalParticles.transform == null) return;
         if (turnedOn)
         {
             lightBlueAdditionalParticles.transform.SetParent(null);
@@ -121,7 +120,6 @@ public class Player : MonoBehaviour
     }
     public void CheckGoldenParticles(bool turnedOn)
     {
-        if (goldenAdditionalParticles.transform == null) return;
         if (turnedOn)
         {
             goldenAdditionalParticles.transform.SetParent(null);

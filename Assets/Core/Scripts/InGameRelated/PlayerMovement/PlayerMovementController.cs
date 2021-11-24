@@ -202,29 +202,9 @@ public class PlayerMovementController : MonoBehaviour
         else
         {
 			Vector3 force = pushingVector * GetCorrectPushbackForce() * Time.deltaTime;
-			rb.AddForce(force, ForceMode.VelocityChange);
-			//transform.Translate(force, Space.World);
+			transform.Translate(force, Space.World);
 		}
-		ManageMaxSpeedOnGravityShot();
 	}
-
-	public float maxSpeed = 10f;
-	void ManageMaxSpeedOnGravityShot()
-    {
-		if(rb.velocity.magnitude > maxSpeed)
-        {
-			Debug.Log("Player speed: "+rb.velocity.magnitude);
-			float magnitude = rb.velocity.magnitude / maxSpeed;
-			magnitude -= 1f;
-			magnitude = 1f - magnitude;
-			Vector3 cappedMaxSpeed = new Vector3(rb.velocity.x * magnitude, 0, rb.velocity.z * magnitude);
-			rb.velocity = cappedMaxSpeed;
-        }
-        else
-        {
-			rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        }
-    }
 
 	#region Reload Addons
 	// basically we use that mechanic to not let the player send(spam) shoot requests,
@@ -369,14 +349,13 @@ public class PlayerMovementController : MonoBehaviour
 	Vector3 pushingVector;
 	IEnumerator PushbackCoroutine(Vector3 projectileDir)
     {
-		//rb.isKinematic = true;
+		rb.isKinematic = true;
 		pushingByProjectile = true;
 		pushingByProjectile_cantJump = true;
 		pushingVector = projectileDir;
 		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
 		rb.isKinematic = false;
-		rb.velocity = Vector3.zero;
 		yield return new WaitForSeconds(0.45f);
 		pushingByProjectile_cantJump = false;
 	}

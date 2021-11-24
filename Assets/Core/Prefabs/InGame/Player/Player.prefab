@@ -177,11 +177,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1d9bcf2d0a70254781d5f852883250a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftController: {fileID: 0}
+  rightController: {fileID: 0}
   collidedWithSpikeTrap: 0
   minRotationAngleToShoot: 5
   _EventManager: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
-  maxSpeed: 17
   localJumpsAmount: 0
   canJumpLocally: 0
   dbIdOflastHitPlayer: -1
@@ -189,7 +190,7 @@ MonoBehaviour:
   speedRotation: 8
   forceModeOnJump: 2
   forceToApplyOnJump: 10.5
-  forceToApplyOnGravityShot: 115
+  forceToApplyOnGravityShot: 22
   pushbackDuration: 0.95
   salmonRunePushbackForce: {x: 13, y: 5, z: 13}
   salmonRuneForceMode: 2
@@ -221,9 +222,7 @@ MonoBehaviour:
   - {fileID: 7182997651910471385}
   - {fileID: 1214449764166526281}
   runeEffects: 
-  debuffEffects: 
   collidedWithSpikeTrap: 0
-  localPlayer: 0
   lightBlueAdditionalParticles: {fileID: 1501322681452988729}
   parentForLightBlueAdditionalParticles: {fileID: 1501322682054235248}
   goldenAdditionalParticles: {fileID: 8569796280309818306}
@@ -243,7 +242,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
 --- !u!23 &6704527064422643021
 MeshRenderer:
   m_ObjectHideFlags: 0
