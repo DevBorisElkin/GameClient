@@ -201,8 +201,9 @@ public class PlayerMovementController : MonoBehaviour
         }
         else
         {
-			Vector3 force = pushingVector * Time.deltaTime;
+			Vector3 force = pushingVector * GetCorrectPushbackForce() * Time.deltaTime;
 			rb.AddForce(force, ForceMode.VelocityChange);
+			//transform.Translate(force, Space.World);
 		}
 		ManageMaxSpeedOnGravityShot();
 	}
@@ -210,11 +211,10 @@ public class PlayerMovementController : MonoBehaviour
 	public float maxSpeed = 10f;
 	void ManageMaxSpeedOnGravityShot()
     {
-		float correctedMaxSpeed = maxSpeed * GetCorrectMaxSpeedOnPushback();
-		if (rb.velocity.magnitude > correctedMaxSpeed)
+		if(rb.velocity.magnitude > maxSpeed)
         {
 			Debug.Log("Player speed: "+rb.velocity.magnitude);
-			float magnitude = rb.velocity.magnitude / correctedMaxSpeed;
+			float magnitude = rb.velocity.magnitude / maxSpeed;
 			magnitude -= 1f;
 			magnitude = 1f - magnitude;
 			Vector3 cappedMaxSpeed = new Vector3(rb.velocity.x * magnitude, 0, rb.velocity.z * magnitude);
@@ -375,6 +375,7 @@ public class PlayerMovementController : MonoBehaviour
 		pushingVector = projectileDir;
 		yield return new WaitForSeconds(pushbackDuration);
 		pushingByProjectile = false;
+		rb.isKinematic = false;
 		rb.velocity = Vector3.zero;
 		yield return new WaitForSeconds(0.45f);
 		pushingByProjectile_cantJump = false;
@@ -438,6 +439,7 @@ public class PlayerMovementController : MonoBehaviour
 		pushingByProjectile = false;
 		pushingByProjectile_cantJump = false;
 
+		rb.isKinematic = false;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		transform.position = spawnPosition;
 		transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180, 180), 0);
@@ -560,16 +562,6 @@ public class PlayerMovementController : MonoBehaviour
 		}
 		return forceToApplyOnGravityShot * defaultMultiplier;
     }
-
-	float GetCorrectMaxSpeedOnPushback()
-    {
-		float defaultMultiplier = 1f;
-		if (lastShotRuneEffects != null && lastShotRuneEffects.Count > 0)
-		{
-			if (lastShotRuneEffects.Contains(Rune.LightBlue)) defaultMultiplier += lightBlueRunePushbackDecrease;
-		}
-		return maxSpeed * defaultMultiplier;
-	}
 
 	void GetMovementAndRotationSpeed(out float movementSpeed, out float rotationSpeed)
     {
