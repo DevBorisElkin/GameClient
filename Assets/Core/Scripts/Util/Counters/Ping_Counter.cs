@@ -14,18 +14,30 @@ public class Ping_Counter : MonoBehaviour
 
     List<System.IDisposable> LifetimeDisposables;
 
-    private void Start()
+    bool activated;
+    private void Update()
     {
-        LifetimeDisposables = new List<System.IDisposable>();
+        if (activated) return;
 
-        LastTcpPing.Subscribe(_ => { lastTcpPing = _; OnDataReceived(); }).AddTo(LifetimeDisposables);
-        LastUdpPing.Subscribe(_ => { lastUdpPing = _; /*OnDataReceived();*/ }).AddTo(LifetimeDisposables);
+        SetUpPingCounters();
+    }
+
+    void SetUpPingCounters()
+    {
+        if (LastTcpPing != null && LastUdpPing != null)
+        {
+            LifetimeDisposables = new List<System.IDisposable>();
+            LastTcpPing.Subscribe(_ => { lastTcpPing = _; OnDataReceived(); }).AddTo(LifetimeDisposables);
+            LastUdpPing.Subscribe(_ => { lastUdpPing = _; /*OnDataReceived();*/ }).AddTo(LifetimeDisposables);
+            activated = true;
+        }
     }
 
     private void OnDestroy()
     {
-        foreach(var a in LifetimeDisposables)
-            a.Dispose();
+        if(LifetimeDisposables != null && LifetimeDisposables.Count > 0)
+            foreach(var a in LifetimeDisposables)
+                a.Dispose();
     }
 
     void OnDataReceived()
