@@ -38,6 +38,8 @@ public class PlayerMovementController : MonoBehaviour
 		pushingByProjectile_cantJump = false;
 		isPushingBackBySalmonRune = false;
 
+		spikesLayer = LayerMask.GetMask("Trap");
+
 		SetLocalAmountOfJumps(OnlineGameManager.maxJumpsAmount);
 
 		EventManager.isAlive = true;
@@ -78,6 +80,7 @@ public class PlayerMovementController : MonoBehaviour
     {
 		ManageJoystickInput();
 		//CheckMovement();
+		CheckCollidingWithSpikes();
 	}
 
 	void ManageJoystickInput()
@@ -206,12 +209,38 @@ public class PlayerMovementController : MonoBehaviour
 		}
 	}
 
-	#region Reload Addons
-	// basically we use that mechanic to not let the player send(spam) shoot requests,
-	// until the actual shot from server side has been released
-	// Using same reload time as on the server, but as signal takes
-	// time to reach the device, effective reload time is about 1.5f
-	bool canShootLocally;
+	int spikesLayer = 7;
+
+	[Header("Spikes collision detection")]
+	public float radiusToCheckSpikesOnPushing = 1f;
+	public Vector3 checkSpikesColOffset = new Vector3(0, -0.3f ,0);
+	void CheckCollidingWithSpikes()
+    {
+		if (!EventManager.isAlive) return;
+		if (!pushingByProjectile) return;
+
+		Collider[] spikes = Physics.OverlapSphere(transform.position + checkSpikesColOffset, radiusToCheckSpikesOnPushing, spikesLayer);
+		if(spikes.Length > 0)
+        {
+            for (int i = 0; i < spikes.Length; i++)
+            {
+				SpikeTrap st = spikes[i].GetComponent<SpikeTrap>();
+				if(st != null)
+                {
+					EventManager.isAlive = false;
+					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
+					return;
+				}
+            }
+		}
+    }
+
+    #region Reload Addons
+    // basically we use that mechanic to not let the player send(spam) shoot requests,
+    // until the actual shot from server side has been released
+    // Using same reload time as on the server, but as signal takes
+    // time to reach the device, effective reload time is about 1.5f
+    bool canShootLocally;
 	bool canShootOnline;
 
 	IEnumerator ReloadLocallyCoroutine()
@@ -256,6 +285,8 @@ public class PlayerMovementController : MonoBehaviour
 		VibrationsManager.OnLocalPlayerJump_Vibrations();
 		rb.AddForce(Vector3.up * GetCorrectJumpForce(), forceModeOnJump);
 	}
+
+	[Header("Other")]
 	public int localJumpsAmount;
 	public bool canJumpLocally; // local reload 2 seconds
 	float localJumpReload = 2f;

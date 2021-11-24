@@ -177,12 +177,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1d9bcf2d0a70254781d5f852883250a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftController: {fileID: 0}
-  rightController: {fileID: 0}
   collidedWithSpikeTrap: 0
   minRotationAngleToShoot: 5
   _EventManager: {fileID: 0}
   assignedPlayer: {fileID: 3082409969823103961}
+  radiusToCheckSpikesOnPushing: 0.55
+  checkSpikesColOffset: {x: 0, y: -0.56, z: 0}
   localJumpsAmount: 0
   canJumpLocally: 0
   dbIdOflastHitPlayer: -1
@@ -222,7 +222,9 @@ MonoBehaviour:
   - {fileID: 7182997651910471385}
   - {fileID: 1214449764166526281}
   runeEffects: 
+  debuffEffects: 
   collidedWithSpikeTrap: 0
+  localPlayer: 0
   lightBlueAdditionalParticles: {fileID: 1501322681452988729}
   parentForLightBlueAdditionalParticles: {fileID: 1501322682054235248}
   goldenAdditionalParticles: {fileID: 8569796280309818306}
