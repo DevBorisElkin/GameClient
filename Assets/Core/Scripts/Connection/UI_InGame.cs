@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using static EnumsAndData;
 using static NetworkingMessageAttributes;
+using UniRx;
 
 public class UI_InGame : MonoBehaviour
 {
@@ -41,13 +42,7 @@ public class UI_InGame : MonoBehaviour
         OnlineGameManager.instance.ui_PlayersInLobby_Manager.SpawnLobbyItems(OnlineGameManager.currentPlayersScores_OnEnter);
         txt_currentLobbyName.text = OnlineGameManager.currentLobbyName_OnEnter;
 
-        //StartCoroutine(DelayedUpdateMatchStateUI(ConnectionManager.activePlayroom.matchState));
-        OnNewMatchState(ConnectionManager.activePlayroom.matchState);
-    }
-    IEnumerator DelayedUpdateMatchStateUI(MatchState newState)
-    {
-        yield return new WaitForSeconds(0.1f);
-        OnNewMatchState(newState);
+        ManageSubscriptions(true);
     }
 
     public void OnNewMatchState(MatchState newState)
@@ -58,27 +53,28 @@ public class UI_InGame : MonoBehaviour
             waitingForPlayersTxt.text = waitingForPlayersString + $"{(ConnectionManager.activePlayroom.playersToStart - OnlineGameManager.instance.opponents.Count - 1)}";
             timeLeftPanel.SetActive(false);
             killsToFinishPanel.SetActive(false);
-            MatchStartCountdown(false);
+            //MatchStartCountdown(false);
         }
         else if(newState == MatchState.InGame)
         {
             waitingForPlayersTxt.gameObject.SetActive(false);
             timeLeftPanel.SetActive(true);
             killsToFinishPanel.SetActive(true);
-            timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(ConnectionManager.activePlayroom.totalTimeToFinishInSeconds);
+            timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(ConnectionManager.activePlayroom.totalTimeToFinishInSeconds.Value);
             killsToFinishTxt.text = ConnectionManager.activePlayroom.killsToFinish.ToString();
-            MatchStartCountdown(false);
+            //MatchStartCountdown(false);
         }
         else if(newState == MatchState.Finished)
         {
             waitingForPlayersTxt.gameObject.SetActive(false);
             timeLeftPanel.SetActive(false);
             killsToFinishPanel.SetActive(false);
-            MatchStartCountdown(false);
+            //MatchStartCountdown(false);
         }
         else if(newState == MatchState.JustStarting)
         {
-            MatchStartCountdown(true);
+            waitingForPlayersTxt.gameObject.SetActive(false);
+            //MatchStartCountdown(true);
         }
     }
 
@@ -88,13 +84,11 @@ public class UI_InGame : MonoBehaviour
     }
     public void UpdateTimeLeftTxt(int newSeconds)
     {
-        ConnectionManager.activePlayroom.totalTimeToFinishInSeconds = newSeconds;
         timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(newSeconds);
     }
 
     public void OnMatchResult(MatchResult result)
     {
-        OnNewMatchState(MatchState.Finished);
         matchFinishedPanel.SetActive(true);
         txtMatchResult.text = MatchResultToString(result);
         txtMatchWinner.text = ConnectionManager.activePlayroom.winnerNickname;
@@ -170,63 +164,81 @@ public class UI_InGame : MonoBehaviour
     public string basicCountdownText = "Match Starts In";
 
     int startMatchCountdown = 8;
-    public void MatchStartCountdown(bool state)
+    //public void MatchStartCountdown(bool state)
+    //{
+    //    Debug.Log($"MatchStartCountdown {state}");
+    //    if (state)
+    //    {
+    //        int tmp = ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged - ConnectionManager.activePlayroom.totalTimeToFinishInSeconds.Value;
+    //        int secondsTillStart = startMatchCountdown - tmp;
+    //        Debug.Log($"ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged [{ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged}] - " +
+    //            $"ConnectionManager.activePlayroom.totalTimeToFinishInSeconds[{ConnectionManager.activePlayroom.totalTimeToFinishInSeconds}], " +
+    //            $"secondsTillStart: [{secondsTillStart}]");
+    //        if (secondsTillStart > 8) return;
+    //        StartCoroutine(MatchStartCountdown(secondsTillStart));
+    //    }
+    //    else
+    //    {
+    //        basicCountdownTmpText.gameObject.SetActive(false);
+    //        timeLeftTmpText.gameObject.SetActive(false);
+    //        matchStartCountdownPanel.SetActive(false);
+    //    }
+    //}
+
+
+    List<System.IDisposable> LifetimeDisposables;
+    void ManageSubscriptions(bool subscribe)
     {
-        Debug.Log($"MatchStartCountdown {state}");
-        if (state)
+        if (subscribe)
         {
-            int tmp = ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged - ConnectionManager.activePlayroom.totalTimeToFinishInSeconds;
-            int secondsTillStart = startMatchCountdown - tmp;
-            Debug.Log($"ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged [{ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged}] - " +
-                $"ConnectionManager.activePlayroom.totalTimeToFinishInSeconds[{ConnectionManager.activePlayroom.totalTimeToFinishInSeconds}], " +
-                $"secondsTillStart: [{secondsTillStart}]");
-            if (secondsTillStart > 8) return;
-            StartCoroutine(MatchStartCountdown(secondsTillStart));
+            LifetimeDisposables = new List<IDisposable>();
+            ConnectionManager.activePlayroom.totalTimeToFinishInSeconds.Subscribe(_ => { 
+                UpdateTimeLeftTxt(_);
+                ManageMatchStart(_);
+            }).AddTo(LifetimeDisposables);
+            ConnectionManager.activePlayroom.matchState.Subscribe(_ => {
+                OnNewMatchState(ConnectionManager.activePlayroom.matchState.Value);
+            }).AddTo(LifetimeDisposables);
         }
         else
         {
-            basicCountdownTmpText.gameObject.SetActive(false);
-            timeLeftTmpText.gameObject.SetActive(false);
-            matchStartCountdownPanel.SetActive(false);
+            if (LifetimeDisposables != null && LifetimeDisposables.Count > 0)
+                foreach (var a in LifetimeDisposables)
+                    a.Dispose();
         }
     }
 
-    bool oneTimeSetUpTopText;
-    bool oneTimeStartCountdownSequence;
-    IEnumerator MatchStartCountdown(int secondsToWait)
+    void ManageMatchStart(int secondsLeft)
     {
-        oneTimeSetUpTopText = true;
-        oneTimeStartCountdownSequence = true;
+        if (ConnectionManager.activePlayroom.matchState.Value != MatchState.JustStarting) return;
+
+        int tmp = ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged - secondsLeft;
+        int secondsTillStart = startMatchCountdown - tmp;
 
         basicCountdownTmpText.text = basicCountdownText;
         matchStartCountdownPanel.SetActive(true);
-        do
+
+        if (secondsTillStart > 5)
         {
-            if(secondsToWait > 5)
-            {
-                if (oneTimeSetUpTopText)
-                {
-                    basicCountdownTmpText.gameObject.SetActive(true);
-                    timeLeftTmpText.gameObject.SetActive(false);
-                    oneTimeSetUpTopText = false;
-                }
-            }
-            else
-            {
-                if (oneTimeStartCountdownSequence)
-                {
-                    basicCountdownTmpText.gameObject.SetActive(false);
-                    timeLeftTmpText.gameObject.SetActive(true);
-                    oneTimeStartCountdownSequence = false;
-                }
-                timeLeftTmpText.text = secondsToWait.ToString();
-            }
-            yield return new WaitForSeconds(1f);
-            secondsToWait--;
-        } while (secondsToWait > -1);
-        matchStartCountdownPanel.SetActive(false);
-        ConnectionManager.activePlayroom.matchState = MatchState.InGame;
-        OnNewMatchState(MatchState.InGame);
+            basicCountdownTmpText.gameObject.SetActive(true);
+            timeLeftTmpText.gameObject.SetActive(false);
+        }
+        else if(secondsTillStart > 0)
+        {
+            basicCountdownTmpText.gameObject.SetActive(false);
+            timeLeftTmpText.gameObject.SetActive(true);
+
+            timeLeftTmpText.text = secondsTillStart.ToString();
+        }else if(secondsTillStart <= 0)
+        {
+            matchStartCountdownPanel.SetActive(false);
+            ConnectionManager.activePlayroom.matchState.Value = MatchState.InGame;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ManageSubscriptions(false);
     }
 
     #endregion

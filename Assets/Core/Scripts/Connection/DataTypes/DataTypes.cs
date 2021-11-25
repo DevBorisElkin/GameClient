@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 using static EnumsAndData;
 
 public static class DataTypes
@@ -17,10 +18,10 @@ public static class DataTypes
         public int playersCurrAmount;
         public int maxPlayers;
 
-        public MatchState matchState;
+        public ReactiveProperty<MatchState> matchState;
         public int playersToStart;
         public int killsToFinish;
-        public int totalTimeToFinishInSeconds;
+        public ReactiveProperty<int> totalTimeToFinishInSeconds;
         public int totalTimeToFinishInSecUnchanged;
         public MatchResult matchResult;
 
@@ -45,9 +46,15 @@ public static class DataTypes
                 maxPlayers = Int32.Parse(substrings[6]);
 
                 Enum.TryParse(substrings[7], out MatchState _matchState);
-                matchState = _matchState;
+                matchState = new ReactiveProperty<MatchState>();
+                matchState.Value = _matchState;
+
                 playersToStart = Int32.Parse(substrings[8]);
-                totalTimeToFinishInSeconds = Int32.Parse(substrings[9]);
+
+                totalTimeToFinishInSeconds = new ReactiveProperty<int>();
+                int timeTillFinish = Int32.Parse(substrings[9]);
+                totalTimeToFinishInSeconds.Value = timeTillFinish;
+
                 totalTimeToFinishInSecUnchanged = Int32.Parse(substrings[10]);
                 killsToFinish = Int32.Parse(substrings[11]);
             }

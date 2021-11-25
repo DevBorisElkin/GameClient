@@ -148,7 +148,7 @@ public class PlayerMovementController : MonoBehaviour
 	[HideInInspector] Vector3 lastMovement;
 	void MakeMovement(float _movementSpeed)
     {
-		if (!moving || pushingByProjectile || isPushingBackBySalmonRune || ConnectionManager.activePlayroom.matchState == MatchState.JustStarting) { lastMovement = Vector3.zero; return; }
+		if (!moving || pushingByProjectile || isPushingBackBySalmonRune || ConnectionManager.activePlayroom.matchState.Value == MatchState.JustStarting) { lastMovement = Vector3.zero; return; }
 		//Vector3 translation = new Vector3(leftController.GetTouchPosition.x * Time.deltaTime * speedMovements, 0, leftController.GetTouchPosition.y * Time.deltaTime * speedMovements);
 		Vector3 translation = new Vector3(posJoystickInput.x, 0, posJoystickInput.y).normalized * _movementSpeed * Time.deltaTime;
 		lastMovement = translation;

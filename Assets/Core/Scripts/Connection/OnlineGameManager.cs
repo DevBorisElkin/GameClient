@@ -201,15 +201,17 @@ public class OnlineGameManager : MonoBehaviour
                     float.Parse(position[2], CultureInfo.InvariantCulture)
                     );
                 UnityThread.executeInUpdate(() => {
-                    UI_InGame.instance.OnNewMatchState(MatchState.JustStarting);
+                    ConnectionManager.activePlayroom.matchState.Value = MatchState.JustStarting;
                     playerMovementConetroller.RevivePlayer(spawnPosition, newJumpsAmount);
                     playerMovementConetroller.ManageMatchStart();
                 });
             }
             else if (message.Contains(MATCH_TIME_REMAINING))
             {
-                UnityThread.executeInUpdate(() => { 
-                    if (UI_InGame.instance != null) UI_InGame.instance.UpdateTimeLeftTxt(Int32.Parse(message.Split('|')[1]));
+                UnityThread.executeInUpdate(() => {
+                    if (ConnectionManager.activePlayroom == null) return;
+                    int matchEndsIn = Int32.Parse(message.Split('|')[1]);
+                    ConnectionManager.activePlayroom.totalTimeToFinishInSeconds.Value = matchEndsIn;
                 });
             }
             else if (message.Contains(MATCH_FINISHED))
@@ -218,7 +220,7 @@ public class OnlineGameManager : MonoBehaviour
                 {
                     EventManager.isAlive = false;
                     string[] substrings = message.Split('|');
-                    ConnectionManager.activePlayroom.matchState = MatchState.Finished;
+                    ConnectionManager.activePlayroom.matchState.Value = MatchState.Finished;
                     ConnectionManager.activePlayroom.winnerNickname = substrings[2];
                     Enum.TryParse(substrings[3], out MatchResult _res);
                     ConnectionManager.activePlayroom.matchResult = _res;
@@ -531,6 +533,7 @@ public class OnlineGameManager : MonoBehaviour
                 catch (Exception e) { Debug.LogError(e.Message + " " + e.StackTrace); }
             }
         }
+        int clearOpponentsCount = GetClearOpponentsCount();
         UI_InGame.instance.UpdateWaitingForPlayersText(GetClearOpponentsCount());
     }
 
