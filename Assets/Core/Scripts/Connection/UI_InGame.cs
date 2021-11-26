@@ -43,6 +43,7 @@ public class UI_InGame : MonoBehaviour
 
     private void Start()
     {
+        RenderSettings.skybox.SetFloat("_Rotation", 0f);
         OnClick_CloseMenu();
         OnlineGameManager.instance.ui_PlayersInLobby_Manager.SpawnLobbyItems(OnlineGameManager.currentPlayersScores_OnEnter);
         txt_currentLobbyName.text = OnlineGameManager.currentLobbyName_OnEnter;
@@ -280,6 +281,7 @@ public class UI_InGame : MonoBehaviour
 
     private void OnDestroy()
     {
+        RenderSettings.skybox.SetFloat("_Rotation", 0f);
         ManageSubscriptions(false);
     }
 
