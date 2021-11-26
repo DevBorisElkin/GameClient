@@ -32,6 +32,9 @@ public class UI_InGame : MonoBehaviour
     public TMP_Text txtMatchResult;
     public TMP_Text txtMatchWinner;
 
+    [Header("Skybox Rotation")]
+    public float skyboxRotationSpeed = 1f;
+
     private void Awake()
     {
         if (instance != null) Destroy(instance);
@@ -45,6 +48,11 @@ public class UI_InGame : MonoBehaviour
         txt_currentLobbyName.text = OnlineGameManager.currentLobbyName_OnEnter;
 
         ManageSubscriptions(true);
+    }
+
+    private void Update()
+    {
+        RenderSettings.skybox.SetFloat("_Rotation", Time.time * skyboxRotationSpeed);
     }
 
     public void OnNewMatchState(MatchState newState)
