@@ -224,6 +224,8 @@ public class UI_InGame : MonoBehaviour
         }
         else if(secondsTillStart > 0)
         {
+            VibrationsManager.OnMatchStarting_Vibrations();
+
             basicCountdownTmpText.gameObject.SetActive(false);
             timeLeftTmpText.gameObject.SetActive(true);
 
@@ -232,6 +234,8 @@ public class UI_InGame : MonoBehaviour
         }
         else if(secondsTillStart == 0)
         {
+            VibrationsManager.OnMatchStarted_Vibrations();
+
             ConnectionManager.activePlayroom.matchState.Value = MatchState.InGame;
 
             basicCountdownTmpText.gameObject.SetActive(true);

@@ -7,8 +7,10 @@ using static EnumsAndData;
 
 public static class VibrationsManager
 {
+    static bool hapticsEnabled = true;
     public static void OnLocalPlayerMadeShot_Vibrations(List<Rune> activeRuneModifiers)
     {
+        if (!hapticsEnabled) return;
         try
         {
             if (activeRuneModifiers.Count > 0)
@@ -23,21 +25,25 @@ public static class VibrationsManager
 
     public static void OnLocalPlayerGotHitByShot_Vibrations()
     {
+        if (!hapticsEnabled) return;
         try { MMVibrationManager.Haptic(HapticTypes.Warning); } catch (Exception e) { Debug.Log(e); }
     }
 
     public static void OnLocalPlayerPickedUpRune_Vibrations()
     {
+        if (!hapticsEnabled) return;
         try { MMVibrationManager.ContinuousHaptic(0.36f, 1f, 0.06f); } catch (Exception e) { Debug.Log(e); }
     }
 
     public static void OnLocalPlayerJump_Vibrations()
     {
+        if (!hapticsEnabled) return;
         try { MMVibrationManager.Haptic(HapticTypes.SoftImpact); } catch (Exception e) { Debug.Log(e); }
     }
 
     public static void OnLocalPlayerDies_Vibrations()
     {
+        if (!hapticsEnabled) return;
         try { MMVibrationManager.Haptic(HapticTypes.Failure); } catch (Exception e) { Debug.Log(e); }
     }
 
@@ -45,6 +51,7 @@ public static class VibrationsManager
     
     public static void OnLocalPlayerReceivedDebuff_Vibrations(MonoBehaviour localPlayerMonoBehaviour)
     {
+        if (!hapticsEnabled) return;
         if (DebuffOnPlayer_Vibrations != null) return;
 
         DebuffOnPlayer_Vibrations = DebuffOnPlayer();
@@ -52,6 +59,7 @@ public static class VibrationsManager
     }
     public static void OnLocalPlayerDebuffEnded_Vibrations(MonoBehaviour localPlayerMonoBehaviour)
     {
+        if (!hapticsEnabled) return;
         if (DebuffOnPlayer_Vibrations == null) return;
 
         localPlayerMonoBehaviour.StopCoroutine(DebuffOnPlayer_Vibrations);
@@ -64,7 +72,19 @@ public static class VibrationsManager
         {
             yield return new WaitForSeconds(0.25f);
 
-            MMVibrationManager.ContinuousHaptic(0.08f, 1f, 0.01f);
+            if(hapticsEnabled)
+                MMVibrationManager.ContinuousHaptic(0.08f, 1f, 0.01f);
         }
+    }
+
+    public static void OnMatchStarting_Vibrations()
+    {
+        if (!hapticsEnabled) return;
+        try { MMVibrationManager.Haptic(HapticTypes.SoftImpact); } catch (Exception e) { Debug.Log(e); }
+    }
+    public static void OnMatchStarted_Vibrations()
+    {
+        if (!hapticsEnabled) return;
+        try { MMVibrationManager.Haptic(HapticTypes.Success); } catch (Exception e) { Debug.Log(e); }
     }
 }
