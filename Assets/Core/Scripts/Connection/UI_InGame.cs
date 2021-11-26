@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 using static EnumsAndData;
 using static NetworkingMessageAttributes;
 using UniRx;
+using DG.Tweening;
+using System.Threading.Tasks;
 
 public class UI_InGame : MonoBehaviour
 {
@@ -162,29 +164,16 @@ public class UI_InGame : MonoBehaviour
     public TMP_Text basicCountdownTmpText;
     public TMP_Text timeLeftTmpText;
     public string basicCountdownText = "Match Starts In";
+    public string matchStartedText = "Match Started";
+    public float scaleInAnimTime = 0.25f;
+    public float basicTextFadeOutDelay = 1f;
+    public float basicTextFadeOutTime = 0.35f;
+    Color transparentColor = new Color(0, 0, 0, 0);
 
     int startMatchCountdown = 8;
-    //public void MatchStartCountdown(bool state)
-    //{
-    //    Debug.Log($"MatchStartCountdown {state}");
-    //    if (state)
-    //    {
-    //        int tmp = ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged - ConnectionManager.activePlayroom.totalTimeToFinishInSeconds.Value;
-    //        int secondsTillStart = startMatchCountdown - tmp;
-    //        Debug.Log($"ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged [{ConnectionManager.activePlayroom.totalTimeToFinishInSecUnchanged}] - " +
-    //            $"ConnectionManager.activePlayroom.totalTimeToFinishInSeconds[{ConnectionManager.activePlayroom.totalTimeToFinishInSeconds}], " +
-    //            $"secondsTillStart: [{secondsTillStart}]");
-    //        if (secondsTillStart > 8) return;
-    //        StartCoroutine(MatchStartCountdown(secondsTillStart));
-    //    }
-    //    else
-    //    {
-    //        basicCountdownTmpText.gameObject.SetActive(false);
-    //        timeLeftTmpText.gameObject.SetActive(false);
-    //        matchStartCountdownPanel.SetActive(false);
-    //    }
-    //}
 
+    Tween matchStartsInAnimation;
+    bool firstCallForBacisStartText;
 
     List<System.IDisposable> LifetimeDisposables;
     void ManageSubscriptions(bool subscribe)
@@ -208,7 +197,7 @@ public class UI_InGame : MonoBehaviour
         }
     }
 
-    void ManageMatchStart(int secondsLeft)
+    async void ManageMatchStart(int secondsLeft)
     {
         if (ConnectionManager.activePlayroom.matchState.Value != MatchState.JustStarting) return;
 
@@ -218,10 +207,12 @@ public class UI_InGame : MonoBehaviour
         basicCountdownTmpText.text = basicCountdownText;
         matchStartCountdownPanel.SetActive(true);
 
+
         if (secondsTillStart > 5)
         {
             basicCountdownTmpText.gameObject.SetActive(true);
             timeLeftTmpText.gameObject.SetActive(false);
+            await AnimateTextScale(basicCountdownTmpText.transform);
         }
         else if(secondsTillStart > 0)
         {
@@ -229,10 +220,49 @@ public class UI_InGame : MonoBehaviour
             timeLeftTmpText.gameObject.SetActive(true);
 
             timeLeftTmpText.text = secondsTillStart.ToString();
-        }else if(secondsTillStart <= 0)
+            await AnimateTextScale(timeLeftTmpText.transform);
+        }
+        else if(secondsTillStart == 0)
         {
-            matchStartCountdownPanel.SetActive(false);
             ConnectionManager.activePlayroom.matchState.Value = MatchState.InGame;
+
+            basicCountdownTmpText.gameObject.SetActive(true);
+            timeLeftTmpText.gameObject.SetActive(false);
+
+            basicCountdownTmpText.text = matchStartedText;
+            firstCallForBacisStartText = false;
+            await AnimateTextScale(basicCountdownTmpText.transform);
+            AnimateMatchStartEndText(basicCountdownTmpText);
+        }
+    }
+    async Task AnimateTextScale(Transform gameObjectTr)
+    {
+        if(basicCountdownTmpText.transform == gameObjectTr)
+        {
+            if (firstCallForBacisStartText) return;
+            firstCallForBacisStartText = true;
+        }
+        ResetMatchStartAnimationTween();
+        gameObjectTr.localScale = Vector3.zero;
+        matchStartsInAnimation = gameObjectTr.DOScale(Vector3.one, scaleInAnimTime);
+        await matchStartsInAnimation.AsyncWaitForCompletion();
+    }
+
+    void AnimateMatchStartEndText(TMP_Text matchStartedText)
+    {
+        Observable.Timer(TimeSpan.FromSeconds(basicTextFadeOutDelay)).Subscribe(_ => {
+            matchStartedText.DOColor(transparentColor, basicTextFadeOutTime).OnComplete(() => {
+                matchStartCountdownPanel.SetActive(false);
+            });
+        }).AddTo(LifetimeDisposables);
+    }
+
+    void ResetMatchStartAnimationTween()
+    {
+        if (matchStartsInAnimation != null)
+        {
+            matchStartsInAnimation.Complete();
+            matchStartsInAnimation = null;
         }
     }
 
