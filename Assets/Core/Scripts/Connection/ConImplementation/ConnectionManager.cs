@@ -26,7 +26,7 @@ public class ConnectionManager : MonoBehaviour
     public static int portTcp = 8384;
     public static int portUdp = 8385;
 
-    public UserData currentUserData;
+    [SerializeField] public UserData currentUserData;
     public ClientAccessLevel clientAccessLevel;
     bool appIsRunning = true;
 
@@ -130,11 +130,10 @@ public class ConnectionManager : MonoBehaviour
                         AccessRights access;
                         try
                         {
-                            Enum.TryParse(userData[5], out AccessRights accessRights);
+                            Enum.TryParse(FirstCharToUpper(userData[5]), out AccessRights accessRights);
                             access = accessRights;
                         }
-                        catch(Exception e) { }
-                        finally { access = AccessRights.User; }
+                        catch(Exception e) { access = AccessRights.User; }
 
                         currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
 
@@ -170,7 +169,7 @@ public class ConnectionManager : MonoBehaviour
                         string[] userData = substrings[2].Split(',');
 
                         AccessRights access;
-                        if (Enum.TryParse(userData[5], out AccessRights accessRights))
+                        if (Enum.TryParse(FirstCharToUpper(userData[5]), out AccessRights accessRights))
                             access = accessRights;
                         else
                             access = AccessRights.User;

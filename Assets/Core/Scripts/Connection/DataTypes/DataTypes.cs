@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using static EnumsAndData;
+using System.Linq;
 
 public static class DataTypes
 {
@@ -64,6 +65,7 @@ public static class DataTypes
             }
         }
     }
+    [System.Serializable]
     public class UserData
     {
         public int db_id;
@@ -98,6 +100,12 @@ public static class DataTypes
         public string ToNetworkString()
         {
             return $"{db_id},{login},{password},{nickname},{ip}";
+        }
+
+        public bool IsAdmin()
+        {
+            if (accessRights.Equals(AccessRights.User)) return false;
+            else return true;
         }
     }
 
@@ -139,6 +147,12 @@ public static class DataTypes
             this.playerDbId = playerDbId;
             this.runeEffects = runeEffects;
         }
+    }
+    public static string FirstCharToUpper(string input)
+    {
+        if (String.IsNullOrEmpty(input))
+            throw new ArgumentException("ARGH!");
+        return input.First().ToString().ToUpper() + input.Substring(1);
     }
 
 }

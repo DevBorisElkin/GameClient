@@ -116,6 +116,11 @@ public class UI_InGame : MonoBehaviour
         panel_Menu.SetActive(false);
     }
 
+    public void AdminPanelOpened(bool state)
+    {
+        panel_inGame.SetActive(!state);
+    }
+
     public void SetCurrentLobbyName(string name)
     {
         txt_currentLobbyName.text = name;
