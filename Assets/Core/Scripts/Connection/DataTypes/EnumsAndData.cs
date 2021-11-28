@@ -69,4 +69,17 @@ public static class EnumsAndData
     public enum MessageParseType { VersionOne, VersionTwo }
 
     public enum OpponentPointerSettings { Normal, LerpPositionWithSprite, InstantDebugPosition }
+
+    public enum CustomRuneSpawn_Amount
+    {
+        One,
+        Three,
+        Five,
+        Max
+    }
+    public enum CustomRuneSpawn_Position
+    {
+        ClosestSpawn,
+        Random
+    }
 }
