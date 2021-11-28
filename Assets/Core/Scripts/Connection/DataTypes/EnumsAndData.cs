@@ -17,6 +17,13 @@ public static class EnumsAndData
         Authenticated = 1
     }
 
+    public enum AccessRights
+    {
+        User,
+        Admin,
+        SuperAdmin
+    }
+
     public enum ClientStatus { 
         Disconnected,
         Connected,

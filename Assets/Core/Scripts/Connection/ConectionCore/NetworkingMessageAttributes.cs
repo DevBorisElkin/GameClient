@@ -27,8 +27,8 @@ class NetworkingMessageAttributes
     // "log_in_result|success_or_failure_plus_reason_if_failure";
 
     // more detailed response
-    // user data: db_id, login, password, nickname, ip
-    // "log_in_result|Success|1,Bond_EA,test_password,Boris228,198.0.0.196";
+    // user data: db_id, login, password, nickname, ip, accessRights
+    // "log_in_result|Success|1,Bond_EA,test_password,Boris,228,198.0.0.196,user";
     // "log_in_result|Fail_WrongPairLoginPassword"
     public const string LOG_IN_RESULT = "log_in_result";
 
@@ -42,7 +42,7 @@ class NetworkingMessageAttributes
     // message from server to player whether player's request was accepted or not
     // example of message
     // "register_result|success_or_failure_plus_reason_if_failure|complete_user_data";
-    // user data: db_id,login,password,nickname,ip
+    // user data: db_id,login,password,nickname,ip,accessRights
     public const string REGISTER_RESULT = "register_result";
 
 
@@ -171,9 +171,6 @@ class NetworkingMessageAttributes
         }
         return false;
     }
-    // _______________________________________________________CONNECTION_CHECK________________________
-
-
     // _______________________________________________________CONNECTION_CHECK________________________
 
     // 1) simple check connected message

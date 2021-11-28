@@ -126,7 +126,14 @@ public class ConnectionManager : MonoBehaviour
                         Debug.Log($"Authenticated successfully: {substrings[1]}, reading user data");
 
                         string[] userData = substrings[2].Split(',');
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
+
+                        AccessRights access;
+                        if (Enum.TryParse(userData[5], out AccessRights accessRights))
+                            access = accessRights;
+                        else
+                            access = AccessRights.User;
+
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
 
                         Action act = StoreUserData;
                         UnityThread.executeInUpdate(act);
@@ -158,7 +165,14 @@ public class ConnectionManager : MonoBehaviour
                         Debug.Log($"Registered successfully: {substrings[1]}, reading user data");
 
                         string[] userData = substrings[2].Split(',');
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4]);
+
+                        AccessRights access;
+                        if (Enum.TryParse(userData[5], out AccessRights accessRights))
+                            access = accessRights;
+                        else
+                            access = AccessRights.User;
+
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
 
                         Action act = StoreUserData;
                         UnityThread.executeInUpdate(act);

@@ -71,6 +71,7 @@ public static class DataTypes
         public string password;
         public string nickname;
         public string ip;
+        public AccessRights accessRights;
 
         public RequestResult requestResult;
 
@@ -79,13 +80,14 @@ public static class DataTypes
         {
             this.requestResult = requestResult;
         }
-        public UserData(int dbID, string login, string password, string nickname, string ip, RequestResult requestResult = RequestResult.Success)
+        public UserData(int dbID, string login, string password, string nickname, string ip, AccessRights accessRights, RequestResult requestResult = RequestResult.Success)
         {
             this.db_id = dbID;
             this.login = login;
             this.password = password;
             this.nickname = nickname;
             this.ip = ip;
+            this.accessRights = accessRights;
             this.requestResult = requestResult;
         }
 
