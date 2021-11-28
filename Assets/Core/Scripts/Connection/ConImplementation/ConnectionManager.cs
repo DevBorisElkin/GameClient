@@ -128,10 +128,13 @@ public class ConnectionManager : MonoBehaviour
                         string[] userData = substrings[2].Split(',');
 
                         AccessRights access;
-                        if (Enum.TryParse(userData[5], out AccessRights accessRights))
+                        try
+                        {
+                            Enum.TryParse(userData[5], out AccessRights accessRights);
                             access = accessRights;
-                        else
-                            access = AccessRights.User;
+                        }
+                        catch(Exception e) { }
+                        finally { access = AccessRights.User; }
 
                         currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
 
