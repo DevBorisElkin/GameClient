@@ -135,7 +135,7 @@ public static class MessageParser
         }
     }
 
-    public static void ParseOnRuneSpawnedMessage(string message, out Vector3 spawnPosition, out Rune rune, out int runeId)
+    public static void ParseOnRuneSpawnedMessage(string message, out Vector3 spawnPosition, out Rune rune, out int runeId, out PlayerData runeInvoker)
     {
         try
         {
@@ -149,6 +149,17 @@ public static class MessageParser
             Enum.TryParse(msg[2], out Rune runeType);
             rune = runeType;
             runeId = Int32.Parse(msg[3]);
+            string dbIdOfInvoker = msg[4];
+
+            if (dbIdOfInvoker.Equals("none")) runeInvoker = null;
+            else
+            {
+                int dbInvokerId = Int32.Parse(dbIdOfInvoker);
+                if (dbInvokerId == OnlineGameManager.instance.current_player.playerData.db_id)
+                    runeInvoker = OnlineGameManager.instance.current_player.playerData;
+                else
+                    runeInvoker = OnlineGameManager.instance.FindPlayerByDbId(dbInvokerId);
+            }
         }
         catch (Exception e)
         {
@@ -156,6 +167,7 @@ public static class MessageParser
             spawnPosition = new Vector3();
             rune = Rune.None;
             runeId = -1;
+            runeInvoker = null;
         }
     }
 

@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static EnumsAndData;
+using static OnlineGameManager;
 
 public class UI_InGameEventMessageItem : MonoBehaviour
 {
@@ -43,6 +44,17 @@ public class UI_InGameEventMessageItem : MonoBehaviour
 
     public TMP_Text runePickerTxt;
     public Image runeImage;
+
+    [Header("Rune spawned")]
+    public GameObject panelRuneSpawned;
+    public Image runeSpawnedImage;
+    public TMP_Text runeSpawnedTxt;
+
+    [Space(5f)]
+    public GameObject panelRuneSpawnedByInvoker;
+    public Image runeSpawnedImageByInvoker;
+    public TMP_Text runeSpawnedByInvokerTxt;
+
     public void SetUpDeathMessage(MessageType messageType, DeathDetails deathDetails, ReasonOfDeath reasonOfDeath, string killerNick, string victimNick)
     {
         DefaultPanel();
@@ -112,6 +124,26 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         StartCoroutine(DestroyCoroutine());
     }
 
+    public void OnRuneSpawnedMessage(Rune runeType, PlayerData invoker)
+    {
+        DefaultPanel();
+
+        Sprite foundSprite = PrefabsHolder.instance.GetSpriteByRuneType(runeType);
+        if (invoker == null)
+        {
+            panelRuneSpawned.SetActive(true);
+            if (foundSprite != null) runeSpawnedImage.sprite = foundSprite;
+            runeSpawnedTxt.text = "Rune spawned";
+        }
+        else
+        {
+            panelRuneSpawnedByInvoker.SetActive(true);
+            if (foundSprite != null) runeSpawnedImageByInvoker.sprite = foundSprite;
+            runeSpawnedByInvokerTxt.text = $"{invoker.nickname} spawned rune";
+        }
+        StartCoroutine(DestroyCoroutine());
+    }
+
     void DefaultPanel()
     {
         panelKillEvent.SetActive(false);
@@ -124,6 +156,8 @@ public class UI_InGameEventMessageItem : MonoBehaviour
         enterImg.gameObject.SetActive(false);
         exitImg.gameObject.SetActive(false);
         panelPickUpRune.SetActive(false);
+        panelRuneSpawned.SetActive(false);
+        panelRuneSpawnedByInvoker.SetActive(false);
     }
 
     IEnumerator DestroyCoroutine()

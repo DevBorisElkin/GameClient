@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static EnumsAndData;
+using static OnlineGameManager;
 
 public class UI_InGameMsgEventsManager : MonoBehaviour
 {
@@ -71,5 +72,12 @@ public class UI_InGameMsgEventsManager : MonoBehaviour
         GameObject msgEventPanel = Instantiate(PrefabsHolder.instance.ui_inGameEventMessage, parentForEventMessages);
         UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
         item.OnRunePickupMessage(runeType, nicknameOfPicker);
+    }
+
+    public void FromServer_RuneSpawned(Rune runeType, PlayerData runeInvoker)
+    {
+        GameObject msgEventPanel = Instantiate(PrefabsHolder.instance.ui_inGameEventMessage, parentForEventMessages);
+        UI_InGameEventMessageItem item = msgEventPanel.GetComponent<UI_InGameEventMessageItem>();
+        item.OnRuneSpawnedMessage(runeType, runeInvoker);
     }
 }

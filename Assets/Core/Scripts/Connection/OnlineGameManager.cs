@@ -230,12 +230,15 @@ public class OnlineGameManager : MonoBehaviour
             }
             else if (message.Contains(RUNE_SPAWNED))
             {
-                MessageParser.ParseOnRuneSpawnedMessage(message, out Vector3 spawnPosition, out Rune runeType, out int runeId);
                 UnityThread.executeInUpdate(() =>
                 {
+                    MessageParser.ParseOnRuneSpawnedMessage(message, out Vector3 spawnPosition, out Rune runeType, out int runeId, out PlayerData runeInvoker);
                     GameObject spawnedRune = Instantiate(PrefabsHolder.instance.rune_prefab, spawnPosition, Quaternion.identity);
                     RuneInstance rune = spawnedRune.GetComponent<RuneInstance>();
                     rune.SetUpRune(runeId, runeType);
+
+                    // 3) create UI notifiying of picking up the rune
+                    UI_InGameMsgEventsManager.instance.FromServer_RuneSpawned(runeType, runeInvoker);
                 });
             }
             else if (message.Contains(RUNE_PICKED_UP))
