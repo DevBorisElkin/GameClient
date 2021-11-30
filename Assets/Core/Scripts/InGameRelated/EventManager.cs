@@ -22,6 +22,9 @@ public class EventManager : MonoBehaviour
 
     [HideInInspector] public CamSimpleFollow camSimpleFollow;
 
+    public List<MeshRenderer> playerSpawns;
+    public List<MeshRenderer> runeSpawns;
+
     private void Start()
     {
         if (instance != null) Destroy(instance);
@@ -125,5 +128,14 @@ public class EventManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         isAvailableForRaycaster = true;
+    }
+
+    public void SetPlayerSpawnsVisible(bool state)
+    {
+        foreach (var a in playerSpawns) a.enabled = state;
+    }
+    public void SetRuneSpawnsVisible(bool state)
+    {
+        foreach (var a in runeSpawns) a.enabled = state;
     }
 }

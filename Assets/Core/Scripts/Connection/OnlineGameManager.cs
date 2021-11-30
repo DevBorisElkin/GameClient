@@ -22,6 +22,7 @@ public class OnlineGameManager : MonoBehaviour
     private void Awake()
     {
         InitSingleton();
+        InitReactiveProperties();
     }
     void InitSingleton()
     {
@@ -34,9 +35,70 @@ public class OnlineGameManager : MonoBehaviour
     }
     #endregion
 
+    #region Reactive Properties
+    void InitReactiveProperties()
+    {
+        LifetimeDisposables = new List<System.IDisposable>();
+        showGhostSelf = new ReactiveProperty<bool>();
+        showPlayerSpawns = new ReactiveProperty<bool>();
+        showRuneSpawns = new ReactiveProperty<bool>();
+
+        showGhostSelf.Subscribe(_ => ManageSpawnedGhostSelf(_)).AddTo(LifetimeDisposables);
+        showPlayerSpawns.Subscribe(_ => ManagePlayerSpawnsVisuals(_)).AddTo(LifetimeDisposables);
+        showRuneSpawns.Subscribe(_ => ManageRuneSpawnsVisuals(_)).AddTo(LifetimeDisposables);
+    }
+
+    void ManageSpawnedGhostSelf(bool val)
+    {
+        if (SceneManager.GetActiveScene().buildIndex != 2) return;
+
+        if (!val)
+        {
+            var ghostPlayerInstance = FindPlayerByDbId(current_player.playerData.db_id);
+            if(ghostPlayerInstance != null)
+            {
+                Destroy(ghostPlayerInstance.controlledGameObject);
+                opponents.Remove(ghostPlayerInstance);
+            }
+        }
+    }
+
+    void ManagePlayerSpawnsVisuals(bool val)
+    {
+        if (SceneManager.GetActiveScene().buildIndex != 2) return;
+        if (EventManager.instance != null) EventManager.instance.SetPlayerSpawnsVisible(val);
+        else
+        {
+            EventManager ev = FindObjectOfType<EventManager>();
+            if (ev != null) ev.SetPlayerSpawnsVisible(val);
+        }
+    }
+    void ManageRuneSpawnsVisuals(bool val)
+    {
+        if (SceneManager.GetActiveScene().buildIndex != 2) return;
+        if (EventManager.instance != null) EventManager.instance.SetRuneSpawnsVisible(val);
+        else
+        {
+            EventManager ev = FindObjectOfType<EventManager>();
+            if (ev != null) ev.SetRuneSpawnsVisible(val);
+        }
+    }
+    private void OnDestroy()
+    {
+        if (LifetimeDisposables != null && LifetimeDisposables.Count > 0)
+            foreach (var a in LifetimeDisposables)
+                a.Dispose();
+    }
+    #endregion
+
     public float pos_interpolationSpeed = 5f;
     public float rot_interpolationSpeed = 7f;
-    public bool showGhostSelf;
+
+    public ReactiveProperty<bool> showGhostSelf;
+    public ReactiveProperty<bool> showPlayerSpawns;
+    public ReactiveProperty<bool> showRuneSpawns;
+    List<System.IDisposable> LifetimeDisposables;
+
     bool inPlayRoom;
 
     EventManager shootingManager;
@@ -417,7 +479,7 @@ public class OnlineGameManager : MonoBehaviour
         bool noticedUnspanedPlayers = false;
         foreach (PlayerData a in retrievedPlayerData)
         {
-            if (!showGhostSelf && a.db_id == current_player.playerData.db_id) continue;
+            if (!showGhostSelf.Value && a.db_id == current_player.playerData.db_id) continue;
 
             PlayerData correctPlayer = FindPlayerByDbId(a.db_id);
             if(correctPlayer != null)

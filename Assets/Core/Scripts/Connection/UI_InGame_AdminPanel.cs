@@ -79,22 +79,11 @@ public class UI_InGame_AdminPanel : MonoBehaviour
         runeSpawnToggle_notifyOthers.SetIsOnWithoutNotify(notifyOthersOnRuneSpawn);
     }
 
-    public void OnSpawnRuneTypeChanged(int val)
-    {
-        runeSpawn_RuneType = (Rune)val;
-    }
-    public void OnSpawnRuneAmountChanged(int val)
-    {
-        runeSpawn_amount = (CustomRuneSpawn_Amount) val;
-    }
-    public void OnSpawnRunePositionsChanged(int val)
-    {
-        runeSpawn_position = (CustomRuneSpawn_Position) val;
-    }
-    public void OnSpawnRuneNotifyOthersChanged(bool val)
-    {
-        notifyOthersOnRuneSpawn = val;
-    }
+    public void OnSpawnRuneTypeChanged(int val) => runeSpawn_RuneType = (Rune)val;
+    public void OnSpawnRuneAmountChanged(int val) => runeSpawn_amount = (CustomRuneSpawn_Amount) val;
+    public void OnSpawnRunePositionsChanged(int val) => runeSpawn_position = (CustomRuneSpawn_Position) val;
+    public void OnSpawnRuneNotifyOthersChanged(bool val) => notifyOthersOnRuneSpawn = val;
+    
 
     // code|RuneType|AmountEnum|SpawnPosEnum|notifyOthers
     public void OnClick_SpawnRune()
@@ -116,16 +105,18 @@ public class UI_InGame_AdminPanel : MonoBehaviour
 
     void OnPanelInit_SetDefaultStateToSimpleToggles()
     {
-        //showNetworkDelay_toggle.SetIsOnWithoutNotify(false);
-        //showPlayerSpawns_toggle.SetIsOnWithoutNotify(false);
-        //showRuneSpawns_toggle.SetIsOnWithoutNotify(false);
+        showNetworkDelay_toggle.SetIsOnWithoutNotify(false);
+        showPlayerSpawns_toggle.SetIsOnWithoutNotify(false);
+        showRuneSpawns_toggle.SetIsOnWithoutNotify(false);
+
+        OnlineGameManager.instance.showGhostSelf.Value = false;
+        OnlineGameManager.instance.showPlayerSpawns.Value = false;
+        OnlineGameManager.instance.showRuneSpawns.Value = false;
     }
 
-    //bool showNetworkDelay
-    //public void OnSpawnRuneNotifyOthersChanged(bool val)
-    //{
-    //    notifyOthersOnRuneSpawn = val;
-    //}
-
+    public void OnShowNetworkDelayToggleChanged(bool val) => OnlineGameManager.instance.showGhostSelf.Value = val;
+    public void OnShowPlayerSpawnsToggleChanged(bool val) => OnlineGameManager.instance.showPlayerSpawns.Value = val;
+    public void OnShowRuneSpawnsToggleChanged(bool val) => OnlineGameManager.instance.showRuneSpawns.Value = val;
+    
     #endregion
 }
