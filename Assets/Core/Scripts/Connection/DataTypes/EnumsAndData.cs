@@ -82,4 +82,12 @@ public static class EnumsAndData
         ClosestSpawn,
         Random
     }
+
+    public enum AdminPanelHint
+    {
+        SpawnRune,
+        NetworkDelay,
+        PlayerSpawns,
+        RuneSpawns
+    }
 }
