@@ -290,4 +290,25 @@ public static class MessageParser
         }
         catch (Exception e) { playerDbId = -1; debuff = Rune.None; Debug.Log(e); }
     }
+
+    //  code|windowType|messageType|message
+    public static void ParceMessageFromServer(string message, out string messageBody, out MessageFromServer_WindowType windowType,
+        out MessageFromServer_MessageType messageType)
+    {
+        try
+        {
+            string[] msg = message.Split('|');
+            Enum.TryParse(msg[1], out MessageFromServer_WindowType window_type);
+            Enum.TryParse(msg[2], out MessageFromServer_MessageType message_type);
+            windowType = window_type;
+            messageType = message_type;
+            messageBody = msg[3];
+        }
+        catch(Exception e)
+        {
+            messageBody = "none";
+            windowType = MessageFromServer_WindowType.LightWindow;
+            messageType = MessageFromServer_MessageType.Info;
+        }
+    }
 }

@@ -116,7 +116,21 @@ public class ConnectionManager : MonoBehaviour
                 Debug.Log("For some reason server disconnected you");
                 Disconnect();
             }
-            if (clientAccessLevel == ClientAccessLevel.LowestLevel)
+            if (message.StartsWith(MESSAGE_FROM_SERVER))
+            {
+                UnityThread.executeInUpdate(() => {
+                    MessageParser.ParceMessageFromServer(message, out string messageBody, out MessageFromServer_WindowType windowType,
+                    out MessageFromServer_MessageType messageType);
+
+                    if (windowType == MessageFromServer_WindowType.ModalWindow)
+                    {
+                        GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_modalWindow);
+                        var ui = spawnedObj.GetComponent<UI_MessageFromServer_ModalWindow>();
+                        ui.SetUp(messageBody, messageType);
+                    }
+                });
+            }
+            else if (clientAccessLevel == ClientAccessLevel.LowestLevel)
             {
                 if (message.Contains(LOG_IN_RESULT))
                 {

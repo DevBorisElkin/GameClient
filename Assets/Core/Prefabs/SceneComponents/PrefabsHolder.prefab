@@ -94,3 +94,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 346bed1dc93322e46a52b8ba6a786dd5, type: 3}
   - rune: 8
     sprite: {fileID: 21300000, guid: f53c03d7c54364d449b487c087487217, type: 3}
+  ui_msgFromServer_modalWindow: {fileID: 8227128193162023609, guid: d8ce76d6f1d86de48bc00f5d8560e6a1,
+    type: 3}
+  ui_msgFromServer_lightWindow: {fileID: 0}

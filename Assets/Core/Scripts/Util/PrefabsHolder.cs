@@ -56,4 +56,7 @@ public class PrefabsHolder : MonoBehaviour
             if (a.rune == rune) return a.sprite;
         return null;
     }
+
+    public GameObject ui_msgFromServer_modalWindow;
+    public GameObject ui_msgFromServer_lightWindow;
 }

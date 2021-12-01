@@ -90,4 +90,16 @@ public static class EnumsAndData
         PlayerSpawns,
         RuneSpawns
     }
+    public enum MessageFromServer_WindowType
+    {
+        ModalWindow,
+        LightWindow
+    }
+
+    public enum MessageFromServer_MessageType
+    {
+        Info,
+        Warning,
+        Error
+    }
 }
