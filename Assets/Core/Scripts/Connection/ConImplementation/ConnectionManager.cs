@@ -127,6 +127,11 @@ public class ConnectionManager : MonoBehaviour
                         GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_modalWindow);
                         var ui = spawnedObj.GetComponent<UI_MessageFromServer_ModalWindow>();
                         ui.SetUp(messageBody, messageType);
+                    } else if (windowType == MessageFromServer_WindowType.LightWindow)
+                    {
+                        GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_lightWindow);
+                        var ui = spawnedObj.GetComponent<UI_MessageFromServer_Light>();
+                        ui.SetUp(messageBody, messageType);
                     }
                 });
             }

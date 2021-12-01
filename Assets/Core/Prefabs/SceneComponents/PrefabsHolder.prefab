@@ -96,4 +96,5 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f53c03d7c54364d449b487c087487217, type: 3}
   ui_msgFromServer_modalWindow: {fileID: 8227128193162023609, guid: d8ce76d6f1d86de48bc00f5d8560e6a1,
     type: 3}
-  ui_msgFromServer_lightWindow: {fileID: 0}
+  ui_msgFromServer_lightWindow: {fileID: 1111193811504929042, guid: 36f3b5ee4fdd07f42b3b00cdf83fd87f,
+    type: 3}
