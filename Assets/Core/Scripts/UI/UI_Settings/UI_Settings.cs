@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static EnumsAndData;
+using static Util_UI;
+using static NetworkingMessageAttributes;
 
 public class UI_Settings : MonoBehaviour
 {
+    #region Main
     // 0 = high, 1 = medium, 2 = low
 
     public TMP_Dropdown dropdownGraphics;
@@ -40,4 +43,25 @@ public class UI_Settings : MonoBehaviour
             default: return 4;
         }
     }
+    #endregion
+
+    #region Promocode
+
+    [Space(5f)]
+    public TMP_InputField promocodeInputField;
+    string promocodeText = "";
+
+    public void OnEdit_Promocode(string text) { promocodeText = text; }
+
+    public void OnClick_SubmitPromocode()
+    {
+        if(IsStringClearFromErrors(promocodeText, null, Input_Field.Promocode, 1, 25))
+        {
+            ConnectionManager.instance.SendMessageToServer($"{PROMOCODE_FROM_CLIENT}|{promocodeText}");
+        }
+        promocodeInputField.SetTextWithoutNotify("");
+        promocodeText = "";
+    }
+
+    #endregion
 }

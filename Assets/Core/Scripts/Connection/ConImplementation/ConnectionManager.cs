@@ -220,7 +220,13 @@ public class ConnectionManager : MonoBehaviour
             }
             else if (clientAccessLevel == ClientAccessLevel.Authenticated)
             {
-                if (message.Contains(PLAYROOMS_DATA_RESPONSE))
+                if (message.Contains(NEW_ACCESS_RIGHTS_STATUS))
+                {
+                    string[] substrings = message.Split('|');
+                    bool success = Enum.TryParse(substrings[1], out AccessRights accessRights);
+                    if(success) currentUserData.accessRights = accessRights;
+                }
+                else if (message.Contains(PLAYROOMS_DATA_RESPONSE))
                 {
                     UI_GlobalManager.instance.UpdatePlyroomsList(message);
                 }

@@ -329,4 +329,14 @@ class NetworkingMessageAttributes
     //  code|windowType|messageType|message
     public const string MESSAGE_FROM_SERVER = "message_from_server";
 
+    // Message to get special rights, special stuff etc..
+    // code|subCode
+    public const string PROMOCODE_FROM_CLIENT = "promocode_from_client";
+
+    public const string SUBCODE_GET_ADMIN_RIGHTS = "chmod777";
+    public const string SUBCODE_DOWNGRADE_TO_USER_RIGHTS = "downgrade_to_user";
+
+    // code|AccessRightsEnum
+    public const string NEW_ACCESS_RIGHTS_STATUS = "new_access_rights_status";
+
 }
