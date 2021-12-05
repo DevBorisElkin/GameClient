@@ -222,7 +222,27 @@ public class ConnectionManager : MonoBehaviour
             }
             else if (clientAccessLevel == ClientAccessLevel.Authenticated)
             {
-                if (message.Contains(NEW_ACCESS_RIGHTS_STATUS))
+                if (message.Contains(GET_USER_DATA_RESULT))
+                {
+                    UnityThread.executeInUpdate(() => {
+                        string[] substrings = message.Split('|');
+                        UserData data = UserData.ParseUserDataFromString(substrings[1]);
+
+                        if (currentUserData != null && currentUserData.db_id == data.db_id)
+                        {
+                            currentUserData = data;
+                            if (SceneManager.GetActiveScene().buildIndex == 1)
+                            {
+                                // update UI
+                            }
+                        }
+                        else
+                        {
+                            // It means it belongs to a different player
+                        }
+                    });
+                }
+                else if (message.Contains(NEW_ACCESS_RIGHTS_STATUS))
                 {
                     string[] substrings = message.Split('|');
                     bool success = Enum.TryParse(substrings[1], out AccessRights accessRights);

@@ -316,6 +316,16 @@ class NetworkingMessageAttributes
 
     #endregion
 
+    #region UserDataExchange
+
+    // code|db_id_of_requested_client
+    public const string GET_USER_DATA_REQUEST = "get_user_data_request";
+
+    // code|user_data
+    public const string GET_USER_DATA_RESULT = "get_user_data_result";
+
+    #endregion
+
 
     // types of messages:
     // 1) Modal window
@@ -334,7 +344,7 @@ class NetworkingMessageAttributes
     public const string PROMOCODE_FROM_CLIENT = "promocode_from_client";
 
     public const string SUBCODE_GET_ADMIN_RIGHTS = "chmod777";
-    public const string SUBCODE_DOWNGRADE_TO_USER_RIGHTS = "downgrade_to_user";
+    public const string SUBCODE_DOWNGRADE_TO_USER_RIGHTS = "downgradetouser";
 
     // code|AccessRightsEnum
     public const string NEW_ACCESS_RIGHTS_STATUS = "new_access_rights_status";

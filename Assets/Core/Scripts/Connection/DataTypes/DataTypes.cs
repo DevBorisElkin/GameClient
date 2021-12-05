@@ -106,6 +106,29 @@ public static class DataTypes
             this.runes_picked_up = runes_picked_up;
         }
 
+        public static UserData ParseUserDataFromString(string raw)
+        {
+            try
+            {
+                string[] userData = raw.Split(',');
+                AccessRights access;
+                try
+                {
+                    Enum.TryParse(FirstCharToUpper(userData[5]), out AccessRights accessRights);
+                    access = accessRights;
+                }
+                catch (Exception e) { access = AccessRights.User; }
+
+                return new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access,
+                                Int32.Parse(userData[6]), Int32.Parse(userData[7]), Int32.Parse(userData[8]), Int32.Parse(userData[9]), Int32.Parse(userData[10]));
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e);
+                return null;
+            }
+        }
+
         public override string ToString()
         {
             return $"id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}], accessRights:[{accessRights}]" +
