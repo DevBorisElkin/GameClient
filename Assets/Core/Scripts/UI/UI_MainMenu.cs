@@ -172,22 +172,22 @@ public class UI_MainMenu : MonoBehaviour
     }
     void ResetAllTweens()
     {
-        if (authWindowScaleInTween != null && authWindowScaleInTween.IsPlaying())
+        if (authWindowScaleInTween != null)
         {
             authWindowScaleInTween.Complete();
             authWindowScaleInTween = null;
         }
-        if (authWindowScaleOutTween != null && authWindowScaleOutTween.IsPlaying())
+        if (authWindowScaleOutTween != null)
         {
             authWindowScaleOutTween.Complete();
             authWindowScaleOutTween = null;
         }
-        if (regWindowScaleInTween != null && regWindowScaleInTween.IsPlaying())
+        if (regWindowScaleInTween != null)
         {
             regWindowScaleInTween.Complete();
             regWindowScaleInTween = null;
         }
-        if (regWindowScaleOutTween != null && regWindowScaleOutTween.IsPlaying())
+        if (regWindowScaleOutTween != null)
         {
             regWindowScaleOutTween.Complete();
             regWindowScaleOutTween = null;

@@ -32,6 +32,10 @@ public class UI_MessageFromServer_Light : MonoBehaviour
     MessageFromServer_MessageType messageType;
     string message;
 
+    Tween moveTween;
+    Tween fadeTextTween;
+    Tween fadeImageTween;
+
     public void SetUp(string message, MessageFromServer_MessageType messageType)
     {
         this.messageType = messageType;
@@ -44,14 +48,32 @@ public class UI_MessageFromServer_Light : MonoBehaviour
     private void Awake()
     {
         Observable.Timer(TimeSpan.FromSeconds(fadeDelay)).Subscribe(_ => {
-            //backgroundImage.DOColor(transparentColor, moveUpTime - fadeDelay).SetEase(globalEase);
             backgroundImage.DOFade(0f, moveUpTime - fadeDelay).SetEase(globalEase);
-            //messageTxt.DOColor(transparentColor, moveUpTime - fadeDelay).SetEase(globalEase);
             messageTxt.DOFade(0f, moveUpTime - fadeDelay).SetEase(globalEase);
         });
         messageBody.transform.DOMove(messageBody.transform.position + new Vector3(0, totalMoveUpValue, 0), moveUpTime).SetEase(globalEase).OnComplete(() => {
+            ResetTweens();
             Destroy(gameObject);
         });
+    }
+
+    void ResetTweens()
+    {
+        if (moveTween != null)
+        {
+            moveTween.Pause();
+            moveTween = null;
+        }
+        if (fadeTextTween != null)
+        {
+            fadeTextTween.Pause();
+            fadeTextTween = null;
+        }
+        if (fadeImageTween != null)
+        {
+            fadeImageTween.Pause();
+            fadeImageTween = null;
+        }
     }
 
     void SetUpCorrectStyles()

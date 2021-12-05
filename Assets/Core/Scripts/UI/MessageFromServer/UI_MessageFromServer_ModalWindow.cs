@@ -110,28 +110,29 @@ public class UI_MessageFromServer_ModalWindow : MonoBehaviour
 
         modalWindowImage.transform.localScale = Vector3.one;
         modalWindowScaleOutTween = modalWindowImage.transform.DOScale(Vector3.zero, modalWindowDisappearTime).SetEase(modalWindowScaleOutEase).OnComplete(() => {
+            ResetAllTweens();
             Destroy(gameObject);
         });
     }
 
     void ResetAllTweens()
     {
-        if (backgroundColorInTween != null && backgroundColorInTween.IsPlaying())
+        if (backgroundColorInTween != null)
         {
             backgroundColorInTween.Pause();
             backgroundColorInTween = null;
         }
-        if (modalWindowScaleInTween != null && modalWindowScaleInTween.IsPlaying())
+        if (modalWindowScaleInTween != null)
         {
             modalWindowScaleInTween.Pause();
             modalWindowScaleInTween = null;
         }
-        if (backgroundColorOutTween != null && backgroundColorOutTween.IsPlaying())
+        if (backgroundColorOutTween != null)
         {
             backgroundColorOutTween.Pause();
             backgroundColorOutTween = null;
         }
-        if (modalWindowScaleOutTween != null && modalWindowScaleOutTween.IsPlaying())
+        if (modalWindowScaleOutTween != null)
         {
             modalWindowScaleOutTween.Pause();
             modalWindowScaleOutTween = null;
