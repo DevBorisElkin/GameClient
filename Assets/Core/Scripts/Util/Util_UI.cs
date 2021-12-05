@@ -93,34 +93,37 @@ public class Util_UI : MonoBehaviour
                 }
                 else if (StringStarstsFromNumberOrUnderscore(stringToCheck))
                 {
-                    errorField.text = $"txtToAdd can't start with digit or underscore";
+                    errorField.text = $"{txtToAdd} can't start with digit or underscore";
                 }
             }
             else
             {
+                string txtToAdd = "";
+                switch (typeOfInput)
+                {
+                    case Input_Field.Login: txtToAdd = "Login field"; break;
+                    case Input_Field.Password: txtToAdd = "Password field"; break;
+                    case Input_Field.Nickname: txtToAdd = "Nickname field"; break;
+                    case Input_Field.Lobby_Name: txtToAdd = "Lobby name field"; break;
+                    default: txtToAdd = "Input field"; break;
+                }
+                string completeText = "";
+
+                if (string.IsNullOrEmpty(stringToCheck))
+                    completeText = txtToAdd + " is empty";
+                if (!IsStringCompatible(stringToCheck))
+                    completeText = txtToAdd + " can contain only english characters and digits";
+                else if (stringToCheck.Length < MinLength)
+                    completeText = $"{txtToAdd} can't be less than {MinLength} characters";
+                else if (stringToCheck.Length > MaxLength)
+                    completeText = $"{txtToAdd} can't be longer than {MaxLength} characters";
+                else if (StringStarstsFromNumberOrUnderscore(stringToCheck))
+                    completeText = $"{txtToAdd} can't start with digit or underscore";
+
                 GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_lightWindow);
                 var ui = spawnedObj.GetComponent<UI_MessageFromServer_Light>();
 
-                if (string.IsNullOrEmpty(stringToCheck))
-                {
-                    ui.SetUp("Input field is empty", MessageFromServer_MessageType.Error);
-                }
-                else if (!IsStringCompatible(stringToCheck))
-                {
-                    ui.SetUp("Input field can contain only english characters and digits", MessageFromServer_MessageType.Error);
-                }
-                else if (stringToCheck.Length < MinLength)
-                {
-                    ui.SetUp("Entered text doesn't have enough symbols", MessageFromServer_MessageType.Error);
-                }
-                else if (stringToCheck.Length > MaxLength)
-                {
-                    ui.SetUp("Entered text has too many symbols", MessageFromServer_MessageType.Error);
-                }
-                else if (StringStarstsFromNumberOrUnderscore(stringToCheck))
-                {
-                    ui.SetUp("Entered text can't start from number or underscore", MessageFromServer_MessageType.Error);
-                }
+                ui.SetUp(completeText, MessageFromServer_MessageType.Error);
             }
             return false;
         }
