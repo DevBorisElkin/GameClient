@@ -1,4 +1,5 @@
 using BorisUnityDev.Networking;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -29,13 +30,11 @@ public class UI_MainMenu : MonoBehaviour
     [Header("Authenticate")]
     public TMP_InputField auth_EnterLogin;
     public TMP_InputField auth_EnterPassword;
-    public TMP_Text auth_errorResult;
 
     [Header("Register")]
     public TMP_InputField reg_EnterLogin;
     public TMP_InputField reg_EnterPassword;
     public TMP_InputField reg_EnterNickname;
-    public TMP_Text reg_errorResult;
 
     [Header("Logged in")]
     public UI_PlayroomsManager ui_PlayroomsManager;
@@ -70,11 +69,6 @@ public class UI_MainMenu : MonoBehaviour
         }
         if (swichBetweenConnectionTypes)
             DetailedAdjustment(newClientStatus);
-
-        auth_errorResult.text = "";
-        reg_errorResult.text = "";
-        auth_errorResult.color = colorNeutral;
-        reg_errorResult.color = colorNeutral;
     }
     void DetailedAdjustment(ClientStatus status)
     {
@@ -84,8 +78,9 @@ public class UI_MainMenu : MonoBehaviour
             panelSendReceive.SetActive(false);
 
             introPanel.SetActive(true);
-            authenticationPanel.SetActive(false);
-            registrationPanel.SetActive(false);
+            Animation_OnOpen(Auth_Window.Login);
+            //authenticationPanel.SetActive(false);
+            //registrationPanel.SetActive(false);
 
             string storedLogin = PlayerPrefs.GetString(CODE_SAVED_LOGIN, "");
             string storedpassword = PlayerPrefs.GetString(CODE_SAVED_PASSWORD, "");
@@ -110,8 +105,8 @@ public class UI_MainMenu : MonoBehaviour
             panelSendReceive.SetActive(true);
 
             introPanel.SetActive(false);
-            authenticationPanel.SetActive(false);
-            registrationPanel.SetActive(false);
+            //authenticationPanel.SetActive(false);
+            //registrationPanel.SetActive(false);
 
             panel_connection_profile.SetActive(false);
             panel_connection_playrooms.SetActive(false);
@@ -134,9 +129,76 @@ public class UI_MainMenu : MonoBehaviour
     void Manage_IntroAuthRegister_Panels(bool intro, bool auth, bool register)
     {
         introPanel.SetActive(intro);
-        authenticationPanel.SetActive(auth);
-        registrationPanel.SetActive(register);
+        //authenticationPanel.SetActive(auth);
+        //registrationPanel.SetActive(register);
     }
+
+    #region LogIn Register panels switching
+
+    public float modalWindowOpenTime = 0.25f;
+    public float modalWindowCloseTime = 0.25f;
+    public Ease modalWindowScaleInEase = Ease.Linear;
+    public Ease modalWindowScaleOutEase = Ease.Linear;
+
+    Tween authWindowScaleInTween;
+    Tween authWindowScaleOutTween;
+    Tween regWindowScaleInTween;
+    Tween regWindowScaleOutTween;
+    void Animation_OnOpen(Auth_Window authWindow)
+    {
+        ResetAllTweens();
+        GameObject panel = authWindow == Auth_Window.Login ? authenticationPanel : registrationPanel;
+        GameObject oppositePanel = authWindow == Auth_Window.Login ? registrationPanel : authenticationPanel;
+
+        panel.gameObject.SetActive(true);
+        oppositePanel.gameObject.SetActive(false);
+
+        panel.transform.localScale = Vector3.zero;
+        if(authWindow == Auth_Window.Login)
+            authWindowScaleInTween = panel.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
+        else
+            regWindowScaleInTween = panel.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
+    }
+
+    void Animation_OnClose(Auth_Window authWindow)
+    {
+        ResetAllTweens();
+        GameObject panel = authWindow == Auth_Window.Login ? authenticationPanel : registrationPanel;
+        panel.transform.localScale = Vector3.one;
+        if (authWindow == Auth_Window.Login)
+            authWindowScaleOutTween = panel.transform.DOScale(Vector3.zero, modalWindowCloseTime).SetEase(modalWindowScaleOutEase);
+        else
+            regWindowScaleInTween = panel.transform.DOScale(Vector3.zero, modalWindowCloseTime).SetEase(modalWindowScaleOutEase);
+    }
+    void ResetAllTweens()
+    {
+        if (authWindowScaleInTween != null && authWindowScaleInTween.IsPlaying())
+        {
+            authWindowScaleInTween.Complete();
+            authWindowScaleInTween = null;
+        }
+        if (authWindowScaleOutTween != null && authWindowScaleOutTween.IsPlaying())
+        {
+            authWindowScaleOutTween.Complete();
+            authWindowScaleOutTween = null;
+        }
+        if (regWindowScaleInTween != null && regWindowScaleInTween.IsPlaying())
+        {
+            regWindowScaleInTween.Complete();
+            regWindowScaleInTween = null;
+        }
+        if (regWindowScaleOutTween != null && regWindowScaleOutTween.IsPlaying())
+        {
+            regWindowScaleOutTween.Complete();
+            regWindowScaleOutTween = null;
+        }
+    }
+
+    public void OnClick_SwitchToLogIn() => Animation_OnOpen(Auth_Window.Login);
+    public void OnClick_SwitchToRegister() => Animation_OnOpen(Auth_Window.Register);
+    public void OnClick_ForgotPassword() => UI_GlobalManager.Message_ModalWindow("Unfortunately, restore password function is not currently supported", MessageFromServer_MessageType.Info);
+
+    #endregion
 
     #region AUTHENTICATE VARIABLES
     string loginAuth;
@@ -148,14 +210,12 @@ public class UI_MainMenu : MonoBehaviour
     {
         if (!UI_GlobalManager.instance.recordedStatus.Equals(ClientStatus.Connected))
         {
-            auth_errorResult.text = "Connection to the internet required!";
+            UI_GlobalManager.Message("Connection to the internet required!", MessageFromServer_WindowType.LightWindow, MessageFromServer_MessageType.Error);
             return;
         }
-        auth_errorResult.color = colorNeutral;
-        auth_errorResult.text = "";
 
-        if (   IsStringClearFromErrors   (loginAuth,    auth_errorResult, Input_Field.Login)
-            && IsStringClearFromErrors   (passwordAuth, auth_errorResult, Input_Field.Password))
+        if (   IsStringClearFromErrors   (loginAuth,    null, Input_Field.Login)
+            && IsStringClearFromErrors   (passwordAuth, null, Input_Field.Password))
         {
             // TODO BLOCK INTERFACE WHILE WAITING FOR RESPONSE
             ConnectionManager.instance.LogIn(loginAuth, passwordAuth);
@@ -175,15 +235,13 @@ public class UI_MainMenu : MonoBehaviour
     {
         if (!UI_GlobalManager.instance.recordedStatus.Equals(ClientStatus.Connected))
         {
-            reg_errorResult.text = "Connection to the internet required!";
+            UI_GlobalManager.Message("Connection to the internet required!", MessageFromServer_WindowType.LightWindow, MessageFromServer_MessageType.Error);
             return;
         }
-        reg_errorResult.color = colorNeutral;
-        reg_errorResult.text = "";
 
-        if (   IsStringClearFromErrors(loginReg, reg_errorResult,    Input_Field.Login)
-            && IsStringClearFromErrors(passwordReg, reg_errorResult, Input_Field.Password)
-            && IsStringClearFromErrors(nicknameReg, reg_errorResult, Input_Field.Nickname))
+        if (   IsStringClearFromErrors(loginReg, null,    Input_Field.Login)
+            && IsStringClearFromErrors(passwordReg, null, Input_Field.Password)
+            && IsStringClearFromErrors(nicknameReg, null, Input_Field.Nickname))
         {
             // TODO BLOCK INTERFACE WHILE WAITING FOR RESPONSE
             ConnectionManager.instance.Register(loginReg, passwordReg, nicknameReg);
@@ -193,10 +251,9 @@ public class UI_MainMenu : MonoBehaviour
 
     #region _____newtwork results for authentication and registration_____
 
-    public void ShowAuthOrRegResult(string result, bool useForAuthentication = true)
+    public void ShowAuthOrRegResult(string result)
     {
-        if (useForAuthentication) { auth_errorResult.text = result; auth_errorResult.color = colorError; }
-        else { reg_errorResult.text = result; reg_errorResult.color = colorError; }
+        UI_GlobalManager.Message(result, MessageFromServer_WindowType.LightWindow, MessageFromServer_MessageType.Error);
     }
     #endregion ___________________________________________________________
 

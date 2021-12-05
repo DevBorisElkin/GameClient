@@ -122,14 +122,14 @@ public class UI_GlobalManager : MonoBehaviour
     {
         if(recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
         {
-            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), true);
+            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result));
         }
     }
     public void SetRegistrationResult(RequestResult result)
     {
         if (recordedStatus.Equals(ClientStatus.Connected) || recordedStatus.Equals(ClientStatus.Disconnected))
         {
-            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result), false);
+            UI_mainMenu.ShowAuthOrRegResult(Util_UI.InternetRequestResultToString(result));
         }
     }
 
@@ -156,5 +156,21 @@ public class UI_GlobalManager : MonoBehaviour
         }
     }
 
-
+    public static void Message(string message, MessageFromServer_WindowType windowType, MessageFromServer_MessageType messageType)
+    {
+        if (windowType == MessageFromServer_WindowType.LightWindow) Message_LightWindow(message, messageType);
+        else if (windowType == MessageFromServer_WindowType.ModalWindow) Message_ModalWindow(message, messageType);
+    }
+    public static void Message_LightWindow(string message, MessageFromServer_MessageType messageType)
+    {
+        GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_lightWindow);
+        var ui = spawnedObj.GetComponent<UI_MessageFromServer_Light>();
+        ui.SetUp(message, messageType);
+    }
+    public static void Message_ModalWindow(string message, MessageFromServer_MessageType messageType)
+    {
+        GameObject spawnedObj = Instantiate(PrefabsHolder.instance.ui_msgFromServer_modalWindow);
+        var ui = spawnedObj.GetComponent<UI_MessageFromServer_ModalWindow>();
+        ui.SetUp(message, messageType);
+    }
 }

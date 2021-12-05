@@ -102,4 +102,10 @@ public static class EnumsAndData
         Warning,
         Error
     }
+
+    public enum Auth_Window
+    {
+        Login,
+        Register
+    }
 }
