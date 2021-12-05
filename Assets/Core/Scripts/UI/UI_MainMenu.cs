@@ -15,6 +15,9 @@ public class UI_MainMenu : MonoBehaviour
     #region _____variables__________
 
     [Header("General")]
+    public UI_MainMenu_Profile ui_profile;
+
+    [Space(5f)]
     public Color colorOkay;
     public Color colorError;
     public Color colorNeutral;
