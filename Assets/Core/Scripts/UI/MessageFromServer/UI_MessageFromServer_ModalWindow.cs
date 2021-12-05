@@ -16,13 +16,9 @@ public class UI_MessageFromServer_ModalWindow : MonoBehaviour
     public Image closeBtnImage;
 
     [Space(5f)]
-    public Sprite messageModalWindowSprite;
-    public Sprite warningMessageModalWindowSprite;
-    public Sprite errorMessageModalWindowSprite;
-    [Space(3f)]
-    public Sprite messageButtonSprite;
-    public Sprite warningMessageButtonSprite;
-    public Sprite errorMessageButtonSprite;
+    public Color messageModalWindowColor;
+    public Color warningMessageModalWindowColor;
+    public Color errorMessageModalWindowColor;
     [Space(3f)]
     public Color messageButtonColor;
     public Color warningButtonColor;
@@ -55,24 +51,21 @@ public class UI_MessageFromServer_ModalWindow : MonoBehaviour
     {
         if(messageType == MessageFromServer_MessageType.Info)
         {
-            modalWindowImage.sprite = messageModalWindowSprite;
-            closeBtnImage.sprite = messageButtonSprite;
+            modalWindowImage.color = messageModalWindowColor;
             headerTxt.text = "Message:";
             closeBtnTxt.text = "Okay";
             closeBtnImage.color = messageButtonColor;
         }
         else if(messageType == MessageFromServer_MessageType.Warning)
         {
-            modalWindowImage.sprite = warningMessageModalWindowSprite;
-            closeBtnImage.sprite = warningMessageButtonSprite;
+            modalWindowImage.color = warningMessageModalWindowColor;
             headerTxt.text = "Warning:";
             closeBtnTxt.text = "Close";
             closeBtnImage.color = warningButtonColor;
         }
         else if (messageType == MessageFromServer_MessageType.Error)
         {
-            modalWindowImage.sprite = errorMessageModalWindowSprite;
-            closeBtnImage.sprite = errorMessageButtonSprite;
+            modalWindowImage.color = errorMessageModalWindowColor;
             headerTxt.text = "Error:";
             closeBtnTxt.text = "Close";
             closeBtnImage.color = errorButtonColor;
