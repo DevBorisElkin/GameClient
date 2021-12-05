@@ -75,6 +75,13 @@ public static class DataTypes
         public string ip;
         public AccessRights accessRights;
 
+        //additional data
+        public int total_games;
+        public int total_victories;
+        public int kills;
+        public int deaths;
+        public int runes_picked_up;
+
         public RequestResult requestResult;
 
         public UserData() { }
@@ -82,24 +89,31 @@ public static class DataTypes
         {
             this.requestResult = requestResult;
         }
-        public UserData(int dbID, string login, string password, string nickname, string ip, AccessRights accessRights, RequestResult requestResult = RequestResult.Success)
+        public UserData(int id, string login, string password, string nickname, string ip, AccessRights accessRights, int totalGames, int totalVictories,
+            int kills, int deaths, int runes_picked_up, RequestResult requestResult = RequestResult.Success)
         {
-            this.db_id = dbID;
+            this.db_id = id;
             this.login = login;
             this.password = password;
             this.nickname = nickname;
             this.ip = ip;
             this.accessRights = accessRights;
             this.requestResult = requestResult;
+            this.total_games = totalGames;
+            this.total_victories = totalVictories;
+            this.kills = kills;
+            this.deaths = deaths;
+            this.runes_picked_up = runes_picked_up;
         }
 
         public override string ToString()
         {
-            return $"id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}], accessRights:[{accessRights}]";
+            return $"id:[{db_id}], login:[{login}], password:[{password}], nickname:[{nickname}], ip:[{ip}], accessRights:[{accessRights}]" +
+                $", totalGames:[{total_games}], totalVictories:[{total_victories}], kills:[{kills}], deaths:[{deaths}], runesPickedUp:[{runes_picked_up}]";
         }
         public string ToNetworkString()
         {
-            return $"{db_id},{login},{password},{nickname},{ip}";
+            return $"{db_id},{login},{password},{nickname},{ip},{accessRights},{total_games},{total_victories},{kills},{deaths},{runes_picked_up}";
         }
 
         public bool IsAdmin()

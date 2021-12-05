@@ -154,7 +154,8 @@ public class ConnectionManager : MonoBehaviour
                         }
                         catch(Exception e) { access = AccessRights.User; }
 
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access,
+                            Int32.Parse(userData[6]), Int32.Parse(userData[7]), Int32.Parse(userData[8]), Int32.Parse(userData[9]), Int32.Parse(userData[10]));
 
                         Action act = StoreUserData;
                         UnityThread.executeInUpdate(act);
@@ -193,7 +194,8 @@ public class ConnectionManager : MonoBehaviour
                         else
                             access = AccessRights.User;
 
-                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access);
+                        currentUserData = new UserData(Int32.Parse(userData[0]), userData[1], userData[2], userData[3], userData[4], access,
+                            Int32.Parse(userData[6]), Int32.Parse(userData[7]), Int32.Parse(userData[8]), Int32.Parse(userData[9]), Int32.Parse(userData[10]));
 
                         Action act = StoreUserData;
                         UnityThread.executeInUpdate(act);
