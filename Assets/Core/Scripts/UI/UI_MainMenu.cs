@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static ConnectionManager;
+using static DataTypes;
 using static EnumsAndData;
 using static UI_GlobalManager;
 using static Util_UI;
@@ -113,6 +114,8 @@ public class UI_MainMenu : MonoBehaviour
 
             panel_connection_profile.SetActive(false);
             panel_connection_playrooms.SetActive(false);
+
+            UpdateProfilePanelValues(ConnectionManager.instance.currentUserData);
         }
         
         loginReg = "";
@@ -314,6 +317,26 @@ public class UI_MainMenu : MonoBehaviour
     public void OnClick_CloseSettingsPanel()
     {
         settingsPanel.SetActive(false);
+    }
+
+    #endregion
+
+    #region Adaptive Data
+
+    [Header("Adaptive Data")]
+    public GameObject profileBtn_User;
+    public GameObject profileBtn_Admin;
+
+    public TMP_Text profileBtn_User_nickname;
+    public TMP_Text profileBtn_Admin_nickname;
+
+    public void UpdateProfilePanelValues(UserData userData)
+    {
+        profileBtn_User_nickname.text = userData.nickname;
+        profileBtn_Admin_nickname.text = userData.nickname;
+
+        profileBtn_User.SetActive(userData.accessRights == EnumsAndData.AccessRights.User);
+        profileBtn_Admin.SetActive(userData.accessRights == EnumsAndData.AccessRights.Admin || userData.accessRights == EnumsAndData.AccessRights.SuperAdmin);
     }
 
     #endregion

@@ -233,7 +233,8 @@ public class ConnectionManager : MonoBehaviour
                             currentUserData = data;
                             if (SceneManager.GetActiveScene().buildIndex == 1)
                             {
-                                // update UI
+                                UI_GlobalManager.instance.UI_mainMenu.ui_profile.UpdateProfilePanelValues(currentUserData);
+                                UI_GlobalManager.instance.UI_mainMenu.UpdateProfilePanelValues(currentUserData);
                             }
                         }
                         else
@@ -244,9 +245,19 @@ public class ConnectionManager : MonoBehaviour
                 }
                 else if (message.Contains(NEW_ACCESS_RIGHTS_STATUS))
                 {
-                    string[] substrings = message.Split('|');
-                    bool success = Enum.TryParse(substrings[1], out AccessRights accessRights);
-                    if(success) currentUserData.accessRights = accessRights;
+                    UnityThread.executeInUpdate(() => {
+                        string[] substrings = message.Split('|');
+                        bool success = Enum.TryParse(substrings[1], out AccessRights accessRights);
+                        if (success)
+                        {
+                            currentUserData.accessRights = accessRights;
+                            if (SceneManager.GetActiveScene().buildIndex == 1)
+                            {
+                                UI_GlobalManager.instance.UI_mainMenu.ui_profile.UpdateProfilePanelValues(currentUserData);
+                                UI_GlobalManager.instance.UI_mainMenu.UpdateProfilePanelValues(currentUserData);
+                            }
+                        }
+                    });
                 }
                 else if (message.Contains(PLAYROOMS_DATA_RESPONSE))
                 {
