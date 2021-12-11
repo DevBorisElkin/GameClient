@@ -6,6 +6,7 @@ using static EnumsAndData;
 using static Util_UI;
 using static NetworkingMessageAttributes;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class UI_Settings : MonoBehaviour
 {
@@ -60,6 +61,57 @@ public class UI_Settings : MonoBehaviour
     #endregion
 
     #region Promocode
+
+    [Header("Settings")]
+    public Image promocodeBackgroundPanel;
+    public GameObject promocodeModalPanel;
+    public Color promocodeBackgroundNormalColor;
+
+    public void OnClick_OpenPromocodePanel()
+    {
+        PromocodesPanel_OnOpen();
+    }
+    public void OnClick_ClosePromocodePanel()
+    {
+        PromocodesPanel_OnClose();
+    }
+
+    Tween promocodeModal_ScaleInTween;
+    Tween promocodeModal_ScaleOutTween;
+    Tween promocodeBack_FadeInTween;
+    Tween promocodeBack_FadeOutTween;
+    void PromocodesPanel_OnOpen()
+    {
+        ResetAllSettingsTweens();
+        promocodeInputField.SetTextWithoutNotify("");
+        promocodeBackgroundPanel.gameObject.SetActive(true);
+        promocodeBackgroundPanel.color = new Color(promocodeBackgroundPanel.color.r, promocodeBackgroundPanel.color.g, promocodeBackgroundPanel.color.b, 0f);
+        promocodeModalPanel.transform.localScale = Vector3.zero;
+
+        promocodeModal_ScaleInTween = promocodeModalPanel.transform.DOScale(Vector3.one, UI_GlobalManager.instance.UI_mainMenu.modalWindowOpenTime).SetEase(UI_GlobalManager.instance.UI_mainMenu.modalWindowScaleInEase);
+        promocodeBack_FadeInTween = promocodeBackgroundPanel.DOColor(promocodeBackgroundNormalColor, UI_GlobalManager.instance.UI_mainMenu.modalWindowOpenTime);
+    }
+
+    void PromocodesPanel_OnClose()
+    {
+        ResetAllSettingsTweens();
+        promocodeBackgroundPanel.color = promocodeBackgroundNormalColor;
+        promocodeModalPanel.transform.localScale = Vector3.one;
+
+        promocodeModal_ScaleOutTween = promocodeModalPanel.transform.DOScale(Vector3.zero, UI_GlobalManager.instance.UI_mainMenu.modalWindowCloseTime).SetEase(UI_GlobalManager.instance.UI_mainMenu.modalWindowScaleOutEase);
+        promocodeBack_FadeOutTween = promocodeBackgroundPanel.DOColor(new Color(promocodeBackgroundNormalColor.r, promocodeBackgroundNormalColor.g, promocodeBackgroundNormalColor.b, 0f), UI_GlobalManager.instance.UI_mainMenu.modalWindowCloseTime).OnComplete(() =>
+        {
+            promocodeBackgroundPanel.gameObject.SetActive(false);
+        });
+    }
+
+    void ResetAllSettingsTweens()
+    {
+        DOTween.Kill(promocodeModal_ScaleInTween);
+        DOTween.Kill(promocodeModal_ScaleOutTween);
+        DOTween.Kill(promocodeBack_FadeInTween);
+        DOTween.Kill(promocodeBack_FadeOutTween);
+    }
 
     [Space(5f)]
     public TMP_InputField promocodeInputField;

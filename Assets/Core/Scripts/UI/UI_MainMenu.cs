@@ -327,7 +327,7 @@ public class UI_MainMenu : MonoBehaviour
     Tween settingsBack_FadeOutTween;
     void Settings_OnOpen()
     {
-        ResetAllTweens();
+        ResetAllSettingsTweens();
         settingsBackgroundPanel.gameObject.SetActive(true);
         settingsBackgroundPanel.color = new Color(settingsBackgroundPanel.color.r, settingsBackgroundPanel.color.g, settingsBackgroundPanel.color.b, 0f);
         settingsModalPanel.transform.localScale = Vector3.zero;
@@ -338,7 +338,7 @@ public class UI_MainMenu : MonoBehaviour
 
     void Settings_OnClose()
     {
-        ResetAllTweens();
+        ResetAllSettingsTweens();
         settingsBackgroundPanel.color = settingsNormalColor;
         settingsModalPanel.transform.localScale = Vector3.one;
 
