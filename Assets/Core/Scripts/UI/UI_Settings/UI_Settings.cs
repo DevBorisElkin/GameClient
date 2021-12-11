@@ -5,6 +5,7 @@ using UnityEngine;
 using static EnumsAndData;
 using static Util_UI;
 using static NetworkingMessageAttributes;
+using UnityEngine.UI;
 
 public class UI_Settings : MonoBehaviour
 {
@@ -12,13 +13,20 @@ public class UI_Settings : MonoBehaviour
     // 0 = high, 1 = medium, 2 = low
 
     public TMP_Dropdown dropdownGraphics;
+    public Toggle toggleVibrations;
+    public SwitchToggle switchToggleVibrations;
 
     int currentGraphicsValue;
+    bool boolVibrationsValue;
 
     public void OnPanelOpened()
     {
         currentGraphicsValue = PlayerPrefs.GetInt(CODE_GRAPHICS_SETTINGS, 0);
         dropdownGraphics.SetValueWithoutNotify(currentGraphicsValue);
+
+        boolVibrationsValue = PlayerPrefs.GetInt(CODE_VIBRATIONS_SETTINGS, 1) > 0 ? true : false;
+        toggleVibrations.SetIsOnWithoutNotify(boolVibrationsValue);
+        switchToggleVibrations.OnSwitchInstant(boolVibrationsValue);
     }
     public void OnGraphicsChanged(int newGraphicsValue)
     {
@@ -31,6 +39,12 @@ public class UI_Settings : MonoBehaviour
             PlayerPrefs.SetInt(CODE_GRAPHICS_SETTINGS, newGraphicsValue);
             QualitySettings.SetQualityLevel(ConvertChosenGraphicsToCorrectInt(newGraphicsValue));
         }
+    }
+
+    public void OnVibrationsChanged(bool newValue)
+    {
+        boolVibrationsValue = newValue;
+        PlayerPrefs.SetInt(CODE_VIBRATIONS_SETTINGS, boolVibrationsValue ? 1 : 0);
     }
 
     public static int ConvertChosenGraphicsToCorrectInt(int chosenGraphics)

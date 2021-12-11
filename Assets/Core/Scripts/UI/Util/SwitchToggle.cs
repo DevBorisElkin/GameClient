@@ -30,11 +30,11 @@ public class SwitchToggle : MonoBehaviour
 
         toggle.onValueChanged.AddListener(OnSwitch);
 
-        if (toggle.isOn)
-            OnSwitch(true);
+        //if (toggle.isOn)
+        //    OnSwitch(true);
     }
 
-    void OnSwitch(bool on)
+    public void OnSwitch(bool on)
     {
         //uiHandleRectTransform.anchoredPosition = on ? handlePosition * -1 : handlePosition ; // no anim
         uiHandleRectTransform.DOAnchorPos(on ? handlePosition * -1 : handlePosition, .4f).SetEase(Ease.InOutBack);
@@ -44,6 +44,13 @@ public class SwitchToggle : MonoBehaviour
 
         //handleImage.color = on ? handleActiveColor : handleDefaultColor ; // no anim
         handleImage.DOColor(on ? handleActiveColor : handleDefaultColor, .4f);
+    }
+
+    public void OnSwitchInstant(bool on)
+    {
+        uiHandleRectTransform.anchoredPosition = on ? handlePosition * -1 : handlePosition;
+        backgroundImage.color = on ? backgroundActiveColor : backgroundDefaultColor;
+        handleImage.color = on ? handleActiveColor : handleDefaultColor;
     }
 
     void OnDestroy()

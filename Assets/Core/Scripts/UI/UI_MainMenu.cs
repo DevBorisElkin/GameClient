@@ -126,7 +126,7 @@ public class UI_MainMenu : MonoBehaviour
         reg_EnterPassword.SetTextWithoutNotify("");
         reg_EnterNickname.SetTextWithoutNotify("");
 
-        settingsPanel.SetActive(false);
+        settingsBackgroundPanel.gameObject.SetActive(false);
     }
 
     public void OnClick_ChoiceAuthenticate() { Manage_IntroAuthRegister_Panels(false, true, false); }
@@ -306,19 +306,55 @@ public class UI_MainMenu : MonoBehaviour
 
     #region ______SETTINGS_PANEL______
     [Header("Settings")]
-    public GameObject settingsPanel;
+    public Image settingsBackgroundPanel;
+    public GameObject settingsModalPanel;
     public UI_Settings ui_settings;
+    public Color settingsNormalColor;
 
     public void OnClick_OpenSettingsPanel()
     {
-        settingsPanel.SetActive(true);
+        Settings_OnOpen();
         ui_settings.OnPanelOpened();
     }
     public void OnClick_CloseSettingsPanel()
     {
-        settingsPanel.SetActive(false);
+        Settings_OnClose();
     }
 
+    Tween settingsModal_ScaleInTween;
+    Tween settingsModal_ScaleOutTween;
+    Tween settingsBack_FadeInTween;
+    Tween settingsBack_FadeOutTween;
+    void Settings_OnOpen()
+    {
+        ResetAllTweens();
+        settingsBackgroundPanel.gameObject.SetActive(true);
+        settingsBackgroundPanel.color = new Color(settingsBackgroundPanel.color.r, settingsBackgroundPanel.color.g, settingsBackgroundPanel.color.b, 0f);
+        settingsModalPanel.transform.localScale = Vector3.zero;
+
+        settingsModal_ScaleInTween = settingsModalPanel.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
+        settingsBack_FadeInTween = settingsBackgroundPanel.DOColor(settingsNormalColor, modalWindowOpenTime);
+    }
+
+    void Settings_OnClose()
+    {
+        ResetAllTweens();
+        settingsBackgroundPanel.color = settingsNormalColor;
+        settingsModalPanel.transform.localScale = Vector3.one;
+
+        settingsModal_ScaleOutTween = settingsModalPanel.transform.DOScale(Vector3.zero, modalWindowCloseTime).SetEase(modalWindowScaleOutEase);
+        settingsBack_FadeOutTween = settingsBackgroundPanel.DOColor(new Color(settingsNormalColor.r, settingsNormalColor.g, settingsNormalColor.b, 0f), modalWindowCloseTime).OnComplete(() => 
+        {
+            settingsBackgroundPanel.gameObject.SetActive(false);
+        });
+    }
+    void ResetAllSettingsTweens()
+    {
+        DOTween.Kill(settingsModal_ScaleInTween);
+        DOTween.Kill(settingsModal_ScaleOutTween);
+        DOTween.Kill(settingsBack_FadeInTween);
+        DOTween.Kill(settingsBack_FadeOutTween);
+    }
     #endregion
 
     #region Adaptive Data

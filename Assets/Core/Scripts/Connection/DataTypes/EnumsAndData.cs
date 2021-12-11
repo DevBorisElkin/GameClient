@@ -8,6 +8,8 @@ public static class EnumsAndData
     public static string CODE_SAVED_PASSWORD = "$code_saved_password";
 
     public static string CODE_GRAPHICS_SETTINGS = "code_settings";
+    public static string CODE_VIBRATIONS_SETTINGS = "code_vibrations";
+
 
     public enum GraphicsSettings { High = 0, Medium = 1, Low = 2 }
 
