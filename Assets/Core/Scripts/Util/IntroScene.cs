@@ -10,6 +10,7 @@ public class IntroScene : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         QualitySettings.SetQualityLevel(UI_Settings.ConvertChosenGraphicsToCorrectInt(PlayerPrefs.GetInt(CODE_GRAPHICS_SETTINGS, 0)));
+        VibrationsManager.hapticsEnabled = PlayerPrefs.GetInt(CODE_VIBRATIONS_SETTINGS, 1) > 0 ? true : false;
         SceneManager.LoadSceneAsync("MainScene");
     }
 

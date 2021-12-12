@@ -7,7 +7,7 @@ using static EnumsAndData;
 
 public static class VibrationsManager
 {
-    static bool hapticsEnabled = true;
+    public static bool hapticsEnabled;
     public static void OnLocalPlayerMadeShot_Vibrations(List<Rune> activeRuneModifiers)
     {
         if (!hapticsEnabled) return;
