@@ -5,6 +5,8 @@ using DG.Tweening;
 using static DataTypes;
 using TMPro;
 using UnityEngine.UI;
+using static Util_UI;
+using static NetworkingMessageAttributes;
 
 public class UI_MainMenu_Profile : MonoBehaviour
 {
@@ -118,4 +120,81 @@ public class UI_MainMenu_Profile : MonoBehaviour
         userAccessLevel_Admin_Particles.SetActive(userData.accessRights == EnumsAndData.AccessRights.Admin || userData.accessRights == EnumsAndData.AccessRights.SuperAdmin);
 
     }
+
+    #region Change nickname related
+
+    [Header("Change Nick Panel")]
+    public Image changeNickBackgroundPanel;
+    public GameObject changeNickModalPanel;
+    public Color changeNickBackgroundNormalColor;
+    public float changeNickOpenCloseTime = 0.25f;
+
+    public TMP_InputField changeNickInputField;
+    string proposedNewNick;
+
+    public void OnClick_OpenChangeNickPanel()
+    {
+        ChangeNickPanel_OnOpen();
+    }
+    public void OnClick_CloseChangeNickPanel()
+    {
+        ChangeNickPanel_OnClose();
+    }
+
+    Tween changeNicknameModal_ScaleInTween;
+    Tween changeNicknameModal_ScaleOutTween;
+    Tween changeNicknameBack_FadeInTween;
+    Tween changeNicknameBack_FadeOutTween;
+    void ChangeNickPanel_OnOpen()
+    {
+        ResetAllChangeNicknameTweens();
+        ResetChangeNickValues_OnOpen();
+        changeNickBackgroundPanel.gameObject.SetActive(true);
+        changeNickBackgroundPanel.color = new Color(changeNickBackgroundNormalColor.r, changeNickBackgroundNormalColor.g, changeNickBackgroundNormalColor.b, 0f);
+        changeNickModalPanel.transform.localScale = Vector3.zero;
+
+        changeNicknameModal_ScaleInTween = changeNickModalPanel.transform.DOScale(Vector3.one, changeNickOpenCloseTime).SetEase(modalWindowScaleInEase);
+        changeNicknameBack_FadeInTween = changeNickBackgroundPanel.DOColor(changeNickBackgroundNormalColor, changeNickOpenCloseTime);
+    }
+    void ChangeNickPanel_OnClose()
+    {
+        ResetAllChangeNicknameTweens();
+        changeNickBackgroundPanel.color = changeNickBackgroundNormalColor;
+        changeNickModalPanel.transform.localScale = Vector3.one;
+
+        changeNicknameModal_ScaleOutTween = changeNickModalPanel.transform.DOScale(Vector3.zero, changeNickOpenCloseTime).SetEase(modalWindowScaleOutEase);
+        changeNicknameBack_FadeOutTween = changeNickBackgroundPanel.DOColor(new Color(changeNickBackgroundNormalColor.r, changeNickBackgroundNormalColor.g, changeNickBackgroundNormalColor.b, 0f), changeNickOpenCloseTime).OnComplete(() =>
+        {
+            changeNickBackgroundPanel.gameObject.SetActive(false);
+        });
+    }
+    void ResetAllChangeNicknameTweens()
+    {
+        DOTween.Kill(changeNicknameModal_ScaleInTween);
+        DOTween.Kill(changeNicknameModal_ScaleOutTween);
+        DOTween.Kill(changeNicknameBack_FadeInTween);
+        DOTween.Kill(changeNicknameBack_FadeOutTween);
+    }
+    void ResetChangeNickValues_OnOpen()
+    {
+        string currentNick = ConnectionManager.instance.currentUserData.nickname;
+        changeNickInputField.SetTextWithoutNotify(currentNick);
+        proposedNewNick = currentNick;
+    }
+    public void OnInputField_ProposedNicknameChanged(string newNick)
+    {
+        proposedNewNick = newNick;
+    }
+    public void OnClick_SubmitNewNickForChange()
+    {
+        if (IsStringClearFromErrors(proposedNewNick, null, Input_Field.Nickname, 5, 12))
+        {
+            ConnectionManager.instance.SendMessageToServer($"{PROMOCODE_FROM_CLIENT}|{SUBCODE_CHANGE_NICKNAME}|{proposedNewNick}");
+            ChangeNickPanel_OnClose();
+        }
+    }
+
+
+
+    #endregion
 }
