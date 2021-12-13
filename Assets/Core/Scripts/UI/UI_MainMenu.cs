@@ -376,4 +376,27 @@ public class UI_MainMenu : MonoBehaviour
     }
 
     #endregion
+
+
+    #region GameHintsAndInformation
+
+    public RectTransform panelGameInfo;
+    public GameObject panelGameInfo_obj;
+    public float panelGameInfoOpenCloseTime = 0.5f;
+
+    public void OnClick_OpenGameInfo()
+    {
+        panelGameInfo.gameObject.SetActive(true);
+        panelGameInfo.anchoredPosition = new Vector2(-panelGameInfo.sizeDelta.x, 0);
+        panelGameInfo.DOMoveX(0f, panelGameInfoOpenCloseTime);
+    }
+
+    public void OnClick_CloseGameInfo()
+    {
+        panelGameInfo.anchoredPosition = new Vector2(0, 0);
+        panelGameInfo.DOMoveX(-panelGameInfo.sizeDelta.x, panelGameInfoOpenCloseTime);
+    }
+
+
+    #endregion
 }
