@@ -12,6 +12,8 @@ public class UI_PlayroomItem : MonoBehaviour
     public TMP_Text txtLobbyMap;
 
     public TMP_Text txtLobbyPlayers;
+    public TMP_Text txtLobbyStatus;
+    public TMP_Text txtTimeLeftForMatch;
 
     public Playroom playroom;
 
@@ -25,6 +27,9 @@ public class UI_PlayroomItem : MonoBehaviour
         else txtLobbyType.text = "Private";
         txtLobbyMap.text = playroom.map.ToString();
         txtLobbyPlayers.text = $"{playroom.playersCurrAmount} / {playroom.maxPlayers}";
+
+        txtLobbyStatus.text = $"{playroom.matchState}";
+        txtTimeLeftForMatch.text = $"{UI_InGame.ConvertTimeSecondsIntoMinsSecs(playroom.totalTimeToFinishInSeconds.Value)}";
     }
 
     public void OnClick_LobbyItem()

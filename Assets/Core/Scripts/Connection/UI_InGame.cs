@@ -142,7 +142,7 @@ public class UI_InGame : MonoBehaviour
 
     static string waitingForPlayersString = "Waiting for players to start...\nPlayers to join left: ";
 
-    static string ConvertTimeSecondsIntoMinsSecs(int timeInSeconds)
+    public static string ConvertTimeSecondsIntoMinsSecs(int timeInSeconds)
     {
         int totalMins = (int)TimeSpan.FromSeconds(timeInSeconds).TotalMinutes;
         int totalSecs = timeInSeconds - (totalMins * 60);
