@@ -387,14 +387,14 @@ public class UI_MainMenu : MonoBehaviour
     public void OnClick_OpenGameInfo()
     {
         panelGameInfo.gameObject.SetActive(true);
-        panelGameInfo.anchoredPosition = new Vector2(-panelGameInfo.sizeDelta.x, 0);
-        panelGameInfo.DOMoveX(0f, panelGameInfoOpenCloseTime);
+        panelGameInfo.anchoredPosition = new Vector2(-panelGameInfo.rect.width, 0);
+        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(0f, 0f), panelGameInfoOpenCloseTime);
     }
 
     public void OnClick_CloseGameInfo()
     {
         panelGameInfo.anchoredPosition = new Vector2(0, 0);
-        panelGameInfo.DOMoveX(-panelGameInfo.sizeDelta.x, panelGameInfoOpenCloseTime);
+        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(-panelGameInfo.rect.width, 0f), panelGameInfoOpenCloseTime);
     }
 
 
