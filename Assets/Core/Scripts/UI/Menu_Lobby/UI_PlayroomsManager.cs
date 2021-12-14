@@ -24,6 +24,7 @@ public class UI_PlayroomsManager : MonoBehaviour
         {
             GameObject gameObj = Instantiate(PrefabsHolder.instance.ui_lobbyItem_prefab);
             gameObj.transform.SetParent(parentForLobbyItems.transform);
+            gameObj.transform.localScale = Vector3.one;
             
             UI_PlayroomItem item = gameObj.GetComponent<UI_PlayroomItem>();
             item.SetUpValues(a);
