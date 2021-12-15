@@ -7,6 +7,9 @@ using static DataTypes;
 using static EnumsAndData;
 using static Util_UI;
 using static NetworkingMessageAttributes;
+using DG.Tweening;
+using UniRx;
+using System;
 
 public class UI_CreateLobby : MonoBehaviour
 {
@@ -53,6 +56,9 @@ public class UI_CreateLobby : MonoBehaviour
 
     public void SetUp()
     {
+        canInteractWithButtons = true;
+        normalBackgroundColor = backgroundImage.color;
+
         string randomDefaultLobbyName = defaultLobbyNames[UnityEngine.Random.Range(0, defaultLobbyNames.Length - 1)];
         lobbyName_inputField.SetTextWithoutNotify(randomDefaultLobbyName);
         nameOfNewLobby = randomDefaultLobbyName;
@@ -79,6 +85,8 @@ public class UI_CreateLobby : MonoBehaviour
         timeOfMatch = 15;
         timeOfMatchTxt.text = timeOfMatch.ToString();
         timeOfMatchSlider.SetValueWithoutNotify(timeOfMatch);
+
+        SetMainPanelAnimationState(true);
     }
 
     public void OnEditInputField_SetLobbyName(string text)
@@ -108,11 +116,11 @@ public class UI_CreateLobby : MonoBehaviour
     // Additional settings
     public void OnClick_OpenAdditionalSettings()
     {
-        additionalSettingsPanel.SetActive(true);
+        SetAdditionalSettingsAnimationState(true);
     }
     public void OnClick_CloseAdditionalSettings()
     {
-        additionalSettingsPanel.SetActive(false);
+        SetAdditionalSettingsAnimationState(false);
     }
     
     public void OnSlider_PlayersToStartChanged(float val)
@@ -133,11 +141,15 @@ public class UI_CreateLobby : MonoBehaviour
 
     public void OnClick_Cancel()
     {
-        Destroy(gameObject);
+        SetMainPanelAnimationState(false);
     }
 
     public void OnClick_CreateLobby()
     {
+        if (!canInteractWithButtons) return;
+        canInteractWithButtons = false;
+        Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ => { canInteractWithButtons = true; });
+
         Debug.Log($"OnClick_CreateLobby {nameOfNewLobby} {password}");
 
         if (!IsStringClearFromErrors(nameOfNewLobby, null, Input_Field.Lobby_Name, 5, 20))
@@ -166,4 +178,62 @@ public class UI_CreateLobby : MonoBehaviour
         "Cool_fight",
         "Join_me_right_now"
     };
+
+
+    [Header("Tween Settings")]
+    public Image backgroundImage;
+    Color normalBackgroundColor;
+    public GameObject modalWindowParent;
+    public CanvasGroup additionalSettingsCG;
+
+    [Space(5f)]
+    public float mainWindowOpenCloseTime = 0.3f;
+    public float addSettingsOpenCloseTime = 0.3f;
+
+    public bool canInteractWithButtons = true;
+
+    public void SetMainPanelAnimationState(bool state)
+    {
+        if (!canInteractWithButtons) return;
+        canInteractWithButtons = false;
+        Observable.Timer(TimeSpan.FromSeconds(mainWindowOpenCloseTime)).Subscribe(_ => { canInteractWithButtons = true; });
+
+        if (state)
+        {
+            backgroundImage.color = new Color(normalBackgroundColor.r, normalBackgroundColor.g, normalBackgroundColor.b, 0f);
+            modalWindowParent.transform.localScale = Vector3.zero;
+
+            backgroundImage.DOColor(normalBackgroundColor, mainWindowOpenCloseTime);
+            modalWindowParent.transform.DOScale(Vector3.one, mainWindowOpenCloseTime);
+        }
+        else
+        {
+            backgroundImage.color = normalBackgroundColor;
+            modalWindowParent.transform.localScale = Vector3.one;
+
+            backgroundImage.DOColor(new Color(normalBackgroundColor.r, normalBackgroundColor.g, normalBackgroundColor.b, 0f), mainWindowOpenCloseTime);
+            modalWindowParent.transform.DOScale(Vector3.zero, mainWindowOpenCloseTime).OnComplete(() => { Destroy(gameObject); });
+        }
+    }
+
+    public void SetAdditionalSettingsAnimationState(bool state)
+    {
+        if (!canInteractWithButtons) return;
+        canInteractWithButtons = false;
+        Observable.Timer(TimeSpan.FromSeconds(addSettingsOpenCloseTime)).Subscribe(_ => { canInteractWithButtons = true; });
+
+        if (state)
+        {
+            additionalSettingsCG.gameObject.SetActive(true);
+            additionalSettingsCG.alpha = 0;
+            additionalSettingsCG.DOFade(1f, addSettingsOpenCloseTime);
+        }
+        else
+        {
+            additionalSettingsCG.alpha = 1;
+            additionalSettingsCG.DOFade(0f, addSettingsOpenCloseTime).OnComplete(() => {
+                additionalSettingsCG.gameObject.SetActive(false);
+            });
+        }
+    }
 }
