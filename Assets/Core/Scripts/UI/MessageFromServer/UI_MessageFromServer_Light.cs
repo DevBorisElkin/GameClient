@@ -59,21 +59,9 @@ public class UI_MessageFromServer_Light : MonoBehaviour
 
     void ResetTweens()
     {
-        if (moveTween != null)
-        {
-            moveTween.Pause();
-            moveTween = null;
-        }
-        if (fadeTextTween != null)
-        {
-            fadeTextTween.Pause();
-            fadeTextTween = null;
-        }
-        if (fadeImageTween != null)
-        {
-            fadeImageTween.Pause();
-            fadeImageTween = null;
-        }
+        DOTween.Kill(moveTween);
+        DOTween.Kill(fadeTextTween);
+        DOTween.Kill(fadeImageTween);
     }
 
     void SetUpCorrectStyles()

@@ -59,7 +59,7 @@ public class UI_CreateLobby : MonoBehaviour
 
         isPublic = true;
         lobbyPassword_inputField.gameObject.SetActive(false);
-        password = "empty";
+        password = "";
 
         map = Map.DefaultMap;
 
@@ -138,10 +138,12 @@ public class UI_CreateLobby : MonoBehaviour
 
     public void OnClick_CreateLobby()
     {
-        if (!IsStringClearFromErrors(nameOfNewLobby, errorText, Input_Field.Lobby_Name, 5, 20))
+        Debug.Log($"OnClick_CreateLobby {nameOfNewLobby} {password}");
+
+        if (!IsStringClearFromErrors(nameOfNewLobby, null, Input_Field.Lobby_Name, 5, 20))
             return;
 
-        if (!isPublic && !IsStringClearFromErrors(password, errorText, Input_Field.Password, 5, 15))
+        if (!isPublic && !IsStringClearFromErrors(password, null, Input_Field.Password, 5, 15))
             return;
 
         // here everything is ok, we need to send the request to create lobby and then wait

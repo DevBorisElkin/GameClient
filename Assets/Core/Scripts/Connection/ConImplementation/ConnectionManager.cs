@@ -270,7 +270,8 @@ public class ConnectionManager : MonoBehaviour
 
                     Debug.Log($"Was not accepted to playroom [{substrings[1]}]");
 
-                    UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
+                    //UI_GlobalManager.instance.ShowLatestMessageFromServer(substrings[1]);
+                    UI_GlobalManager.Message_LightWindow(substrings[1], MessageFromServer_MessageType.Error);
 
                 }
                 // "confirm_enter_playroom|idOfRoom/nameOfRoom/is_public/password/map/currentPlayers/maxPlayers/matchState/playersToStart/totalTimeToFinishInSeconds/killsToFinish";
