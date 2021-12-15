@@ -18264,7 +18264,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 209.31, y: -325.1463}
+  m_AnchoredPosition: {x: 209.31, y: -367.23737}
   m_SizeDelta: {x: 276.62, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1369095686
@@ -20468,8 +20468,8 @@ MonoBehaviour:
   reg_EnterNickname: {fileID: 822736829}
   ui_PlayroomsManager: {fileID: 1515844428}
   panel_connection_main: {fileID: 237589631}
-  panel_connection_profile: {fileID: 408420908}
   panel_connection_playrooms: {fileID: 38143646}
+  playroomsRectTransform: {fileID: 38143647}
   rootForServerMessages: {fileID: 1067420362}
   panelConnect: {fileID: 1027456254}
   panelSendReceive: {fileID: 511800064}
@@ -20488,7 +20488,7 @@ MonoBehaviour:
   profileBtn_Admin_nickname: {fileID: 1962702813}
   panelGameInfo: {fileID: 7386282119919365979}
   panelGameInfo_obj: {fileID: 7456125776216374132}
-  panelGameInfoOpenCloseTime: 0.5
+  fullScreenPanelOpenCloseTime: 0.35
 --- !u!114 &1515844428
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -43,8 +43,9 @@ public class UI_MainMenu : MonoBehaviour
     [Header("Logged in")]
     public UI_PlayroomsManager ui_PlayroomsManager;
     public GameObject panel_connection_main;
-    public GameObject panel_connection_profile;
     public GameObject panel_connection_playrooms;
+    public RectTransform playroomsRectTransform;
+
     [Space(5f)]
     public GameObject rootForServerMessages;
 
@@ -109,11 +110,12 @@ public class UI_MainMenu : MonoBehaviour
             panelSendReceive.SetActive(true);
 
             introPanel.SetActive(false);
-            //authenticationPanel.SetActive(false);
-            //registrationPanel.SetActive(false);
 
-            panel_connection_profile.SetActive(false);
             panel_connection_playrooms.SetActive(false);
+            panelGameInfo_obj.SetActive(false);
+            settingsBackgroundPanel.gameObject.SetActive(false);
+            ui_profile.backgroundPanel.gameObject.SetActive(false);
+            ui_settings.promocodeBackgroundPanel.gameObject.SetActive(false);
 
             UpdateProfilePanelValues(ConnectionManager.instance.currentUserData);
         }
@@ -292,10 +294,17 @@ public class UI_MainMenu : MonoBehaviour
     public void OnClick_OpenPlayroomsList()
     {
         ui_PlayroomsManager.ClearItemsHolder();
-        panel_connection_playrooms.SetActive(true);
         ConnectionManager.instance.RequestListOfPlayrooms();
+
+        panel_connection_playrooms.SetActive(true);
+        playroomsRectTransform.anchoredPosition = new Vector2(panelGameInfo.rect.width, 0);
+        DOTween.To(() => playroomsRectTransform.anchoredPosition, x => playroomsRectTransform.anchoredPosition = x, new Vector2(0f, 0f), fullScreenPanelOpenCloseTime);
     }
-    public void OnClick_ClosePlayroomsList() { panel_connection_playrooms.SetActive(false); }
+    public void OnClick_ClosePlayroomsList() 
+    {
+        playroomsRectTransform.anchoredPosition = new Vector2(0, 0);
+        DOTween.To(() => playroomsRectTransform.anchoredPosition, x => playroomsRectTransform.anchoredPosition = x, new Vector2(playroomsRectTransform.rect.width, 0f), fullScreenPanelOpenCloseTime);
+    }
     public void OnClick_RefreshPlayroomsList() { ConnectionManager.instance.RequestListOfPlayrooms(); }
 
     public void OnClick_CreatePlayroom()
@@ -382,19 +391,19 @@ public class UI_MainMenu : MonoBehaviour
 
     public RectTransform panelGameInfo;
     public GameObject panelGameInfo_obj;
-    public float panelGameInfoOpenCloseTime = 0.5f;
+    public float fullScreenPanelOpenCloseTime = 0.35f;
 
     public void OnClick_OpenGameInfo()
     {
         panelGameInfo.gameObject.SetActive(true);
         panelGameInfo.anchoredPosition = new Vector2(-panelGameInfo.rect.width, 0);
-        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(0f, 0f), panelGameInfoOpenCloseTime);
+        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(0f, 0f), fullScreenPanelOpenCloseTime);
     }
 
     public void OnClick_CloseGameInfo()
     {
         panelGameInfo.anchoredPosition = new Vector2(0, 0);
-        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(-panelGameInfo.rect.width, 0f), panelGameInfoOpenCloseTime);
+        DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(-panelGameInfo.rect.width, 0f), fullScreenPanelOpenCloseTime);
     }
 
 

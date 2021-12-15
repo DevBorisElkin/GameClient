@@ -194,7 +194,5 @@ public class UI_MainMenu_Profile : MonoBehaviour
         }
     }
 
-
-
     #endregion
 }
