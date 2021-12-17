@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,6 +22,13 @@ public class UI_InGame_AdminPanel : MonoBehaviour
     public GameObject adminPanelButton;
     public GameObject adminPanel;
 
+    [Header("Tween Settings")]
+    public UnityEngine.UI.Image adminPanelBackground;
+    public Color adminPanelBakground_normalColor;
+    public RectTransform adminPanelRect;
+    public float adminPanelOpenCloseTime = 0.35f;
+
+
     void Start()
     {
         ManageAdminAccessBtn();
@@ -41,17 +49,43 @@ public class UI_InGame_AdminPanel : MonoBehaviour
     {
         if (ConnectionManager.instance.currentUserData.IsAdmin())
         {
-            adminPanel.SetActive(true);
-            OnClick_CloseHintPanel();
+            AdminPanelOpenCloseAnimation(true);
+            
+            InstantCloseHintPanel();
             UI_InGame.instance.AdminPanelOpened(true);
             RuneSpawnPanel_SetDefaultValues();
         }
     }
 
+    void AdminPanelOpenCloseAnimation(bool state)
+    {
+        if (state)
+        {
+            adminPanel.SetActive(true);
+            adminPanelBackground.color = Color.clear;
+            adminPanelBackground.DOColor(adminPanelBakground_normalColor, adminPanelOpenCloseTime);
+
+            adminPanelRect.anchoredPosition = new Vector2(-adminPanelRect.rect.width, 0);
+            DOTween.To(() => adminPanelRect.anchoredPosition, x => adminPanelRect.anchoredPosition = x, new Vector2(0, 0f), adminPanelOpenCloseTime);
+        }
+        else
+        {
+            adminPanelBackground.color = adminPanelBakground_normalColor;
+            adminPanelBackground.DOColor(Color.clear, adminPanelOpenCloseTime);
+
+            adminPanelRect.anchoredPosition = new Vector2(0, 0);
+            DOTween.To(() => adminPanelRect.anchoredPosition, x => adminPanelRect.anchoredPosition = x, new Vector2(-adminPanelRect.rect.width, 0f), adminPanelOpenCloseTime).OnComplete(() => 
+            {
+                adminPanel.SetActive(false);
+            });
+        }
+    }
+
     public void OnClick_CloseAdminPanel()
     {
-        adminPanel.SetActive(false);
-        OnClick_CloseHintPanel();
+        AdminPanelOpenCloseAnimation(false);
+        //OnClick_CloseHintPanel();
+        InstantCloseHintPanel();
         UI_InGame.instance.AdminPanelOpened(false);
     }
 
@@ -170,12 +204,28 @@ public class UI_InGame_AdminPanel : MonoBehaviour
     public void OnClick_OpenHintPanel(int id) => OpenHintPanel((AdminPanelHint)id);
     public void OpenHintPanel(AdminPanelHint adminPanelHint)
     {
-        adminPanelHintParent.SetActive(true);
+        if (!adminPanelHintParent.activeSelf)
+        {
+            adminPanelHintParent.SetActive(true);
+
+            adminPanelHintParent.transform.localScale = Vector3.zero;
+            adminPanelHintParent.transform.DOScale(Vector3.one, adminPanelOpenCloseTime);
+        }
+
         networkHintHeader.text = GetAdminPanelHeaderByHintType(adminPanelHint);
         networkHintBody.text = GetAdminPanelBodyByHintType(adminPanelHint);
     }
 
-    public void OnClick_CloseHintPanel() => adminPanelHintParent.SetActive(false);
+    public void OnClick_CloseHintPanel()
+    {
+        adminPanelHintParent.transform.localScale = Vector3.one;
+        adminPanelHintParent.transform.DOScale(Vector3.zero, adminPanelOpenCloseTime).OnComplete(() => 
+        {
+            adminPanelHintParent.SetActive(false);
+        });
+    }
+
+    public void InstantCloseHintPanel() => adminPanelHintParent.SetActive(false);
 
     #endregion
 }

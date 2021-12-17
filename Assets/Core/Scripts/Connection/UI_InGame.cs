@@ -9,6 +9,7 @@ using static NetworkingMessageAttributes;
 using UniRx;
 using DG.Tweening;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 public class UI_InGame : MonoBehaviour
 {
@@ -31,6 +32,13 @@ public class UI_InGame : MonoBehaviour
     public GameObject matchFinishedPanel;
     public TMP_Text txtMatchResult;
     public TMP_Text txtMatchWinner;
+
+    [Header("TweensSettings")]
+    public CanvasGroup panel_inGame_CanvasGroup;
+    public RectTransform panelMenuRectTransform;
+    public Image panelMenuBackround;
+    public Color panelMenuBackgroundNormalColor;
+    public float panelInGame_OpenCloseTime = 0.3f;
 
     [Header("Skybox Rotation")]
     public float skyboxRotationSpeed = 1f;
@@ -107,17 +115,43 @@ public class UI_InGame : MonoBehaviour
 
     public void OnClick_OpenMenu()
     {
-        panel_inGame.SetActive(false);
         panel_Menu.SetActive(true);
+
+        panel_inGame_CanvasGroup.alpha = 1f;
+        panelMenuRectTransform.anchoredPosition = new Vector2(-panelMenuRectTransform.rect.width, 0);
+        panelMenuBackround.color = Color.clear;
+
+        panel_inGame_CanvasGroup.DOFade(0f, panelInGame_OpenCloseTime);
+        DOTween.To(() => panelMenuRectTransform.anchoredPosition, x => panelMenuRectTransform.anchoredPosition = x, new Vector2(0f, 0f), panelInGame_OpenCloseTime);
+        panelMenuBackround.DOColor(panelMenuBackgroundNormalColor, panelInGame_OpenCloseTime);
     }
     public void OnClick_CloseMenu()
     {
-        panel_inGame.SetActive(true);
-        panel_Menu.SetActive(false);
+        panel_inGame_CanvasGroup.alpha = 0f;
+        panelMenuRectTransform.anchoredPosition = new Vector2(0, 0);
+        panelMenuBackround.color = panelMenuBackgroundNormalColor;
+
+        panel_inGame_CanvasGroup.DOFade(1f, panelInGame_OpenCloseTime);
+        DOTween.To(() => panelMenuRectTransform.anchoredPosition, x => panelMenuRectTransform.anchoredPosition = x, new Vector2(-panelMenuRectTransform.rect.width, 0f), panelInGame_OpenCloseTime);
+        panelMenuBackround.DOColor(Color.clear, panelInGame_OpenCloseTime).OnComplete(() => {
+            panel_Menu.SetActive(false);
+        });
     }
 
     public void AdminPanelOpened(bool state)
     {
+        if (state)
+        {
+            panel_inGame_CanvasGroup.alpha = 1f;
+            panel_inGame_CanvasGroup.DOFade(0f, panelInGame_OpenCloseTime);
+        }
+        else
+        {
+            panel_inGame_CanvasGroup.alpha = 0f;
+            panel_inGame_CanvasGroup.DOFade(1f, panelInGame_OpenCloseTime);
+        }
+
+
         panel_inGame.SetActive(!state);
     }
 
