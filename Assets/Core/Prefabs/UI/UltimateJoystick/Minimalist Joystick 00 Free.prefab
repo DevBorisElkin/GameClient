@@ -68,7 +68,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7eb8fb0421a24f54fb1d5d789a892333, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 63cdacf6ab93bc041aa34626ee46caa8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -202,12 +202,12 @@ MonoBehaviour:
   useScale: 1
   scaleTouched: 1.2
   showHighlight: 1
-  highlightColor: {r: 0.4392157, g: 0.6156863, b: 1, a: 1}
+  highlightColor: {r: 0.5529412, g: 0.7960785, b: 1, a: 1}
   highlightBase: {fileID: 1252489623314934370}
   highlightJoystick: {fileID: 1252489623835390324}
   showTension: 1
   tensionColorNone: {r: 0, g: 0, b: 0, a: 0}
-  tensionColorFull: {r: 0.30588236, g: 0.34901962, b: 0.54901963, a: 1}
+  tensionColorFull: {r: 0.5529412, g: 0.7960785, b: 1, a: 1}
   tensionType: 1
   rotationOffset: 0
   tensionDeadZone: 0
@@ -311,7 +311,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300002, guid: 56e5e5d80a373a846a8a8f68f06d62b4, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 7eb8fb0421a24f54fb1d5d789a892333, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -454,14 +454,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4392157, g: 0.6156863, b: 1, a: 1}
+  m_Color: {r: 0.5529412, g: 0.7960785, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7eb8fb0421a24f54fb1d5d789a892333, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 63cdacf6ab93bc041aa34626ee46caa8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -529,14 +529,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4392157, g: 0.6156863, b: 1, a: 1}
+  m_Color: {r: 0.5529412, g: 0.7960785, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300002, guid: 56e5e5d80a373a846a8a8f68f06d62b4, type: 3}
+  m_Sprite: {fileID: 21300002, guid: 0ad3ca6bf1472f64096a63265ba88e43, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
