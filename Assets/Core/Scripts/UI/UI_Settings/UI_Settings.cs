@@ -62,6 +62,7 @@ public class UI_Settings : MonoBehaviour
     #region Promocode
 
     [Header("Settings")]
+    public Image promocodeBackgroundPanelHolder;
     public Image promocodeBackgroundPanel;
     public GameObject promocodeModalPanel;
     public Color promocodeBackgroundNormalColor;
@@ -83,6 +84,7 @@ public class UI_Settings : MonoBehaviour
     {
         ResetAllSettingsTweens();
         promocodeInputField.SetTextWithoutNotify("");
+        promocodeBackgroundPanelHolder.gameObject.SetActive(true);
         promocodeBackgroundPanel.gameObject.SetActive(true);
         promocodeBackgroundPanel.color = new Color(promocodeBackgroundPanel.color.r, promocodeBackgroundPanel.color.g, promocodeBackgroundPanel.color.b, 0f);
         promocodeModalPanel.transform.localScale = Vector3.zero;
@@ -100,6 +102,7 @@ public class UI_Settings : MonoBehaviour
         promocodeModal_ScaleOutTween = promocodeModalPanel.transform.DOScale(Vector3.zero, UI_GlobalManager.instance.UI_mainMenu.modalWindowCloseTime).SetEase(UI_GlobalManager.instance.UI_mainMenu.modalWindowScaleOutEase);
         promocodeBack_FadeOutTween = promocodeBackgroundPanel.DOColor(new Color(promocodeBackgroundNormalColor.r, promocodeBackgroundNormalColor.g, promocodeBackgroundNormalColor.b, 0f), UI_GlobalManager.instance.UI_mainMenu.modalWindowCloseTime).OnComplete(() =>
         {
+            promocodeBackgroundPanelHolder.gameObject.SetActive(false);
             promocodeBackgroundPanel.gameObject.SetActive(false);
         });
     }

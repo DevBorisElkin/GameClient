@@ -315,6 +315,7 @@ public class UI_MainMenu : MonoBehaviour
 
     #region ______SETTINGS_PANEL______
     [Header("Settings")]
+    public Image settingsBackgroundPanelHolder;
     public Image settingsBackgroundPanel;
     public GameObject settingsModalPanel;
     public UI_Settings ui_settings;
@@ -337,6 +338,7 @@ public class UI_MainMenu : MonoBehaviour
     void Settings_OnOpen()
     {
         ResetAllSettingsTweens();
+        settingsBackgroundPanelHolder.gameObject.SetActive(true);
         settingsBackgroundPanel.gameObject.SetActive(true);
         settingsBackgroundPanel.color = new Color(settingsBackgroundPanel.color.r, settingsBackgroundPanel.color.g, settingsBackgroundPanel.color.b, 0f);
         settingsModalPanel.transform.localScale = Vector3.zero;
@@ -354,6 +356,7 @@ public class UI_MainMenu : MonoBehaviour
         settingsModal_ScaleOutTween = settingsModalPanel.transform.DOScale(Vector3.zero, modalWindowCloseTime).SetEase(modalWindowScaleOutEase);
         settingsBack_FadeOutTween = settingsBackgroundPanel.DOColor(new Color(settingsNormalColor.r, settingsNormalColor.g, settingsNormalColor.b, 0f), modalWindowCloseTime).OnComplete(() => 
         {
+            settingsBackgroundPanelHolder.gameObject.SetActive(false);
             settingsBackgroundPanel.gameObject.SetActive(false);
         });
     }

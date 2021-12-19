@@ -10,6 +10,7 @@ using static NetworkingMessageAttributes;
 
 public class UI_MainMenu_Profile : MonoBehaviour
 {
+    public Image backgroundPanelHolder;
     public Image backgroundPanel;
     public GameObject profileModalWindow;
     
@@ -62,6 +63,7 @@ public class UI_MainMenu_Profile : MonoBehaviour
         profileModalWindow.transform.localScale = Vector3.zero;
         profileWindowScaleInTween = profileModalWindow.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
 
+        backgroundPanelHolder.gameObject.SetActive(true);
         backgroundPanel.gameObject.SetActive(true);
         backgroundPanel.color = transparentColor;
         backgroundWindowFadeInTween = backgroundPanel.DOColor(normalColor, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
@@ -76,6 +78,7 @@ public class UI_MainMenu_Profile : MonoBehaviour
 
         backgroundPanel.color = normalColor;
         backgroundWindowFadeOutTween = backgroundPanel.DOColor(transparentColor, modalWindowCloseTime + 0.1f).SetEase(modalWindowScaleInEase).OnComplete(() => {
+            backgroundPanelHolder.gameObject.SetActive(false);
             backgroundPanel.gameObject.SetActive(false);
         });
     }
