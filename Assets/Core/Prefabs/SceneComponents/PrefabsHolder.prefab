@@ -77,6 +77,8 @@ MonoBehaviour:
     type: 3}
   rune_prefab: {fileID: 3332331144010735384, guid: d2c4693a44d6dba47a7d73a8f1076fe1,
     type: 3}
+  matchFinishedStatsItem_prefab: {fileID: 4760499492884826930, guid: 56b0dd6993d87d74a9e15af33a4e0133,
+    type: 3}
   runeIcons:
   - rune: 1
     sprite: {fileID: 21300000, guid: f048b5dd29e7d014ab20bee1c5efaaa0, type: 3}

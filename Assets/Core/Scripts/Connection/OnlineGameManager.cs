@@ -280,14 +280,8 @@ public class OnlineGameManager : MonoBehaviour
             {
                 UnityThread.executeInUpdate(() =>
                 {
-                    EventManager.isAlive = false;
-                    string[] substrings = message.Split('|');
-                    ConnectionManager.activePlayroom.matchState.Value = MatchState.Finished;
-                    ConnectionManager.activePlayroom.winnerNickname = substrings[2];
-                    Enum.TryParse(substrings[3], out MatchResult _res);
-                    ConnectionManager.activePlayroom.matchResult = _res;
-
-                    UI_InGame.instance.OnMatchResult(_res);
+                    //UI_InGame.instance.OnMatchResult(_res);
+                    UI_InGame.instance.winScreen.SetUpResults(message);
                 });
             }
             else if (message.Contains(RUNE_SPAWNED))

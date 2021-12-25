@@ -47,6 +47,7 @@ public class PrefabsHolder : MonoBehaviour
     public GameObject ui_opponentPointer_prefab;
 
     public GameObject rune_prefab;
+    public GameObject matchFinishedStatsItem_prefab;
 
     public List<RuneIcon> runeIcons;
 

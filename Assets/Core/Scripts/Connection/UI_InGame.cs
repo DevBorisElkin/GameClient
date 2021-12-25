@@ -29,16 +29,15 @@ public class UI_InGame : MonoBehaviour
     public GameObject killsToFinishPanel;
     public TMP_Text killsToFinishTxt;
 
-    public GameObject matchFinishedPanel;
-    public TMP_Text txtMatchResult;
-    public TMP_Text txtMatchWinner;
-
     [Header("TweensSettings")]
     public CanvasGroup panel_inGame_CanvasGroup;
     public RectTransform panelMenuRectTransform;
     public Image panelMenuBackround;
     public Color panelMenuBackgroundNormalColor;
     public float panelInGame_OpenCloseTime = 0.3f;
+
+    [Header("MatchFinishedPanel")]
+    public WinScreen winScreen;
 
     [Header("Skybox Rotation")]
     public float skyboxRotationSpeed = 1f;
@@ -104,13 +103,6 @@ public class UI_InGame : MonoBehaviour
     public void UpdateTimeLeftTxt(int newSeconds)
     {
         timeLeftTxt.text = ConvertTimeSecondsIntoMinsSecs(newSeconds);
-    }
-
-    public void OnMatchResult(MatchResult result)
-    {
-        matchFinishedPanel.SetActive(true);
-        txtMatchResult.text = MatchResultToString(result);
-        txtMatchWinner.text = ConnectionManager.activePlayroom.winnerNickname;
     }
 
     public void OnClick_OpenMenu()
@@ -183,21 +175,6 @@ public class UI_InGame : MonoBehaviour
         if (totalMins > 0)
             return $"{totalMins}:{totalSecs}";
         else return timeInSeconds.ToString();
-    }
-
-    static string MatchResultToString(MatchResult res)
-    {
-        if(res == MatchResult.PlayerWon)
-        {
-            return "Congractulations! Player WON";
-        }else if (res == MatchResult.Draw)
-        {
-            return "No one won the match, it's a Draw";
-        } else if (res == MatchResult.Discarded)
-        {
-            return "Match was discarded";
-        }
-        return "";
     }
 
     public void OnClick_ToMainMenu()
