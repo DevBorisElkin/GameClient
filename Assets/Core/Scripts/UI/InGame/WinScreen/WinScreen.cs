@@ -19,12 +19,16 @@ public class WinScreen : MonoBehaviour
 
         EventManager.isAlive = false;
         string[] substrings = message.Split('|');
-        ConnectionManager.activePlayroom.matchState.Value = MatchState.Finished;
-        int winnerDbId = Int32.Parse(substrings[1]);
-        ConnectionManager.activePlayroom.winnerNickname = substrings[2];
+        int winnerDbId = -1;
         Enum.TryParse(substrings[3], out MatchResult _res);
+        if (!_res.Equals(MatchResult.Discarded))
+        {
+            winnerDbId = Int32.Parse(substrings[1]);
+            ConnectionManager.activePlayroom.winnerNickname = substrings[2];
+        }
+        ConnectionManager.activePlayroom.matchState.Value = MatchState.Finished;
         ConnectionManager.activePlayroom.matchResult = _res;
-
+        
         List<EndResultItem> items = GenerateMatchResultsFromString(substrings[4], winnerDbId);
 
         int i = 1;
