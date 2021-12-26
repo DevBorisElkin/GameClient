@@ -16,6 +16,7 @@ public class UI_MainMenu : MonoBehaviour
     #region _____variables__________
 
     [Header("General")]
+    public CanvasGroup mainMenuCanvasGroup;
     public UI_MainMenu_Profile ui_profile;
 
     [Space(5f)]
@@ -77,7 +78,7 @@ public class UI_MainMenu : MonoBehaviour
     }
     void DetailedAdjustment(ClientStatus status)
     {
-        if(status.Equals(ClientStatus.Disconnected) || status.Equals(ClientStatus.Connected))
+        if (status.Equals(ClientStatus.Disconnected) || status.Equals(ClientStatus.Connected))
         {
             panelConnect.SetActive(true);
             panelSendReceive.SetActive(false);
@@ -89,7 +90,7 @@ public class UI_MainMenu : MonoBehaviour
 
             string storedLogin = PlayerPrefs.GetString(CODE_SAVED_LOGIN, "");
             string storedpassword = PlayerPrefs.GetString(CODE_SAVED_PASSWORD, "");
-            if(!string.IsNullOrEmpty(storedLogin) && !string.IsNullOrEmpty(storedpassword))
+            if (!string.IsNullOrEmpty(storedLogin) && !string.IsNullOrEmpty(storedpassword))
             {
                 loginAuth = storedLogin;
                 auth_EnterLogin.SetTextWithoutNotify(storedLogin);
@@ -104,7 +105,7 @@ public class UI_MainMenu : MonoBehaviour
                 auth_EnterPassword.SetTextWithoutNotify("");
             }
         }
-        else if(status.Equals(ClientStatus.Authenticated))
+        else if (status.Equals(ClientStatus.Authenticated))
         {
             panelConnect.SetActive(false);
             panelSendReceive.SetActive(true);
@@ -119,7 +120,7 @@ public class UI_MainMenu : MonoBehaviour
 
             UpdateProfilePanelValues(ConnectionManager.instance.currentUserData);
         }
-        
+
         loginReg = "";
         passwordReg = "";
         nicknameReg = "";
@@ -129,6 +130,8 @@ public class UI_MainMenu : MonoBehaviour
         reg_EnterNickname.SetTextWithoutNotify("");
 
         settingsBackgroundPanel.gameObject.SetActive(false);
+
+        mainMenuCanvasGroup.alpha = 1f;
     }
 
     public void OnClick_ChoiceAuthenticate() { Manage_IntroAuthRegister_Panels(false, true, false); }
@@ -162,7 +165,7 @@ public class UI_MainMenu : MonoBehaviour
         oppositePanel.gameObject.SetActive(false);
 
         panel.transform.localScale = Vector3.zero;
-        if(authWindow == Auth_Window.Login)
+        if (authWindow == Auth_Window.Login)
             authWindowScaleInTween = panel.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
         else
             regWindowScaleInTween = panel.transform.DOScale(Vector3.one, modalWindowOpenTime).SetEase(modalWindowScaleInEase);
@@ -222,8 +225,8 @@ public class UI_MainMenu : MonoBehaviour
             return;
         }
 
-        if (   IsStringClearFromErrors   (loginAuth,    null, Input_Field.Login)
-            && IsStringClearFromErrors   (passwordAuth, null, Input_Field.Password))
+        if (IsStringClearFromErrors(loginAuth, null, Input_Field.Login)
+            && IsStringClearFromErrors(passwordAuth, null, Input_Field.Password))
         {
             // TODO BLOCK INTERFACE WHILE WAITING FOR RESPONSE
             ConnectionManager.instance.LogIn(loginAuth, passwordAuth);
@@ -247,7 +250,7 @@ public class UI_MainMenu : MonoBehaviour
             return;
         }
 
-        if (   IsStringClearFromErrors(loginReg, null,    Input_Field.Login)
+        if (IsStringClearFromErrors(loginReg, null, Input_Field.Login)
             && IsStringClearFromErrors(passwordReg, null, Input_Field.Password)
             && IsStringClearFromErrors(nicknameReg, null, Input_Field.Nickname))
         {
@@ -300,7 +303,7 @@ public class UI_MainMenu : MonoBehaviour
         playroomsRectTransform.anchoredPosition = new Vector2(panelGameInfo.rect.width, 0);
         DOTween.To(() => playroomsRectTransform.anchoredPosition, x => playroomsRectTransform.anchoredPosition = x, new Vector2(0f, 0f), fullScreenPanelOpenCloseTime);
     }
-    public void OnClick_ClosePlayroomsList() 
+    public void OnClick_ClosePlayroomsList()
     {
         playroomsRectTransform.anchoredPosition = new Vector2(0, 0);
         DOTween.To(() => playroomsRectTransform.anchoredPosition, x => playroomsRectTransform.anchoredPosition = x, new Vector2(playroomsRectTransform.rect.width, 0f), fullScreenPanelOpenCloseTime);
@@ -323,11 +326,13 @@ public class UI_MainMenu : MonoBehaviour
 
     public void OnClick_OpenSettingsPanel()
     {
+        SetMainMenuOpened(false);
         Settings_OnOpen();
         ui_settings.OnPanelOpened();
     }
     public void OnClick_CloseSettingsPanel()
     {
+        SetMainMenuOpened(true);
         Settings_OnClose();
     }
 
@@ -354,7 +359,7 @@ public class UI_MainMenu : MonoBehaviour
         settingsModalPanel.transform.localScale = Vector3.one;
 
         settingsModal_ScaleOutTween = settingsModalPanel.transform.DOScale(Vector3.zero, modalWindowCloseTime).SetEase(modalWindowScaleOutEase);
-        settingsBack_FadeOutTween = settingsBackgroundPanel.DOColor(new Color(settingsNormalColor.r, settingsNormalColor.g, settingsNormalColor.b, 0f), modalWindowCloseTime).OnComplete(() => 
+        settingsBack_FadeOutTween = settingsBackgroundPanel.DOColor(new Color(settingsNormalColor.r, settingsNormalColor.g, settingsNormalColor.b, 0f), modalWindowCloseTime).OnComplete(() =>
         {
             settingsBackgroundPanelHolder.gameObject.SetActive(false);
             settingsBackgroundPanel.gameObject.SetActive(false);
@@ -409,6 +414,19 @@ public class UI_MainMenu : MonoBehaviour
         DOTween.To(() => panelGameInfo.anchoredPosition, x => panelGameInfo.anchoredPosition = x, new Vector2(-panelGameInfo.rect.width, 0f), fullScreenPanelOpenCloseTime);
     }
 
+
+    #endregion
+
+
+    #region Later addons
+
+    public void SetMainMenuOpened(bool state)
+    {
+        float fadeTarget = state ? 1f : 0f;
+
+        //mainMenuCanvasGroup.DOFade(fadeTarget, fullScreenPanelOpenCloseTime);
+        DOTween.To(() => mainMenuCanvasGroup.alpha, x => mainMenuCanvasGroup.alpha = x, fadeTarget, fullScreenPanelOpenCloseTime);
+    }
 
     #endregion
 }

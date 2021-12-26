@@ -47,12 +47,14 @@ public class UI_MainMenu_Profile : MonoBehaviour
 
     public void OnClick_OpenProfile()
     {
+        UI_GlobalManager.instance.UI_mainMenu.SetMainMenuOpened(false);
         Animation_OnOpen();
         UpdateProfilePanelValues(ConnectionManager.instance.currentUserData);
     }
 
     public void OnClick_CloseProfile()
     {
+        UI_GlobalManager.instance.UI_mainMenu.SetMainMenuOpened(true);
         Animation_OnClose();
     }
 
