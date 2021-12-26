@@ -533,7 +533,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: BOBISCHE left  playroom
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ad5569965d2734880a004e3e3d7d1358, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 3074828514974314926, guid: ad5569965d2734880a004e3e3d7d1358,
     type: 2}
   m_fontSharedMaterials: []
@@ -598,7 +598,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &3551134857894339289
@@ -785,7 +785,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: BOBISCHE spawned rune
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -850,7 +850,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: -0.72052, z: 0, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &8445488045449612279
@@ -1532,7 +1532,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: BOBISCHE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -1597,7 +1597,7 @@ MonoBehaviour:
   m_margin: {x: 5.813034, y: -0.72052, z: 16.709106, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &1547398841961816100
@@ -1815,7 +1815,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: lllll picked up rune
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -1880,7 +1880,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: -0.72052, z: 0, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &8200904807432525788
@@ -3229,7 +3229,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: lllll Made a wrong choice
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -3294,7 +3294,7 @@ MonoBehaviour:
   m_margin: {x: 10.808517, y: -0.72052, z: 3.2419434, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &4827229929143388392
@@ -3756,7 +3756,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Rune spanwed
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -3821,7 +3821,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: -0.72052, z: 0, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &5501849137847562106
@@ -4040,7 +4040,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: BOBISCHE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e21d9fa883341484f8393b51730ca170, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 8ecd17aeceaba4c10b42ac497ccbfcff,
     type: 2}
   m_fontSharedMaterials: []
@@ -4105,7 +4105,7 @@ MonoBehaviour:
   m_margin: {x: 16.964157, y: -0.72052, z: 4.265991, w: 0.093811035}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &5501849138565056154
