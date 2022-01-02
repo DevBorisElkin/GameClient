@@ -29,7 +29,7 @@ public class SpikeTrap : MonoBehaviour
         {
             EventManager.isAlive = false;
             if (mc == null) mc = movementController;
-            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
+            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, Vector3.zero, 0));
         }
     }
 
@@ -40,7 +40,7 @@ public class SpikeTrap : MonoBehaviour
         {
             EventManager.isAlive = false;
             if (mc == null) mc = movementController;
-            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
+            StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, Vector3.zero, 0));
         }
     }
 }

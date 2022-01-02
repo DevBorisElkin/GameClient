@@ -188,6 +188,7 @@ MonoBehaviour:
   dbIdOflastHitPlayer: -1
   speedMovements: 5.6
   speedRotation: 8
+  forceOnBlackRuneKilled: 15
   forceModeOnJump: 2
   forceToApplyOnJump: 10.5
   forceToApplyOnGravityShot: 22
@@ -315,6 +316,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6703321808056644354}
     m_Modifications:
+    - target: {fileID: 1873771164481656246, guid: 7dda7b0dbacefd2449a35fe81862ae67,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 37
+      objectReference: {fileID: 0}
     - target: {fileID: 4631183158647036363, guid: 7dda7b0dbacefd2449a35fe81862ae67,
         type: 3}
       propertyPath: m_Name

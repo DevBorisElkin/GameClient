@@ -95,17 +95,15 @@ public class EventManager : MonoBehaviour
         {
             EventManager.isAlive = false;
             MC = movementController;
-            StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, 0f));
+            StartCoroutine(KillPlayer(DeathDetails.FellOutOfMap, Vector3.zero, 0f));
             camSimpleFollow.SetFalling(true);
         }
     }
     // "player_died|killer_ip|reasonOfDeath
-    public IEnumerator KillPlayer(DeathDetails deathDetails, float initialDelay = 0)
+    public IEnumerator KillPlayer(DeathDetails deathDetails, Vector3 lastProjectileForward, float initialDelay = 0)
     {
         VibrationsManager.OnLocalPlayerDies_Vibrations();
-        // tmp
-        if (deathDetails == DeathDetails.BlackRuneKilled) deathDetails = DeathDetails.FellOutOfMap;
-
+        
         CameraRenderingManager.instance.SetRedRuneDebuffState(false);
 
         EventManager.isAlive = false;
@@ -116,7 +114,10 @@ public class EventManager : MonoBehaviour
 
         yield return new WaitForSeconds(initialDelay);
         EventManager.isAlive = false;
-        MC.KillPlayer();
+        MC.KillPlayer(deathDetails, lastProjectileForward);
+
+        // tmp
+        if (deathDetails == DeathDetails.BlackRuneKilled) deathDetails = DeathDetails.FellOutOfMap;
 
         ConnectionManager.instance.SendMessageToServer($"{PLAYER_DIED}|{killerDbId}|{deathDetails}");
         yield return new WaitForSeconds(showMovementAfterDeath);

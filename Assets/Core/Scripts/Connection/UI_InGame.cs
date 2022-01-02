@@ -92,6 +92,8 @@ public class UI_InGame : MonoBehaviour
         else if(newState == MatchState.JustStarting)
         {
             waitingForPlayersTxt.gameObject.SetActive(false);
+            timeLeftPanel.SetActive(false);
+            killsToFinishPanel.SetActive(false);
             //MatchStartCountdown(true);
         }
     }

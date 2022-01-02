@@ -232,7 +232,7 @@ public class PlayerMovementController : MonoBehaviour
 				if(st != null)
                 {
 					EventManager.isAlive = false;
-					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, 0));
+					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.TouchedSpikes, Vector3.zero, 0));
 					return;
 				}
             }
@@ -331,7 +331,7 @@ public class PlayerMovementController : MonoBehaviour
                 {
 					// tmp black rune death equals to spike death
 					EventManager.isAlive = false;
-					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.BlackRuneKilled, 0));
+					StartCoroutine(EventManager.instance.KillPlayer(DeathDetails.BlackRuneKilled, gp.transform.forward, 0));
 				}
             }
         }
@@ -416,30 +416,37 @@ public class PlayerMovementController : MonoBehaviour
     #region DeathRelated
 
 	[EditorButton]
-	public void KillPlayer()
+	public void KillPlayer(DeathDetails deathDetails, Vector3 lastProjectileForward)
     {
 		rb.constraints = RigidbodyConstraints.None;
 
-        if (!lastMovement.Equals(Vector3.zero))
+        if (!deathDetails.Equals(DeathDetails.BlackRuneKilled))
         {
-			rb.AddForce(new Vector3(lastMovement.x * 50, 0, lastMovement.z * 50), ForceMode.Impulse);
-			
+			if (!lastMovement.Equals(Vector3.zero))
+			{
+				rb.AddForce(new Vector3(lastMovement.x * 50, 0, lastMovement.z * 50), ForceMode.Impulse);
+			}
+			else
+			{
+				bool X_Positive = UnityEngine.Random.Range(0, 2) == 1;
+				bool Z_Positive = UnityEngine.Random.Range(0, 2) == 1;
+				float xRandomForce;
+				float zRandomForce;
+
+				if (X_Positive) xRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
+				else xRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
+
+				if (Z_Positive) zRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
+				else zRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
+
+				rb.AddForce(new Vector3(xRandomForce, 0, zRandomForce), ForceMode.Impulse);
+			}
 		}
         else
         {
-			bool X_Positive = UnityEngine.Random.Range(0, 2) == 1;
-			bool Z_Positive = UnityEngine.Random.Range(0, 2) == 1;
-			float xRandomForce;
-			float zRandomForce;
-
-			if (X_Positive) xRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
-			else xRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
-
-			if (Z_Positive) zRandomForce = UnityEngine.Random.Range(25, 50) * speedMovements * Time.deltaTime;
-			else zRandomForce = UnityEngine.Random.Range(-25, -50) * speedMovements * Time.deltaTime;
-
-			rb.AddForce(new Vector3(xRandomForce, 0, zRandomForce), ForceMode.Impulse);
+			rb.AddForce(lastProjectileForward * UnityEngine.Random.Range(forceOnBlackRuneKilled.x, forceOnBlackRuneKilled.y), ForceMode.Impulse);
 		}
+        
     }
 
 	public void RevivePlayer(Vector3 spawnPosition, int newJumpsAmount)
@@ -470,6 +477,7 @@ public class PlayerMovementController : MonoBehaviour
 	#region Adaptive projectile hit settings
 	public float speedMovements = 5.6f;
 	public float speedRotation = 8f;
+	public Vector2 forceOnBlackRuneKilled = new Vector2(17.5f, 22f);
 
 	public ForceMode forceModeOnJump = ForceMode.VelocityChange;
 	public float forceToApplyOnJump = 10.5f;
