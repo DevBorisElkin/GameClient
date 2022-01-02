@@ -68,7 +68,7 @@ public class UI_MainMenu : MonoBehaviour
         Debug.Log($"<b><color=#5C6AFF>[Unity_Editor]</color></b>");
         promocodesButton.SetActive(false);
 #elif UNITY_ANDROID
-        Debug.Log($"<b><color=#31F838>[Unity_Android]</color></b>")
+        Debug.Log($"<b><color=#31F838>[Unity_Android]</color></b>");
         promocodesButton.SetActive(true);
 #elif UNITY_IOS
         Debug.Log($"<b><color=#FF6B89>[Unity_iOS]</color></b>");
