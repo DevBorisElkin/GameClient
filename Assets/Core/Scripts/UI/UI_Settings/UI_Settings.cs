@@ -69,10 +69,12 @@ public class UI_Settings : MonoBehaviour
 
     public void OnClick_OpenPromocodePanel()
     {
+        UI_GlobalManager.instance.UI_mainMenu.SetMainMenuOpened(false);
         PromocodesPanel_OnOpen();
     }
     public void OnClick_ClosePromocodePanel()
     {
+        UI_GlobalManager.instance.UI_mainMenu.SetMainMenuOpened(true);
         PromocodesPanel_OnClose();
     }
 
