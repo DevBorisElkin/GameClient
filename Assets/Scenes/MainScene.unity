@@ -2454,6 +2454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4443629d5e7ac4b1594e4fd99224fb2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useSafeRepeat: 1
 --- !u!225 &237589636
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3313,7 +3314,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &326952049
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3330,10 +3331,10 @@ RectTransform:
   m_Father: {fileID: 1852702793}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 519.73, y: -717.67053}
+  m_SizeDelta: {x: 276.62, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &326952050
 MonoBehaviour:
@@ -22756,6 +22757,7 @@ MonoBehaviour:
   profileBtn_Admin: {fileID: 131371992}
   profileBtn_User_nickname: {fileID: 1151275960}
   profileBtn_Admin_nickname: {fileID: 1962702813}
+  promocodesButton: {fileID: 326952048}
   panelGameInfo: {fileID: 7386282119919365979}
   panelGameInfo_obj: {fileID: 7456125776216374132}
   fullScreenPanelOpenCloseTime: 0.35

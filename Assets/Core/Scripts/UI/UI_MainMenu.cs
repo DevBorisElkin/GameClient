@@ -59,6 +59,21 @@ public class UI_MainMenu : MonoBehaviour
     private void Start()
     {
         UI_GlobalManager.instance.ManageSceneOnLoad();
+        ManageDifferentPlatforms();
+    }
+
+    void ManageDifferentPlatforms()
+    {
+#if UNITY_EDITOR
+        Debug.Log($"<b><color=#5C6AFF>[Unity_Editor]</color></b>");
+        promocodesButton.SetActive(false);
+#elif UNITY_ANDROID
+        Debug.Log($"<b><color=#31F838>[Unity_Android]</color></b>")
+        promocodesButton.SetActive(true);
+#elif UNITY_IOS
+        Debug.Log($"<b><color=#FF6B89>[Unity_iOS]</color></b>");
+        promocodesButton.SetActive(false);
+#endif
     }
 
     public void MainMenu_Connected(ClientStatus newClientStatus, bool swichBetweenConnectionTypes = true)
@@ -76,6 +91,7 @@ public class UI_MainMenu : MonoBehaviour
         if (swichBetweenConnectionTypes)
             DetailedAdjustment(newClientStatus);
     }
+
     void DetailedAdjustment(ClientStatus status)
     {
         if (status.Equals(ClientStatus.Disconnected) || status.Equals(ClientStatus.Connected))
@@ -144,7 +160,7 @@ public class UI_MainMenu : MonoBehaviour
         //registrationPanel.SetActive(register);
     }
 
-    #region LogIn Register panels switching
+#region LogIn Register panels switching
 
     public float modalWindowOpenTime = 0.25f;
     public float modalWindowCloseTime = 0.25f;
@@ -209,9 +225,9 @@ public class UI_MainMenu : MonoBehaviour
     public void OnClick_SwitchToRegister() => Animation_OnOpen(Auth_Window.Register);
     public void OnClick_ForgotPassword() => UI_GlobalManager.Message_ModalWindow("Unfortunately, restore password function is not currently supported", MessageFromServer_MessageType.Info);
 
-    #endregion
+#endregion
 
-    #region AUTHENTICATE VARIABLES
+#region AUTHENTICATE VARIABLES
     string loginAuth;
     string passwordAuth;
     public void OnEdit_AuthLogin(string text) { loginAuth = text; }
@@ -232,9 +248,9 @@ public class UI_MainMenu : MonoBehaviour
             ConnectionManager.instance.LogIn(loginAuth, passwordAuth);
         }
     }
-    #endregion
+#endregion
 
-    #region _____REGISTER VARIABLES__________
+#region _____REGISTER VARIABLES__________
     string loginReg;
     string passwordReg;
     string nicknameReg;
@@ -258,17 +274,17 @@ public class UI_MainMenu : MonoBehaviour
             ConnectionManager.instance.Register(loginReg, passwordReg, nicknameReg);
         }
     }
-    #endregion ___________________________
+#endregion ___________________________
 
-    #region _____newtwork results for authentication and registration_____
+#region _____newtwork results for authentication and registration_____
 
     public void ShowAuthOrRegResult(string result)
     {
         UI_GlobalManager.Message(result, MessageFromServer_WindowType.LightWindow, MessageFromServer_MessageType.Error);
     }
-    #endregion ___________________________________________________________
+#endregion ___________________________________________________________
 
-    #region _____ALREADY CONNECTED_____________
+#region _____ALREADY CONNECTED_____________
     public void OnClick_LogOut() { ConnectionManager.instance.Disconnect(false); }
     public void OnClick_SendMessage()
     {
@@ -314,9 +330,9 @@ public class UI_MainMenu : MonoBehaviour
     {
         GameObject newObj = Instantiate(PrefabsHolder.instance.ui_createLobby_prefab, rootForServerMessages.transform);
     }
-    #endregion ________________________________
+#endregion ________________________________
 
-    #region ______SETTINGS_PANEL______
+#region ______SETTINGS_PANEL______
     [Header("Settings")]
     public Image settingsBackgroundPanelHolder;
     public Image settingsBackgroundPanel;
@@ -372,9 +388,9 @@ public class UI_MainMenu : MonoBehaviour
         DOTween.Kill(settingsBack_FadeInTween);
         DOTween.Kill(settingsBack_FadeOutTween);
     }
-    #endregion
+#endregion
 
-    #region Adaptive Data
+#region Adaptive Data
 
     [Header("Adaptive Data")]
     public GameObject profileBtn_User;
@@ -382,6 +398,9 @@ public class UI_MainMenu : MonoBehaviour
 
     public TMP_Text profileBtn_User_nickname;
     public TMP_Text profileBtn_Admin_nickname;
+
+    [Space(5f)]
+    public GameObject promocodesButton;
 
     public void UpdateProfilePanelValues(UserData userData)
     {
@@ -392,10 +411,10 @@ public class UI_MainMenu : MonoBehaviour
         profileBtn_Admin.SetActive(userData.accessRights == EnumsAndData.AccessRights.Admin || userData.accessRights == EnumsAndData.AccessRights.SuperAdmin);
     }
 
-    #endregion
+#endregion
 
 
-    #region GameHintsAndInformation
+#region GameHintsAndInformation
 
     public RectTransform panelGameInfo;
     public GameObject panelGameInfo_obj;
@@ -415,10 +434,10 @@ public class UI_MainMenu : MonoBehaviour
     }
 
 
-    #endregion
+#endregion
 
 
-    #region Later addons
+#region Later addons
 
     public void SetMainMenuOpened(bool state)
     {
@@ -428,5 +447,5 @@ public class UI_MainMenu : MonoBehaviour
         DOTween.To(() => mainMenuCanvasGroup.alpha, x => mainMenuCanvasGroup.alpha = x, fadeTarget, fullScreenPanelOpenCloseTime);
     }
 
-    #endregion
+#endregion
 }
